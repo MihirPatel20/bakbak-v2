@@ -8,7 +8,6 @@ const storage = multer.diskStorage({
   },
   // Store file in a .png/.jpeg/.jpg format instead of binary
   filename: function (req, file, cb) {
-    console.log("file: ", file)
     let fileExtension = "";
     if (file.originalname.split(".").length > 1) {
       fileExtension = file.originalname.substring(

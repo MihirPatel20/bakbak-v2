@@ -1,7 +1,6 @@
 import express from "express";
 import cors from "cors";
 import { createServer } from "http";
-import { errorHandler } from "./middlewares/error.middlewares.js";
 import rateLimit from "express-rate-limit";
 import cookieParser from "cookie-parser";
 
@@ -43,9 +42,12 @@ app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(express.static("public")); // configure static file to save images locally
 app.use(cookieParser());
 
-app.get("/", (req, res) => {
-  res.send("Server is running!");
-});
+// * App routes
+import userRouter from "./routes/user.routes.js";
+import { errorHandler } from "./middlewares/error.middlewares.js";
+
+// * App apis
+app.use("/api/v1/users", userRouter);
 
 // common error handling middleware
 app.use(errorHandler);
