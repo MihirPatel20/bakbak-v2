@@ -12,8 +12,11 @@ export default defineConfig({
     alias: {
       "@": "/src",
       assets: "/src/assets",
+      api: "/src/api",
+      components: "/src/components",
       context: "/src/context",
       pages: "/src/pages",
+      reducer: "/src/reducer",
     },
   },
   build: {

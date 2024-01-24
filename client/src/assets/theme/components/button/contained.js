@@ -31,7 +31,7 @@ const contained = {
     padding: `${pxToRem(10)} ${pxToRem(24)}`,
 
     "&:hover": {
-      backgroundColor: white.main,
+      // backgroundColor: white.main,
     },
 
     "&:active, &:active:focus, &:active:hover": {

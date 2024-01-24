@@ -7,18 +7,16 @@ import theme from "assets/theme";
 // Material Dashboard 2 React Dark Mode themes
 import themeDark from "assets/theme-dark";
 import { useMaterialUIController } from "context";
-import Ecommerce from "pages/Ecommerce";
+import LoginPage from "pages/Auth/LoginPage";
 
 const App = () => {
   const [controller] = useMaterialUIController();
   const { darkMode } = controller;
 
-  console.log("theme: ", theme);
-
   return (
     <ThemeProvider theme={darkMode ? themeDark : theme}>
       <CssBaseline />
-      <Ecommerce />
+      <LoginPage />
     </ThemeProvider>
   );
 };
