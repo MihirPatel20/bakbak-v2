@@ -1,10 +1,10 @@
 
 
-// Material Dashboard 2 React base styles
+// Material UI base styles
 import colors from "assets/theme/base/colors";
 import borders from "assets/theme/base/borders";
 
-// Material Dashboard 2 React helper functions
+// Material UI helper functions
 import pxToRem from "assets/theme/functions/pxToRem";
 
 const { white } = colors;

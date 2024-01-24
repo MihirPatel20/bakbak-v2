@@ -1,6 +1,6 @@
 
 
-// Material Dashboard 2 React Base Styles
+// Material UI Base Styles
 import colors from "assets/theme-dark/base/colors";
 import typography from "assets/theme-dark/base/typography";
 

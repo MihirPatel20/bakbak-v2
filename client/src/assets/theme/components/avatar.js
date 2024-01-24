@@ -1,6 +1,6 @@
 
 
-// Material Dashboard 2 React base styles
+// Material UI base styles
 import borders from "assets/theme/base/borders";
 
 const { borderRadius } = borders;

@@ -1,9 +1,9 @@
 
 
-// Material Dashboard 2 React Base Styles
+// Material UI Base Styles
 import borders from "assets/theme-dark/base/borders";
 
-// Material Dashboard 2 React Helper Functions
+// Material UI Helper Functions
 import pxToRem from "assets/theme-dark/functions/pxToRem";
 
 const { borderRadius } = borders;

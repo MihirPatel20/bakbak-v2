@@ -1,10 +1,10 @@
 
 
-// Material Dashboard 2 React base styles
+// Material UI base styles
 import typography from "assets/theme-dark/base/typography";
 import colors from "assets/theme-dark/base/colors";
 
-// Material Dashboard 2 React helper functions
+// Material UI helper functions
 import pxToRem from "assets/theme-dark/functions/pxToRem";
 import rgba from "assets/theme-dark/functions/rgba";
 

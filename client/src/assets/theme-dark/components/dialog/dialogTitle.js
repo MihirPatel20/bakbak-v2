@@ -1,9 +1,9 @@
 
 
-// Material Dashboard 2 React base styles
+// Material UI base styles
 import typography from "assets/theme-dark/base/typography";
 
-// Material Dashboard 2 React helper functions
+// Material UI helper functions
 import pxToRem from "assets/theme-dark/functions/pxToRem";
 
 const { size } = typography;

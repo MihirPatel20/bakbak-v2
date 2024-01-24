@@ -1,8 +1,8 @@
-// Material Dashboard 2 React Base Styles
+// Material UI Base Styles
 import colors from "assets/theme/base/colors";
 import typography from "assets/theme/base/typography";
 
-// Material Dashboard 2 React Helper Functions
+// Material UI Helper Functions
 import pxToRem from "assets/theme/functions/pxToRem";
 
 const { transparent, light, info, primary, secondary } = colors;

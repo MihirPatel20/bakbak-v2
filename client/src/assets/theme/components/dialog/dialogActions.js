@@ -1,6 +1,6 @@
 
 
-// Material Dashboard 2 React helper functions
+// Material UI helper functions
 import pxToRem from "assets/theme/functions/pxToRem";
 
 const dialogActions = {

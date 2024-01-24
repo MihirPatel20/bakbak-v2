@@ -1,6 +1,6 @@
 
 
-// Material Dashboard 2 React base styles
+// Material UI base styles
 import colors from "assets/theme-dark/base/colors";
 
 const { text } = colors;
