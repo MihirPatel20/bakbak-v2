@@ -19,6 +19,7 @@ import {
   updateUserAvatar,
   resendEmailVerification,
 } from "reducer/auth/auth.thunk";
+import { showSnackbar } from "reducer/snackbar/snackbar.slice";
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({
@@ -58,6 +59,14 @@ const LoginPage = () => {
   return (
     <Container component="main" maxWidth="sm">
       <Paper elevation={3} style={{ padding: 20, marginTop: 50 }}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => dispatch(showSnackbar("success", "You are logged in"))}
+        >
+          Snackbar
+        </Button>
+
         <Typography variant="h4" gutterBottom>
           User Authentication
         </Typography>

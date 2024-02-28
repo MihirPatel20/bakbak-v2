@@ -8,6 +8,7 @@ import theme from "assets/theme";
 import themeDark from "assets/theme-dark";
 import { useMaterialUIController } from "context";
 import LoginPage from "pages/Auth/LoginPage";
+import SnackbarAlert from "components/common/Snackbar";
 
 const App = () => {
   const [controller] = useMaterialUIController();
@@ -16,6 +17,7 @@ const App = () => {
   return (
     <ThemeProvider theme={darkMode ? themeDark : theme}>
       <CssBaseline />
+      <SnackbarAlert />
       <LoginPage />
     </ThemeProvider>
   );
