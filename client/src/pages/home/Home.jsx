@@ -9,7 +9,7 @@ const Home = () => {
   return (
     <>
       <NavBar />
-      <Grid container>
+      <Grid container spacing={1}>
         <Grid item sm={3} lg={3} sx={{ display: { xs: "none", sm: "block" } }}>
           <ChatHistory />
         </Grid>

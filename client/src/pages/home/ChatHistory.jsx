@@ -5,9 +5,11 @@ const ChatHistory = () => {
   return (
     <Box
       sx={{
-        backgroundColor: {
-          md: "purple",
+        height: {
+          xs: "calc(100vh - 56px)",
+          sm: "calc(100vh - 64px)",
         },
+        border: "1px solid gray",
       }}
     >
       ChatHistory

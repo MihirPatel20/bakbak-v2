@@ -197,6 +197,20 @@ const getCurrentUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, req.user, "Current user fetched successfully"));
 });
 
+// Controller function to fetch all users with specific fields
+const getAllUsers = asyncHandler(async (req, res) => {
+  // Get the ID of the current user
+  console.log("req.user: ", req.user)
+  const currentUserId = req.user._id;
+
+  // Fetch all users except the current user
+  const users = await User.find({ _id: { $ne: currentUserId } }).select(
+    "avatar username email"
+  );
+
+  res.status(200).json(new ApiResponse(200, users, "List of all users"));
+});
+
 const refreshAccessToken = asyncHandler(async (req, res) => {
   const incomingRefreshToken =
     req.cookies.refreshToken || req.body.refreshToken;
@@ -497,6 +511,7 @@ export {
   changeCurrentPassword,
   forgotPasswordRequest,
   getCurrentUser,
+  getAllUsers,
   // handleSocialLogin,
   loginUser,
   logoutUser,

@@ -45,6 +45,20 @@ export const getUserProfile = createAsyncThunk(
   }
 );
 
+// Async thunk for getting user profile
+export const getAllUsers = createAsyncThunk(
+  "users/getAllUsers",
+  async (_) => {
+    try {
+      const response = await api.get("/users/all-users");
+      // console.log("response: ", response)
+      return response.data.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+);
+
 // Async thunk for user logout
 export const logoutUser = createAsyncThunk("users/logout", async () => {
   try {
