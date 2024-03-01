@@ -9,7 +9,7 @@ export const registerUser = createAsyncThunk(
     try {
       // Send a POST request to your registration endpoint
       const response = await api.post("/users/register", userData);
-      return response.data;
+      return response.data.data;
     } catch (error) {
       throw error;
     }
@@ -20,10 +20,11 @@ export const registerUser = createAsyncThunk(
 export const loginUser = createAsyncThunk(
   "users/login",
   async (credentials) => {
-    try {
+    try {w
       // Send a POST request to your login endpoint with credentials included
       const response = await api.post("/users/login", credentials);
-      return response.data;
+      console.log("response: ", response)
+      return response.data.data;
     } catch (error) {
       throw error;
     }
@@ -35,8 +36,9 @@ export const getUserProfile = createAsyncThunk(
   "users/getUserProfile",
   async (_) => {
     try {
-      const response = await api.get("/user/profile");
-      return response.data;
+      const response = await api.get("/users/current-user");
+      console.log("response: ", response)
+      return response.data.data;
     } catch (error) {
       throw error;
     }
@@ -47,7 +49,7 @@ export const getUserProfile = createAsyncThunk(
 export const logoutUser = createAsyncThunk("users/logout", async () => {
   try {
     const response = await api.get("/users/logout");
-    return response.data;
+    return response.data.data;
   } catch (error) {
     throw error;
   }

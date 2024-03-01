@@ -32,8 +32,7 @@ const Login = () => {
   const handleLoginRequest = async (userData) => {
     try {
       const res = await dispatch(loginUser(userData)).unwrap();
-      console.log("res: ", res);
-      // navigate("/dashboard");
+      navigate("/home");
     } catch (error) {
       console.log("Error during login:", error);
     }
