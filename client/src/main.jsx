@@ -4,13 +4,16 @@ import CssBaseline from "@mui/material/CssBaseline";
 import App from "./App.jsx";
 import store from "./redux/store.js";
 import { Provider } from "react-redux";
+import { SocketProvider } from "context/SocketContext.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
+  <>
     <CssBaseline />
 
     <Provider store={store}>
-      <App />
+      <SocketProvider>
+        <App />
+      </SocketProvider>
     </Provider>
-  </React.StrictMode>
+  </>
 );

@@ -1,11 +1,22 @@
 import express from "express";
 import cors from "cors";
 import { createServer } from "http";
+import { Server } from "socket.io";
 import rateLimit from "express-rate-limit";
 import cookieParser from "cookie-parser";
 
 const app = express();
 const httpServer = createServer(app);
+
+const io = new Server(httpServer, {
+  pingTimeout: 60000,
+  cors: {
+    origin: process.env.CORS_ORIGIN,
+    credentials: true,
+  },
+});
+
+app.set("io", io); // using set method to mount the `io` instance on the app to avoid usage of `global`
 
 // global middlewares
 app.use(
@@ -45,9 +56,12 @@ app.use(cookieParser());
 // * App routes
 import userRouter from "./routes/user.routes.js";
 import { errorHandler } from "./middlewares/error.middlewares.js";
+import { initializeSocketIO } from "./socket.js";
 
 // * App apis
 app.use("/api/v1/users", userRouter);
+
+initializeSocketIO(io);
 
 // common error handling middleware
 app.use(errorHandler);

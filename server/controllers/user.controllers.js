@@ -200,7 +200,6 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 // Controller function to fetch all users with specific fields
 const getAllUsers = asyncHandler(async (req, res) => {
   // Get the ID of the current user
-  console.log("req.user: ", req.user)
   const currentUserId = req.user._id;
 
   // Fetch all users except the current user

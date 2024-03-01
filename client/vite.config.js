@@ -16,6 +16,7 @@ export default defineConfig({
       components: "/src/components",
       context: "/src/context",
       pages: "/src/pages",
+      layouts: "/src/layouts",
       reducer: "/src/reducer",
     },
   },
