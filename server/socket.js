@@ -39,6 +39,28 @@ const mountParticipantStoppedTypingEvent = (socket) => {
   });
 };
 
+// Function to generate a unique chat room ID based on user IDs
+
+/**
+ * @description This function is responsible for emitting a new message to other participants of the chat.
+ * @param {Socket<import("socket.io/dist/typed-events").DefaultEventsMap, import("socket.io/dist/typed-events").DefaultEventsMap, import("socket.io/dist/typed-events").DefaultEventsMap, any>} socket
+ */
+const mountSendMessageEvent = (socket, io) => {
+  socket.on(
+    ChatEventEnum.SEND_MESSAGE_EVENT,
+    async ({ recipientId, message }) => {
+      const senderId = socket.user._id.toString();
+      const newMessage = { sender: senderId, message };
+
+      // Emit message to the recipient
+      io.to(recipientId).emit(ChatEventEnum.MESSAGE_RECEIVED_EVENT, newMessage);
+
+      // Emit message to the sender (optional, depending on your requirements)
+      io.to(senderId).emit(ChatEventEnum.MESSAGE_RECEIVED_EVENT, newMessage);
+    }
+  );
+};
+
 /**
  *
  * @param {Server<import("socket.io/dist/typed-events").DefaultEventsMap, import("socket.io/dist/typed-events").DefaultEventsMap, import("socket.io/dist/typed-events").DefaultEventsMap, any>} io
@@ -84,6 +106,7 @@ const initializeSocketIO = (io) => {
       mountJoinChatEvent(socket);
       mountParticipantTypingEvent(socket);
       mountParticipantStoppedTypingEvent(socket);
+      mountSendMessageEvent(socket, io);
 
       socket.on(ChatEventEnum.DISCONNECT_EVENT, () => {
         console.log("user has disconnected 🚫. userId: " + socket.user?._id);

@@ -1,54 +1,56 @@
-import {
-  Box,
-  Button,
-  IconButton,
-  Paper,
-  TextField,
-  Typography,
-} from "@mui/material";
-import React, { useEffect, useState } from "react";
+import { Box, Button, Paper, TextField, Typography } from "@mui/material";
+import React, { useEffect, useRef, useState } from "react";
 import { useSocket } from "context/SocketContext";
 import SendIcon from "@mui/icons-material/Send";
+import { useSelector, useDispatch } from "react-redux";
+import MessageBubble from "components/shared/MessageBubble";
 
-const ChatInterface = () => {
+const SEND_MESSAGE_EVENT = "sendMessage";
+const MESSAGE_RECEIVED_EVENT = "messageReceived";
+
+const ChatInterface = ({ activeChat }) => {
   const { socket } = useSocket();
+  const { user } = useSelector((state) => state.auth);
   const [messages, setMessages] = useState([]);
-  const [newMessage, setNewMessage] = useState("");
+  const newMessageRef = useRef(""); // Create a ref for newMessage
 
   // Function to send a new message
-  const sendMessage = () => {
-    if (newMessage.trim() !== "") {
-      socket.emit("newMessage", { message: newMessage });
-      setNewMessage("");
+  const sendMessage = (event) => {
+    event.preventDefault();
+
+    const newMessage = newMessageRef.current.value.trim(); // Access value from ref
+    if (newMessage !== "") {
+      socket.emit(SEND_MESSAGE_EVENT, {
+        recipientId: activeChat?._id,
+        message: newMessage,
+      });
+      newMessageRef.current.value = ""; // Clear input value via ref
     }
   };
 
   // Listen for new messages from the server
   useEffect(() => {
     if (socket) {
-      socket.on("connect", () => {
-        console.log("Connected to the server");
-      });
-      socket.on("messageReceived", (message) => {
+      socket.on(MESSAGE_RECEIVED_EVENT, (message) => {
         setMessages((prevMessages) => [...prevMessages, message]);
       });
     }
     return () => {
       if (socket) {
-        socket.off("messageReceived");
+        socket.off(MESSAGE_RECEIVED_EVENT);
       }
     };
   }, [socket]);
 
   return (
     <Paper
+    variant="outlined"
       sx={{
         height: {
-          xs: "calc(100vh - 56px)",
-          sm: "calc(100vh - 64px)",
+          xs: "calc(100vh - 72px)",
+          sm: "calc(100vh - 80px)",
         },
-        border: "1px solid gray",
-        // background: "linear-gradient(to right, #667eea, #764ba2)",
+        // border: "1px solid gray",
       }}
     >
       <Box
@@ -66,10 +68,14 @@ const ChatInterface = () => {
           sx={{
             flex: 1,
             overflowY: "auto",
+
+            display: "flex",
+            flexDirection: "column",
+            gap: "4px",
           }}
         >
           {messages.map((message, index) => (
-            <Typography key={index}>{message}</Typography>
+            <MessageBubble key={index} message={message} userId={user._id} />
           ))}
         </Box>
 
@@ -80,19 +86,19 @@ const ChatInterface = () => {
           display="flex"
           flexDirection="row"
           gap={1}
+          onSubmit={sendMessage}
         >
           <TextField
             name="message"
             label="Message"
             size="small"
             fullWidth
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
+            inputRef={newMessageRef} // Attach ref to input
           />
           <Button
+            type="submit"
             sx={{ minWidth: "auto", p: "8px 12px" }}
             variant="contained"
-            onClick={sendMessage}
           >
             <SendIcon />
           </Button>

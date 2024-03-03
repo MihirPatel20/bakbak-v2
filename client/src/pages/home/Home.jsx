@@ -4,20 +4,24 @@ import { Grid } from "@mui/material";
 import ChatHistory from "./ChatHistory.jsx";
 import ChatArea from "./ChatArea.jsx";
 import UsersList from "./UsersList.jsx";
+import { LocalStorage } from "@/utils/LocalStorage.js";
 
 const Home = () => {
+  const [activeChat, setActiveChat] = React.useState(
+    LocalStorage.get("activeChat") || {}
+  );
   return (
     <>
       <NavBar />
-      <Grid container spacing={1}>
+      <Grid container spacing={1} p={1}>
         <Grid item sm={3} lg={3} sx={{ display: { xs: "none", sm: "block" } }}>
-          <ChatHistory />
+          <ChatHistory activeChat={activeChat} />
         </Grid>
         <Grid item xs={12} sm={6} lg={6}>
-          <ChatArea />
+          <ChatArea activeChat={activeChat} />
         </Grid>
         <Grid item sm={3} lg={3} sx={{ display: { xs: "none", sm: "block" } }}>
-          <UsersList />
+          <UsersList setActiveChat={setActiveChat} />
         </Grid>
       </Grid>
     </>

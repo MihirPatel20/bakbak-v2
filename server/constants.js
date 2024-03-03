@@ -88,6 +88,8 @@ export const UserRolesEnum = {
     LEAVE_CHAT_EVENT: "leaveChat",
     // ? when admin updates a group name
     UPDATE_GROUP_NAME_EVENT: "updateGroupName",
+    // ? when user sends a message
+    SEND_MESSAGE_EVENT: "sendMessage",
     // ? when new message is received
     MESSAGE_RECEIVED_EVENT: "messageReceived",
     // ? when there is new one on one chat, new group chat or user gets added in the group
