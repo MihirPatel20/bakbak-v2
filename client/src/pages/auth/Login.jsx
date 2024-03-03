@@ -12,7 +12,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useDispatch } from "react-redux";
-import { loginUser } from "@/redux/authReducer/authThunk.js";
+import { loginUser } from "@/reducer/auth/auth.thunk";
 
 const Login = () => {
   const {

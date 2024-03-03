@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { Outlet, Navigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { getUserProfile } from "@/redux/authReducer/authThunk";
+import { getUserProfile } from "@/reducer/auth/auth.thunk";
 
 // Custom component and asset imports
 

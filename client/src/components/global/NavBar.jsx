@@ -12,11 +12,11 @@ import {
 } from "@mui/material";
 
 const NavBar = () => {
-  const auth = useSelector((state) => state.auth);
+  const auth = useSelector((state) => state?.auth);
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
+    setAnchorEl(event?.currentTarget);
   };
 
   const handleClose = () => {
@@ -32,11 +32,11 @@ const NavBar = () => {
 
         <Box display="flex" alignItems={"center"} gap={2}>
           <Typography variant="h6" component="div">
-            {auth.user.username}
+            {auth?.user?.username}
           </Typography>
           <Avatar
-            alt={auth.user.username}
-            src={auth.user.avatar.url}
+            alt={auth?.user?.username}
+            src={auth?.user?.avatar?.url}
             onClick={handleClick}
           />
           <Menu

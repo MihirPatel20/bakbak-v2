@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { getAllUsers } from "@/redux/authReducer/authThunk";
 import { Box, Typography } from "@mui/material";
 import UserCard from "components/shared/UserCard";
 import api from "api/api";
