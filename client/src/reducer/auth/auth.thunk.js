@@ -1,5 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import api from "api";
+import { showSnackbar } from "reducer/snackbar/snackbar.slice";
 
 // Async thunk for user registration
 const registerUser = createAsyncThunk("auth/registerUser", async (userData) => {
@@ -8,7 +9,7 @@ const registerUser = createAsyncThunk("auth/registerUser", async (userData) => {
     return response.data;
   } catch (error) {
     console.log("error: ", error.response.data);
-    throw error;
+    throw error.response.data;
   }
 });
 
@@ -16,9 +17,10 @@ const registerUser = createAsyncThunk("auth/registerUser", async (userData) => {
 const loginUser = createAsyncThunk("auth/loginUser", async (userData) => {
   try {
     const response = await api.post("/users/login", userData);
+
     return response.data;
   } catch (error) {
-    throw error;
+    throw error.response.data;
   }
 });
 
@@ -30,7 +32,7 @@ const refreshAccessToken = createAsyncThunk(
       const response = await api.post("/users/refresh-token");
       return response.data;
     } catch (error) {
-      throw error;
+      throw error.response.data;
     }
   }
 );
@@ -43,7 +45,7 @@ const verifyEmail = createAsyncThunk(
       const response = await api.get(`/verify-email/${verificationToken}`);
       return response.data;
     } catch (error) {
-      throw error;
+      throw error.response.data;
     }
   }
 );
@@ -57,7 +59,7 @@ const forgotPassword = createAsyncThunk(
       return response.data;
     } catch (error) {
       console.log("error: ", error.response.data);
-      throw error;
+      throw error.response.data;
     }
   }
 );
@@ -79,7 +81,7 @@ const resetForgottenPassword = createAsyncThunk(
       );
       return response.data;
     } catch (error) {
-      throw error;
+      throw error.response.data;
     }
   }
 );
@@ -90,7 +92,7 @@ const logoutUser = createAsyncThunk("auth/logoutUser", async () => {
     const response = await api.post("/users/logout");
     return response.data;
   } catch (error) {
-    throw error;
+    throw error.response.data;
   }
 });
 
@@ -100,7 +102,7 @@ const getUserProfile = createAsyncThunk("auth/getUserProfile", async () => {
     const response = await api.get("/users/current-user");
     return response.data;
   } catch (error) {
-    throw error;
+    throw error.response.data;
   }
 });
 
@@ -111,7 +113,7 @@ const getAllUsers = createAsyncThunk("auth/getAllUsers", async (_) => {
     // console.log("response: ", response)
     return response.data.data;
   } catch (error) {
-    throw error;
+    throw error.response.data;
   }
 });
 
@@ -128,7 +130,7 @@ const updateUserAvatar = createAsyncThunk(
       });
       return response.data;
     } catch (error) {
-      throw error;
+      throw error.response.data;
     }
   }
 );
@@ -141,7 +143,7 @@ const resendEmailVerification = createAsyncThunk(
       const response = await api.post("/users/resend-email-verification");
       return response.data;
     } catch (error) {
-      throw error;
+      throw error.response.data;
     }
   }
 );

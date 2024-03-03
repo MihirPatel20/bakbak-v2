@@ -54,12 +54,14 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
+        // console.log("login payload: ", action.payload.data.user);
         state.isLoading = false;
-        state.user = action.payload.data.user;
-        state.token = action.payload.data.token;
+        // state.user = action.payload.data.user;
+        state.token = action.payload.data.accessToken;
         state.error = null;
       })
       .addCase(loginUser.rejected, (state, action) => {
+        // console.log("thunk action: ", action)
         state.isLoading = false;
         state.error = action.error.message;
       })
@@ -138,17 +140,9 @@ const authSlice = createSlice({
       })
 
       // Get Current User
-      .addCase(getUserProfile.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
-      })
       .addCase(getUserProfile.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.user = action.payload;
-      })
-      .addCase(getUserProfile.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.error.message;
+        // console.log("get user payload: ", action.payload);
+        state.user = action.payload.data;
       })
 
       // Update User Avatar

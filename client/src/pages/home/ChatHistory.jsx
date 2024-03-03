@@ -25,7 +25,6 @@ const ChatHistory = ({ activeChat }) => {
     const fetchChats = async () => {
       try {
         const response = await api.get("/chats");
-        console.log(response.data.data);
         setChats(response.data.data);
       } catch (error) {
         console.log(error);

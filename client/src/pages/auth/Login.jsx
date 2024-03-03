@@ -31,10 +31,10 @@ const Login = () => {
 
   const handleLoginRequest = async (userData) => {
     try {
-      const res = await dispatch(loginUser(userData)).unwrap();
+      await dispatch(loginUser(userData)).unwrap();
       navigate("/home");
     } catch (error) {
-      console.log("Error during login:", error);
+      console.error("Error during login:", error);
     }
   };
 

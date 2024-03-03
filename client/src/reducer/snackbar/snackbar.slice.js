@@ -26,8 +26,9 @@ export const showSnackbar = (type, message) => (dispatch) => {
   dispatch(setSnackbar({ open: true, type, message }));
 };
 
-export const hideSnackbar = () => (dispatch) => {
-  dispatch(setSnackbar({ open: false }));
+export const hideSnackbar = () => (dispatch, getState) => {
+  const prevState = getState().snackbar;
+  dispatch(setSnackbar({ ...prevState, open: false }));
 };
 
 export default snackbarSlice.reducer;

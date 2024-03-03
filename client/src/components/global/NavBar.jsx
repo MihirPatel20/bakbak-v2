@@ -1,18 +1,20 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   AppBar,
   Toolbar,
   Typography,
-  Button,
   Avatar,
   Menu,
   MenuItem,
   Box,
 } from "@mui/material";
+import { logoutUser } from "reducer/auth/auth.thunk";
 
 const NavBar = () => {
   const auth = useSelector((state) => state?.auth);
+  const dispatch = useDispatch();
+  // console.log("auth: ", auth);
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleClick = (event) => {
@@ -20,6 +22,7 @@ const NavBar = () => {
   };
 
   const handleClose = () => {
+    dispatch(logoutUser());
     setAnchorEl(null);
   };
 
