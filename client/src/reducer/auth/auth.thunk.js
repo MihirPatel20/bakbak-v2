@@ -1,22 +1,19 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import api from "api/api";
+import api from "api";
 
 // Async thunk for user registration
-const registerUser = createAsyncThunk(
-  "users/registerUser",
-  async (userData) => {
-    try {
-      const response = await api.post("/users/register", userData);
-      return response.data;
-    } catch (error) {
-      console.log("error: ", error.response.data);
-      throw error;
-    }
+const registerUser = createAsyncThunk("auth/registerUser", async (userData) => {
+  try {
+    const response = await api.post("/users/register", userData);
+    return response.data;
+  } catch (error) {
+    console.log("error: ", error.response.data);
+    throw error;
   }
-);
+});
 
 // Async thunk for user login
-const loginUser = createAsyncThunk("users/loginUser", async (userData) => {
+const loginUser = createAsyncThunk("auth/loginUser", async (userData) => {
   try {
     const response = await api.post("/users/login", userData);
     return response.data;
@@ -27,7 +24,7 @@ const loginUser = createAsyncThunk("users/loginUser", async (userData) => {
 
 // Async thunk for refreshing access token
 const refreshAccessToken = createAsyncThunk(
-  "users/refreshAccessToken",
+  "auth/refreshAccessToken",
   async () => {
     try {
       const response = await api.post("/users/refresh-token");
@@ -40,7 +37,7 @@ const refreshAccessToken = createAsyncThunk(
 
 // Async thunk for verifying email
 const verifyEmail = createAsyncThunk(
-  "users/verifyEmail",
+  "auth/verifyEmail",
   async (verificationToken) => {
     try {
       const response = await api.get(`/verify-email/${verificationToken}`);
@@ -53,7 +50,7 @@ const verifyEmail = createAsyncThunk(
 
 // Async thunk for requesting forgotten password
 const forgotPassword = createAsyncThunk(
-  "users/forgotPassword",
+  "auth/forgotPassword",
   async (email) => {
     try {
       const response = await api.post("/users/forgot-password", { email });
@@ -67,7 +64,7 @@ const forgotPassword = createAsyncThunk(
 
 // Async thunk for resetting forgotten password
 const resetForgottenPassword = createAsyncThunk(
-  "users/resetForgottenPassword",
+  "auth/resetForgottenPassword",
   async ({ resetPassToken, newPassword }) => {
     console.log("{ resetPassToken, newPassword }: ", {
       resetPassToken,
@@ -88,7 +85,7 @@ const resetForgottenPassword = createAsyncThunk(
 );
 
 // Async thunk for logging out user
-const logoutUser = createAsyncThunk("users/logoutUser", async () => {
+const logoutUser = createAsyncThunk("auth/logoutUser", async () => {
   try {
     const response = await api.post("/users/logout");
     return response.data;
@@ -98,7 +95,7 @@ const logoutUser = createAsyncThunk("users/logoutUser", async () => {
 });
 
 // Async thunk for getting current user
-const getUserProfile = createAsyncThunk("users/getUserProfile", async () => {
+const getUserProfile = createAsyncThunk("auth/getUserProfile", async () => {
   try {
     const response = await api.get("/users/current-user");
     return response.data;
@@ -108,7 +105,7 @@ const getUserProfile = createAsyncThunk("users/getUserProfile", async () => {
 });
 
 // Async thunk for getting user profile
-const getAllUsers = createAsyncThunk("users/getAllUsers", async (_) => {
+const getAllUsers = createAsyncThunk("auth/getAllUsers", async (_) => {
   try {
     const response = await api.get("/users/all-users");
     // console.log("response: ", response)
@@ -120,7 +117,7 @@ const getAllUsers = createAsyncThunk("users/getAllUsers", async (_) => {
 
 // Async thunk for updating user avatar
 const updateUserAvatar = createAsyncThunk(
-  "users/updateUserAvatar",
+  "auth/updateUserAvatar",
   async (avatarFile) => {
     const formDataForAvatar = new FormData();
     formDataForAvatar.append("avatar", avatarFile);
@@ -138,7 +135,7 @@ const updateUserAvatar = createAsyncThunk(
 
 // Async thunk for resending email verification
 const resendEmailVerification = createAsyncThunk(
-  "users/resendEmailVerification",
+  "auth/resendEmailVerification",
   async () => {
     try {
       const response = await api.post("/users/resend-email-verification");

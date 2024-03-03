@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
 import UserCard from "components/shared/UserCard";
-import api from "api/api";
+import api from "api";
 import { useSelector } from "react-redux";
 import { ChatEventEnum } from "@/constants";
 import { useSocket } from "context/SocketContext";
