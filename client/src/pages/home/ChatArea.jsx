@@ -4,9 +4,7 @@ import { useSocket } from "context/SocketContext";
 import SendIcon from "@mui/icons-material/Send";
 import { useSelector, useDispatch } from "react-redux";
 import MessageBubble from "components/shared/MessageBubble";
-
-const SEND_MESSAGE_EVENT = "sendMessage";
-const MESSAGE_RECEIVED_EVENT = "messageReceived";
+import { ChatEventEnum } from "@/constants";
 
 const ChatInterface = ({ activeChat }) => {
   const { socket } = useSocket();
@@ -20,7 +18,7 @@ const ChatInterface = ({ activeChat }) => {
 
     const newMessage = newMessageRef.current.value.trim(); // Access value from ref
     if (newMessage !== "") {
-      socket.emit(SEND_MESSAGE_EVENT, {
+      socket.emit(ChatEventEnum.SEND_MESSAGE_EVENT, {
         recipientId: activeChat?._id,
         message: newMessage,
       });
@@ -31,20 +29,21 @@ const ChatInterface = ({ activeChat }) => {
   // Listen for new messages from the server
   useEffect(() => {
     if (socket) {
-      socket.on(MESSAGE_RECEIVED_EVENT, (message) => {
+      // Listener for when a new message is received.
+      socket.on(ChatEventEnum.MESSAGE_RECEIVED_EVENT, (message) => {
         setMessages((prevMessages) => [...prevMessages, message]);
       });
     }
     return () => {
       if (socket) {
-        socket.off(MESSAGE_RECEIVED_EVENT);
+        socket.off(ChatEventEnum.MESSAGE_RECEIVED_EVENT);
       }
     };
   }, [socket]);
 
   return (
     <Paper
-    variant="outlined"
+      variant="outlined"
       sx={{
         height: {
           xs: "calc(100vh - 72px)",

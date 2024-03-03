@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { getAllUsers } from "@/redux/authReducer/authThunk";
 import { Box, Typography } from "@mui/material";
 import UserCard from "components/shared/UserCard";
-import { LocalStorage } from "@/utils/LocalStorage";
+import api from "api/api";
 
 const UsersList = ({ setActiveChat }) => {
   const dispatch = useDispatch();
@@ -12,8 +12,8 @@ const UsersList = ({ setActiveChat }) => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await dispatch(getAllUsers()).unwrap();
-        setUsers(res);
+        const res = await api.get("chats/users");
+        setUsers(res.data.data);
       } catch (error) {
         console.log("error: ", error);
       }
@@ -21,6 +21,15 @@ const UsersList = ({ setActiveChat }) => {
 
     fetchUsers();
   }, [dispatch]);
+
+  const createNewChat = async (reciepentId) => {
+    try {
+      const response = await api.post("/chats/c/" + reciepentId);
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <Box
@@ -44,9 +53,7 @@ const UsersList = ({ setActiveChat }) => {
           user={user}
           onClick={() => {
             setActiveChat(user);
-
-            // Store in local storage
-            LocalStorage.set("activeChat", user);
+            createNewChat(user._id);
           }}
         />
       ))}

@@ -3,6 +3,7 @@ import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ProtectedRoutes from "@/utils/ProtectedRoutes";
 import Home from "pages/home/Home";
+import AdminPanel from "pages/auth/AdminPanel";
 
 const App = () => {
   return (
@@ -15,6 +16,7 @@ const App = () => {
         <Route element={<ProtectedRoutes />}>
           <Route path="/" element={<div>Home</div>} />
           <Route path="/home" element={<Home />} />
+          <Route path="/admin" element={<AdminPanel />} />
         </Route>
         <Route path="*" render={() => <div>404 Not Found</div>} />
       </Routes>
