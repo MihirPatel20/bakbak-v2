@@ -40,6 +40,7 @@ const UsersList = ({ setActiveChat }) => {
           xs: "calc(100vh - 72px)",
           sm: "calc(100vh - 80px)",
         },
+        overflow: "auto",
         // border: "1px solid gray",
       }}
     >

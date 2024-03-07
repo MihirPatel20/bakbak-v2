@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import fs from "fs";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import rateLimit from "express-rate-limit";
@@ -84,6 +85,59 @@ app.use("/api/v1/messages", messageRouter);
 app.use("/api/v1/admin", adminRouter);
 
 initializeSocketIO(io);
+
+// * Seeding handlers
+import { avoidInProduction } from "./middlewares/auth.middlewares.js";
+import { getGeneratedCredentials, seedUsers } from "./seeds/user.seeds.js";
+import { seedSocialMedia } from "./seeds/social-media.seeds.js";
+import { dbInstance } from "./db/index.js";
+import { DB_NAME } from "./constants.js";
+import { ApiError } from "./utils/ApiError.js";
+import { ApiResponse } from "./utils/ApiResponse.js";
+import path from "path";
+
+app.post(
+  "/api/v1/seed/social-media",
+  avoidInProduction,
+  seedUsers,
+  seedSocialMedia
+);
+
+// ! 🚫 Danger Zone
+app.delete("/api/v1/reset-db", avoidInProduction, async (req, res) => {
+  if (dbInstance) {
+    // Drop the whole DB
+    await dbInstance.connection.db.dropDatabase({
+      dbName: DB_NAME,
+    });
+
+    const directory = "./public/images";
+
+    // Remove all product images from the file system
+    fs.readdir(directory, (err, files) => {
+      if (err) {
+        // fail silently
+        console.log("Error while removing the images: ", err);
+      } else {
+        for (const file of files) {
+          if (file === ".gitkeep") continue;
+          fs.unlink(path.join(directory, file), (err) => {
+            if (err) throw err;
+          });
+        }
+      }
+    });
+    // remove the seeded users if exist
+    fs.unlink("./public/temp/seed-credentials.json", (err) => {
+      // fail silently
+      if (err) console.log("Seed credentials are missing.");
+    });
+    return res
+      .status(200)
+      .json(new ApiResponse(200, null, "Database dropped successfully"));
+  }
+  throw new ApiError(500, "Something went wrong while dropping the database");
+});
 
 // common error handling middleware
 app.use(errorHandler);

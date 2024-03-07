@@ -11,6 +11,7 @@ const UserCard = ({ user, onClick }) => {
         width: "auto",
         border: "1px solid grey",
         cursor: "pointer",
+        minHeight: 70,
       }}
       onClick={onClick}
     >

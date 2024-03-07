@@ -112,10 +112,16 @@ export const getLocalPath = (fileName) => {
  * @description Removed the local file from the local file system based on the file path
  */
 export const removeLocalFile = (localPath) => {
-  fs.unlink(localPath, (err) => {
-    if (err) console.log("Error while removing local files: ", err);
-    else {
-      console.log("Removed local: ", localPath);
+  fs.access(localPath, fs.constants.F_OK, (err) => {
+    if (err) {
+      console.log(`File ${localPath} does not exist`);
+    } else {
+      fs.unlink(localPath, (err) => {
+        if (err) console.log("Error while removing local files: ", err);
+        else {
+          console.log("Removed local: ", localPath);
+        }
+      });
     }
   });
 };
