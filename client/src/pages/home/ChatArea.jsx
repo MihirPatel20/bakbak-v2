@@ -45,6 +45,12 @@ const ChatInterface = ({ activeChat }) => {
         });
         setMessages((prevMessages) => [...prevMessages, res.data.data]);
         setNewMessage(""); // Clear message input
+
+        // Emit a stop typing event to the server for the current chat
+        socket.emit(ChatEventEnum.STOP_TYPING_EVENT, activeChat);
+
+        // Reset the user's typing state
+        setSelfTyping(false);
       } catch (error) {
         console.error("Error sending message:", error);
       }
@@ -91,12 +97,10 @@ const ChatInterface = ({ activeChat }) => {
         setMessages((prevMessages) => [...prevMessages, payload]);
       });
       socket.on(ChatEventEnum.TYPING_EVENT, (chatId) => {
-        console.log("typing: ", chatId);
         if (chatId !== activeChat) return;
         setIsTyping(true);
       });
       socket.on(ChatEventEnum.STOP_TYPING_EVENT, (chatId) => {
-        console.log("stopped typing: ", chatId);
         if (chatId !== activeChat) return;
         setIsTyping(false);
       });
@@ -110,9 +114,18 @@ const ChatInterface = ({ activeChat }) => {
 
   useEffect(() => {
     // Scroll to the bottom of the chat interface when messages change
-    if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop =
-        chatContainerRef.current.scrollHeight;
+    const chatContainer = chatContainerRef.current;
+    const lastMessage = chatContainer.lastElementChild;
+
+    // Check if there are new messages and if the user is not looking at previous messages
+    const isNewMessages =
+      messages.length > 0 &&
+      chatContainer.scrollTop + chatContainer.clientHeight >=
+        chatContainer.scrollHeight - 200;
+
+    // Scroll to the bottom of the chat interface when there are new messages and the user is already viewing the latest messages
+    if (isNewMessages) {
+      lastMessage.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
 
