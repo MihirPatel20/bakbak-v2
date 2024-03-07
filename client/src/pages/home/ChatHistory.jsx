@@ -5,8 +5,9 @@ import api from "api";
 import { useSelector } from "react-redux";
 import { ChatEventEnum } from "@/constants";
 import { useSocket } from "context/SocketContext";
+import { LocalStorage } from "@/utils/LocalStorage";
 
-const ChatHistory = ({ activeChat }) => {
+const ChatHistory = ({ setActiveChat }) => {
   const { socket } = useSocket();
   const auth = useSelector((state) => state.auth);
   const [chats, setChats] = useState([]);
@@ -76,7 +77,11 @@ const ChatHistory = ({ activeChat }) => {
             <UserCard
               key={chat._id}
               user={participant}
-              onClick={() => deleteChat(chat._id)}
+              onClick={() => {
+                // deleteChat(chat._id);
+                setActiveChat(chat._id);
+                LocalStorage.set("activeChat", chat._id);
+              }}
             />
           );
         })

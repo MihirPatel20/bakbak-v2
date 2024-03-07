@@ -2,7 +2,7 @@ import React from "react";
 import { Box, Typography } from "@mui/material";
 
 const MessageBubble = ({ message, userId }) => {
-  const isOwnMessage = message.sender === userId;
+  const isOwnMessage = message.sender._id === userId;
 
   return (
     <Box
@@ -21,7 +21,7 @@ const MessageBubble = ({ message, userId }) => {
           wordWrap: "break-word",
         }}
       >
-        <Typography>{message?.message}</Typography>
+        <Typography>{message?.content}</Typography>
       </Box>
     </Box>
   );

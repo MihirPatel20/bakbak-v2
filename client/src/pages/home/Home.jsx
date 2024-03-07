@@ -10,12 +10,13 @@ const Home = () => {
   const [activeChat, setActiveChat] = React.useState(
     LocalStorage.get("activeChat") || {}
   );
+
   return (
     <>
       <NavBar />
       <Grid container spacing={1} p={1}>
         <Grid item sm={3} lg={3} sx={{ display: { xs: "none", sm: "block" } }}>
-          <ChatHistory activeChat={activeChat} />
+          <ChatHistory activeChat={activeChat} setActiveChat={setActiveChat} />
         </Grid>
         <Grid item xs={12} sm={6} lg={6}>
           <ChatArea activeChat={activeChat} />

@@ -51,7 +51,6 @@ const UsersList = ({ setActiveChat }) => {
           key={user._id}
           user={user}
           onClick={() => {
-            setActiveChat(user);
             createNewChat(user._id);
           }}
         />

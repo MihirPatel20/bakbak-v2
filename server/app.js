@@ -57,6 +57,7 @@ app.use(cookieParser());
 import userRouter from "./routes/user.routes.js";
 import chatRouter from "./routes/chat.routes.js";
 import adminRouter from "./routes/admin.routes.js";
+import messageRouter from "./routes/message.routes.js";
 import { errorHandler } from "./middlewares/error.middlewares.js";
 import { initializeSocketIO } from "./socket.js";
 
@@ -64,7 +65,7 @@ import { initializeSocketIO } from "./socket.js";
 app.use("/api/v1/users", userRouter);
 
 app.use("/api/v1/chats", chatRouter);
-// app.use("/api/v1/chat-app/messages", messageRouter);
+app.use("/api/v1/messages", messageRouter);
 
 app.use("/api/v1/admin", adminRouter);
 
