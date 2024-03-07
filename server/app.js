@@ -57,6 +57,8 @@ app.use(cookieParser());
 import userRouter from "./routes/user.routes.js";
 import profileRouter from "./routes/profile.routes.js";
 import followRouter from "./routes/follow.routes.js";
+import postRouter from "./routes/post.routes.js";
+import bookmarkRouter from "./routes/bookmark.routes.js";
 
 import chatRouter from "./routes/chat.routes.js";
 import adminRouter from "./routes/admin.routes.js";
@@ -69,6 +71,8 @@ app.use("/api/v1/users", userRouter);
 app.use("/api/v1/profile", profileRouter);
 
 app.use("/api/v1/follow", followRouter);
+app.use("/api/v1/post", postRouter);
+app.use("/api/v1/bookmark", bookmarkRouter);
 
 app.use("/api/v1/chats", chatRouter);
 app.use("/api/v1/messages", messageRouter);
