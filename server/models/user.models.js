@@ -8,6 +8,7 @@ import {
   USER_TEMPORARY_TOKEN_EXPIRY,
   UserLoginType,
 } from "../constants.js";
+import { SocialProfile } from "./profile.models.js";
 
 const userSchema = new Schema(
   {
@@ -85,10 +86,17 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-userSchema.post("save", function (error, doc, next) {
+userSchema.post("save", async function (user, next) {
   // ! Generally, querying data on every user save is not a good idea and not necessary when you are working on a specific application which has concrete models which are tightly coupled
   // ! However, in this application this user model is being referenced in many loosely coupled models so we need to do some initial setups before proceeding to make sure the data consistency and integrity
+  const socialProfile = await SocialProfile.findOne({ owner: user._id });
 
+  // Setup necessary social media models for the user
+  if (!socialProfile) {
+    await SocialProfile.create({
+      owner: user._id,
+    });
+  }
   next();
 });
 

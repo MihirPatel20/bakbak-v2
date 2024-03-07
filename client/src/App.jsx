@@ -18,7 +18,7 @@ const App = () => {
           <Route path="/home" element={<Home />} />
           <Route path="/admin" element={<AdminPanel />} />
         </Route>
-        <Route path="*" render={() => <div>404 Not Found</div>} />
+        <Route path="*" element={<div>404 Not Found</div>} />
       </Routes>
     </BrowserRouter>
   );
