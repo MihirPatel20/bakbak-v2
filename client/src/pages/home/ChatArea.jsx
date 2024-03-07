@@ -4,15 +4,20 @@ import { useSocket } from "context/SocketContext";
 import SendIcon from "@mui/icons-material/Send";
 import { useSelector } from "react-redux";
 import MessageBubble from "components/shared/MessageBubble";
-import { ChatEventEnum } from "@/constants";
+import { ChatEventEnum } from "../../constants";
 import api from "api";
 
 const ChatInterface = ({ activeChat }) => {
   const { socket } = useSocket();
   const { user } = useSelector((state) => state.auth);
   const [messages, setMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState(""); // State to handle message input
+
+  const [isTyping, setIsTyping] = useState(false); // To track if someone is currently typing
+  const [selfTyping, setSelfTyping] = useState(false); // To track if the current user is typing
+
+  const typingTimeoutRef = useRef(null);
   const chatContainerRef = useRef(null);
-  const newMessageRef = useRef("");
 
   const getMessages = async (chatId) => {
     try {
@@ -25,24 +30,59 @@ const ChatInterface = ({ activeChat }) => {
 
   useEffect(() => {
     if (activeChat) {
+      socket?.emit(ChatEventEnum.JOIN_CHAT_EVENT, activeChat);
+
       getMessages(activeChat);
     }
   }, [activeChat]);
 
   const sendMessage = async (event) => {
     event.preventDefault();
-    const newMessage = newMessageRef.current.value.trim();
-    if (newMessage !== "") {
+    if (newMessage.trim() !== "") {
       try {
         const res = await api.post(`/messages/${activeChat}`, {
           content: newMessage,
         });
         setMessages((prevMessages) => [...prevMessages, res.data.data]);
-        newMessageRef.current.value = ""; // Clear input value
+        setNewMessage(""); // Clear message input
       } catch (error) {
         console.error("Error sending message:", error);
       }
     }
+  };
+
+  const handleOnMessageChange = (e) => {
+    // Update the message state with the current input value
+    setNewMessage(e.target.value);
+
+    // If socket doesn't exist, exit the function
+    if (!socket) return;
+
+    // Check if the user isn't already set as typing
+    if (!selfTyping) {
+      // Set the user as typing
+      setSelfTyping(true);
+
+      // Emit a typing event to the server for the current chat
+      socket.emit(ChatEventEnum.TYPING_EVENT, activeChat);
+    }
+
+    // Clear the previous timeout (if exists) to avoid multiple setTimeouts from running
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+
+    // Define a length of time (in milliseconds) for the typing timeout
+    const timerLength = 2000;
+
+    // Set a timeout to stop the typing indication after the timerLength has passed
+    typingTimeoutRef.current = setTimeout(() => {
+      // Emit a stop typing event to the server for the current chat
+      socket.emit(ChatEventEnum.STOP_TYPING_EVENT, activeChat);
+
+      // Reset the user's typing state
+      setSelfTyping(false);
+    }, timerLength);
   };
 
   useEffect(() => {
@@ -50,16 +90,29 @@ const ChatInterface = ({ activeChat }) => {
       socket.on(ChatEventEnum.MESSAGE_RECEIVED_EVENT, (payload) => {
         setMessages((prevMessages) => [...prevMessages, payload]);
       });
+      socket.on(ChatEventEnum.TYPING_EVENT, (chatId) => {
+        console.log("typing: ", chatId);
+        if (chatId !== activeChat) return;
+        setIsTyping(true);
+      });
+      socket.on(ChatEventEnum.STOP_TYPING_EVENT, (chatId) => {
+        console.log("stopped typing: ", chatId);
+        if (chatId !== activeChat) return;
+        setIsTyping(false);
+      });
       return () => {
         socket.off(ChatEventEnum.MESSAGE_RECEIVED_EVENT);
+        socket.off(ChatEventEnum.TYPING_EVENT);
+        socket.off(ChatEventEnum.STOP_TYPING_EVENT);
       };
     }
-  }, [socket]);
+  }, [socket, activeChat]);
 
   useEffect(() => {
     // Scroll to the bottom of the chat interface when messages change
     if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
     }
   }, [messages]);
 
@@ -71,7 +124,6 @@ const ChatInterface = ({ activeChat }) => {
           xs: "calc(100vh - 72px)",
           sm: "calc(100vh - 80px)",
         },
-        // border: "1px solid gray",
       }}
     >
       <Box
@@ -86,11 +138,10 @@ const ChatInterface = ({ activeChat }) => {
           Chat Interface
         </Typography>
         <Box
-        ref={chatContainerRef}
-        sx={{
+          ref={chatContainerRef}
+          sx={{
             flex: 1,
             overflowY: "auto",
-
             display: "flex",
             flexDirection: "column",
             gap: "4px",
@@ -103,6 +154,8 @@ const ChatInterface = ({ activeChat }) => {
               userId={user._id}
             />
           ))}
+          {/* Display typing indicator if someone is typing */}
+          {isTyping && <Typography variant="body2">Typing...</Typography>}
         </Box>
         <Box
           component="form"
@@ -117,7 +170,8 @@ const ChatInterface = ({ activeChat }) => {
             label="Message"
             size="small"
             fullWidth
-            inputRef={newMessageRef}
+            value={newMessage} // Bind value to state
+            onChange={handleOnMessageChange} // Handle input change
           />
           <Button type="submit" sx={{ ml: 1 }} variant="contained">
             <SendIcon />
