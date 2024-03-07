@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   forgotPasswordRequest,
+  getAllUsers,
   getCurrentUser,
   loginUser,
   logoutUser,
@@ -30,6 +31,7 @@ router.route("/reset-password/:resetToken").post(resetForgottenPassword);
 // Secured routes
 router.route("/logout").post(verifyJWT, logoutUser);
 router.route("/current-user").get(verifyJWT, getCurrentUser);
+router.route("/all-users").get(verifyJWT, getAllUsers);
 
 router
   .route("/avatar")

@@ -68,7 +68,7 @@ export const UserRolesEnum = {
   export const MAXIMUM_SUB_IMAGE_COUNT = 4;
   export const MAXIMUM_SOCIAL_POST_IMAGE_COUNT = 6;
   
-  export const DB_NAME = "bakbak-v2";
+  export const DB_NAME = "chat-app-socket-io";
   
   export const paypalBaseUrl = {
     sandbox: "https://api-m.sandbox.paypal.com",
@@ -88,6 +88,8 @@ export const UserRolesEnum = {
     LEAVE_CHAT_EVENT: "leaveChat",
     // ? when admin updates a group name
     UPDATE_GROUP_NAME_EVENT: "updateGroupName",
+    // ? when user sends a message
+    SEND_MESSAGE_EVENT: "sendMessage",
     // ? when new message is received
     MESSAGE_RECEIVED_EVENT: "messageReceived",
     // ? when there is new one on one chat, new group chat or user gets added in the group
