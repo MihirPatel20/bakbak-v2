@@ -55,7 +55,8 @@ app.use(cookieParser());
 
 // * App routes
 import userRouter from "./routes/user.routes.js";
-import socialProfileRouter from "./routes/profile.routes.js";
+import profileRouter from "./routes/profile.routes.js";
+import followRouter from "./routes/follow.routes.js";
 
 import chatRouter from "./routes/chat.routes.js";
 import adminRouter from "./routes/admin.routes.js";
@@ -65,7 +66,9 @@ import { initializeSocketIO } from "./socket.js";
 
 // * App apis
 app.use("/api/v1/users", userRouter);
-app.use("/api/v1/profile", socialProfileRouter);
+app.use("/api/v1/profile", profileRouter);
+
+app.use("/api/v1/follow", followRouter);
 
 app.use("/api/v1/chats", chatRouter);
 app.use("/api/v1/messages", messageRouter);
