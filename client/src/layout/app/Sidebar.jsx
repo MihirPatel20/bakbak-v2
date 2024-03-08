@@ -16,9 +16,10 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 
 // Component imports
-import routes, { additionalRoutes } from "@/routes";
 import { drawerWidth } from "@/constants";
 import BakbakLogo from "components/global/BakbakLogo";
+import AppRoutes from "@/routes/appRoutes";
+import authenticationRoutes from "@/routes/authenticationRoutes";
 
 const Sidebar = ({
   mobileOpen,
@@ -40,7 +41,7 @@ const Sidebar = ({
       </Toolbar>
       <Divider />
       <List>
-        {routes.map((route) => (
+        {AppRoutes.map((route) => (
           <ListItem key={route.key} disablePadding>
             <ListItemButton onClick={() => navigate(route.path)}>
               <ListItemIcon>{route.icon}</ListItemIcon>
@@ -53,7 +54,7 @@ const Sidebar = ({
       <Divider />
 
       <List>
-        {additionalRoutes.map((route) => (
+        {authenticationRoutes.map((route) => (
           <ListItem key={route.key} disablePadding>
             <ListItemButton>
               <ListItemIcon>{route.icon}</ListItemIcon>

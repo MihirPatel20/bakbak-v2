@@ -1,7 +1,6 @@
-// routes.js
 import AdminPanel from "pages/auth/AdminPanel";
 
-const routes = [
+const appRoutes = [
   {
     name: "Home",
     key: "home",
@@ -60,19 +59,4 @@ const routes = [
   },
 ];
 
-export const additionalRoutes = [
-  {
-    name: "Ecommerce",
-    key: "ecommerce",
-    icon: null,
-    element: <div>Welcome to Ecommerce</div>,
-  },
-  {
-    name: "More",
-    key: "more",
-    icon: null,
-    element: <div>Welcome to More</div>,
-  },
-];
-
-export default routes;
+export default appRoutes;
