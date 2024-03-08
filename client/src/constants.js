@@ -1,3 +1,5 @@
+export const drawerWidth = 240;
+
 export const ChatEventEnum = Object.freeze({
   // ? once user is ready to go
   CONNECTED_EVENT: "connected",

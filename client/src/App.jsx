@@ -1,9 +1,14 @@
-import Login from "pages/auth/Login";
+// Desc: Main entry point for the application
+
+//import dependencies
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import routes from "./routes.jsx";
+
+//import components
+import AppLayout from "@/layout/app/index.jsx";
 import ProtectedRoutes from "@/utils/ProtectedRoutes";
-import Home from "pages/home/Home";
-import AdminPanel from "pages/auth/AdminPanel";
+import Login from "pages/auth/Login";
 
 const App = () => {
   return (
@@ -11,14 +16,21 @@ const App = () => {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<div>Register</div>} />
-        <Route path="/forgot-password" element={<div>ForgotPassword</div>} />
+        <Route path="/forgot-password" element={<div>Forgot Password</div>} />
 
         <Route element={<ProtectedRoutes />}>
-          <Route path="/" element={<div>Home</div>} />
-          <Route path="/home" element={<Home />} />
-          <Route path="/admin" element={<AdminPanel />} />
+          <Route path="/" element={<AppLayout />}>
+            {routes.map((route, index) => (
+              <Route key={index} path={route.path} element={route.element} />
+            ))}
+          </Route>
         </Route>
-        <Route path="*" element={<div>404 Not Found</div>} />
+
+        {/* Catch-all route for routes not matching any specified route */}
+        <Route
+          path="*"
+          element={<div>The page you're looking for doesn't exist</div>}
+        />
       </Routes>
     </BrowserRouter>
   );
