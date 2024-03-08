@@ -9,6 +9,7 @@ import routes from "./routes.jsx";
 import AppLayout from "@/layout/app/index.jsx";
 import ProtectedRoutes from "@/utils/ProtectedRoutes";
 import Login from "pages/auth/Login";
+import "./styles/keyframes.scss";
 
 const App = () => {
   return (

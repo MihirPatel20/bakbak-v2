@@ -18,6 +18,7 @@ import ListItemText from "@mui/material/ListItemText";
 // Component imports
 import routes, { additionalRoutes } from "@/routes";
 import { drawerWidth } from "@/constants";
+import BakbakLogo from "components/global/BakbakLogo";
 
 const Sidebar = ({
   mobileOpen,
@@ -28,7 +29,15 @@ const Sidebar = ({
 
   const drawer = (
     <div>
-      <Toolbar />
+      <Toolbar
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        {/* <BakbakLogo sx={{ fontSize: "2rem" }} /> */}
+      </Toolbar>
       <Divider />
       <List>
         {routes.map((route) => (

@@ -1,26 +1,31 @@
 // React-related imports
 import { useEffect, useState } from "react";
 import { Outlet, Navigate } from "react-router-dom";
+
+// Redux-related imports
 import { useSelector, useDispatch } from "react-redux";
 import { getUserProfile } from "@/reducer/auth/auth.thunk";
 
-// Custom component and asset imports
+// Component imports
+import PageLoading from "components/global/PageLoading";
 
 const ProtectedRoutes = () => {
   const [isLoading, setIsLoading] = useState(true);
   const auth = useSelector((state) => state.auth);
-
   const dispatch = useDispatch();
+
   useEffect(() => {
     const fetchData = async () => {
       await dispatch(getUserProfile());
-      setIsLoading(false);
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 1000); // Delay of 1 second (1000 milliseconds)
     };
     fetchData();
   }, [dispatch]);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <PageLoading />;
   }
 
   if (!auth.user) {

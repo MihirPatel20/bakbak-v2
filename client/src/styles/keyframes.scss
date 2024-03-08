@@ -1,0 +1,51 @@
+.gradient-wave {
+  // background: linear-gradient(120deg, #007bff, #00c6ff);
+
+  // background: linear-gradient(
+  //   120deg,
+  //   #ee7752,
+  //   #e73c7e,
+  //   #007bff,
+  //   #23a6d5,
+  //   #23d5ab
+  // );
+
+  background: linear-gradient(
+    90deg,
+    #0e069e 0%,
+    #005bbc 25%,
+    #007bff 80%,
+    #00c6ff 100%
+  );
+
+  animation: gradient 3s ease infinite;
+  -webkit-animation: gradient 3s ease infinite; /* Added */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 400% 400%;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 0%;
+  }
+  50% {
+    background-position: 100% 100%;
+  }
+  100% {
+    background-position: 0% 0%;
+  }
+}
+
+@-webkit-keyframes gradient {
+  /* Added */
+  0% {
+    background-position: 0% 0%;
+  }
+  50% {
+    background-position: 100% 100%;
+  }
+  100% {
+    background-position: 0% 0%;
+  }
+}
