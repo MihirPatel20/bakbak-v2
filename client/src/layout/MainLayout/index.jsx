@@ -48,10 +48,10 @@ const Main = styled("main", {
     padding: "16px",
   },
   [theme.breakpoints.down("sm")]: {
-    marginLeft: "10px",
+    marginLeft: "16px",
     width: `calc(100% - ${drawerWidth}px)`,
     padding: "16px",
-    marginRight: "10px",
+    marginRight: "16px",
   },
 }));
 
@@ -83,7 +83,12 @@ const MainLayout = () => {
             : "none",
         }}
       >
-        <Toolbar>
+        <Toolbar
+          sx={{
+            gap: { xs: 1, md: 2 },
+            justifyContent: { xs: "space-between", md: "normal" },
+          }}
+        >
           <Header handleLeftDrawerToggle={handleLeftDrawerToggle} />
         </Toolbar>
       </AppBar>

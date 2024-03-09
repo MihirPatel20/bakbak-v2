@@ -8,6 +8,7 @@ import { getUserProfile } from "@/reducer/auth/auth.thunk";
 
 // Component imports
 import PageLoading from "components/global/PageLoading";
+import { loadingTimer } from "constants";
 
 const ProtectedRoutes = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -19,7 +20,7 @@ const ProtectedRoutes = () => {
       await dispatch(getUserProfile());
       setTimeout(() => {
         setIsLoading(false);
-      }, 2000); // Delay of 1 second (1000 milliseconds)
+      }, loadingTimer); // Delay of 1 second (1000 milliseconds)
     };
     fetchData();
   }, [dispatch]);

@@ -2,6 +2,8 @@ export const drawerWidth = 240;
 
 export const AppBarHeight = 72;
 
+export const loadingTimer = 500;
+
 export const ChatEventEnum = Object.freeze({
   // ? once user is ready to go
   CONNECTED_EVENT: "connected",

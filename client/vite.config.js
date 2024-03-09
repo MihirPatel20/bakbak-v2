@@ -32,6 +32,7 @@ export default defineConfig({
       context: "/src/context",
       pages: "/src/pages",
       layouts: "/src/layouts",
+      views: "/src/views",
       reducer: "/src/reducer",
       config: "/src/config",
       constants: "/src/constants",
