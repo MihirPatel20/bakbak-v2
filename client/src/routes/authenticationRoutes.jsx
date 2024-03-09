@@ -3,38 +3,38 @@ import Login from "pages/auth/Login";
 // Array of authentication routes
 export const authenticationRoutes = [
   {
-    name: "Login",
-    key: "login",
+    title: "Login",
+    id: "login",
     icon: null,
-    path: "/login",
+    url: "/login",
     element: <Login />,
   },
   {
-    name: "Register",
-    key: "register",
+    title: "Register",
+    id: "register",
     icon: null,
-    path: "/register",
+    url: "/register",
     element: <div>Register</div>,
   },
   {
-    name: "Forgot Password",
-    key: "forgot-password",
+    title: "Forgot Password",
+    id: "forgot-password",
     icon: null,
-    path: "/forgot-password",
+    url: "/forgot-password",
     element: <div>Forgot Password</div>,
   },
 ];
 
 export const additionalRoutes = [
   {
-    name: "Ecommerce",
-    key: "ecommerce",
+    title: "Ecommerce",
+    id: "ecommerce",
     icon: null,
     element: <div>Welcome to Ecommerce</div>,
   },
   {
-    name: "More",
-    key: "more",
+    title: "More",
+    id: "more",
     icon: null,
     element: <div>Welcome to More</div>,
   },

@@ -147,20 +147,13 @@ const loginUser = asyncHandler(async (req, res) => {
   const options = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
+    // sameSite: "none",
   };
 
   res
     .status(200)
-    .cookie("accessToken", accessToken, {
-      ...options,
-      sameSite: "none",
-      secure: true,
-    })
-    .cookie("refreshToken", refreshToken, {
-      ...options,
-      sameSite: "none",
-      secure: true,
-    })
+    .cookie("accessToken", accessToken, options)
+    .cookie("refreshToken", refreshToken, options)
     .json(
       new ApiResponse(
         200,

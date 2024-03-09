@@ -9,17 +9,24 @@ import { CssBaseline, StyledEngineProvider } from "@mui/material";
 
 //import components
 import Routes from "./routes/index.jsx";
-import "./styles/keyframes.scss";
 import NavigationScroll from "@/layout/NavigationScroll.js";
+import themes from "@/themes";
+import { useSelector } from "react-redux";
+import SnackbarAlert from "components/global/Snackbar.jsx";
 
 const App = () => {
+  const customization = useSelector((state) => state.customization);
+
   return (
     <StyledEngineProvider injectFirst>
-      <CssBaseline />
+      <ThemeProvider theme={themes(customization)}>
+        <CssBaseline />
+        <SnackbarAlert />
 
-      <NavigationScroll>
-        <Routes />
-      </NavigationScroll>
+        <NavigationScroll>
+          <Routes />
+        </NavigationScroll>
+      </ThemeProvider>
     </StyledEngineProvider>
   );
 };

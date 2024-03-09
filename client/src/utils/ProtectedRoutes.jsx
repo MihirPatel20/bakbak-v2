@@ -19,7 +19,7 @@ const ProtectedRoutes = () => {
       await dispatch(getUserProfile());
       setTimeout(() => {
         setIsLoading(false);
-      }, 1000); // Delay of 1 second (1000 milliseconds)
+      }, 2000); // Delay of 1 second (1000 milliseconds)
     };
     fetchData();
   }, [dispatch]);

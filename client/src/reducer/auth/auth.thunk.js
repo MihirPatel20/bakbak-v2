@@ -1,6 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import api from "api";
-import { showSnackbar } from "reducer/snackbar/snackbar.slice";
 
 // Async thunk for user registration
 const registerUser = createAsyncThunk("auth/registerUser", async (userData) => {
@@ -20,7 +19,7 @@ const loginUser = createAsyncThunk("auth/loginUser", async (userData) => {
 
     return response.data;
   } catch (error) {
-    throw error.response.data;
+    throw error;
   }
 });
 

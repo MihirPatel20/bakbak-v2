@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 import { useDispatch } from "react-redux";
 import { loginUser } from "@/reducer/auth/auth.thunk";
+import {  showSnackbar } from "reducer/snackbar/snackbar.slice";
 
 const Login = () => {
   const {
@@ -21,7 +22,7 @@ const Login = () => {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      email: "akshat@gmail.com",
+      email: "malvina_miller60@hotmail.com",
       password: "1234",
     },
   });
@@ -30,11 +31,14 @@ const Login = () => {
   const dispatch = useDispatch();
 
   const handleLoginRequest = async (userData) => {
+    // dispatch(showSnackbar("success", "success message"));
+
     try {
       await dispatch(loginUser(userData)).unwrap();
       navigate("/home");
     } catch (error) {
       console.error("Error during login:", error);
+      // dispatch(showSnackbar("error", error));
     }
   };
 
@@ -94,6 +98,19 @@ const Login = () => {
                   Login
                 </Button>
               </div>
+              {/* <div>
+                <Button
+                  type="button"
+                  variant="contained"
+                  color="primary"
+                  fullWidth
+                  onClick={() => {
+                    dispatch(showSnackbar("success", "success message"));
+                  }}
+                >
+                  Snackbar
+                </Button>
+              </div> */}
             </Box>
           </CardContent>
         </Card>
