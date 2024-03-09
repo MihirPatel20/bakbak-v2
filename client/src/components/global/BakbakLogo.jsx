@@ -13,6 +13,7 @@ const BakbakLogo = ({ sx }) => {
         background: "linear-gradient(120deg, #007bff 75%, #00c6ff 100%)",
         WebkitBackgroundClip: "text",
         WebkitTextFillColor: "transparent",
+
         ...sx,
       }}
     >

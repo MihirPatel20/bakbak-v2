@@ -3,6 +3,8 @@
  * @param {JsonObject} theme theme customization object
  */
 
+import { AppBarHeight } from "constants";
+
 export default function themeTypography(theme) {
   return {
     fontFamily: theme?.customization?.fontFamily,
@@ -92,7 +94,7 @@ export default function themeTypography(theme) {
       minHeight: 'calc(100vh - 88px)',
       flexGrow: 1,
       padding: '20px',
-      marginTop: '88px',
+      marginTop:  `${AppBarHeight}px`,
       marginRight: '20px',
       borderRadius: `${theme?.customization?.borderRadius}px`
     },

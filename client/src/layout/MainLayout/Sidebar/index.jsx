@@ -14,6 +14,7 @@ import MenuCard from "./MenuCard.jsx";
 import { drawerWidth } from "reducer/customization/constant";
 import appRoutes from "@/routes/appRoutes";
 import NavItem from "./NavItem";
+import { AppBarHeight } from "constants";
 
 // ==============================|| SIDEBAR DRAWER ||============================== //
 
@@ -28,7 +29,7 @@ const Sidebar = ({ drawerOpen, drawerToggle, window }) => {
   const drawer = (
     <>
       <Box sx={{ display: { xs: "block", md: "none" } }}>
-        <Box sx={{ display: "flex", p: 2, mx: "auto" }}>
+        <Box sx={{ display: "flex", p: 2, mx: "auto", ml: 2 }}>
           <LogoSection />
         </Box>
       </Box>
@@ -36,17 +37,17 @@ const Sidebar = ({ drawerOpen, drawerToggle, window }) => {
         <PerfectScrollbar
           component="div"
           style={{
-            height: !matchUpMd ? "calc(100vh - 56px)" : "calc(100vh - 88px)",
+            height: !matchUpMd ? "calc(100vh - 56px)" : `calc(100vh - 88px)`,
             paddingLeft: "16px",
             paddingRight: "16px",
           }}
         >
           {menuList}
 
-          {/* <MenuCard /> */}
-          {/* <Stack direction="row" justifyContent="center" sx={{ mb: 2 }}>
+          <MenuCard />
+          <Stack direction="row" justifyContent="center" sx={{ mb: 2 }}>
             <Chip label={import.meta.env.REACT_APP_VERSION} disabled chipcolor="secondary" size="small" sx={{ cursor: 'pointer' }} />
-          </Stack> */}
+          </Stack>
         </PerfectScrollbar>
       </BrowserView>
       <MobileView>
@@ -90,7 +91,7 @@ const Sidebar = ({ drawerOpen, drawerToggle, window }) => {
             color: theme.palette.text.primary,
             borderRight: "none",
             [theme.breakpoints.up("md")]: {
-              top: "88px",
+              top: `${AppBarHeight}px`,
             },
           },
         }}
