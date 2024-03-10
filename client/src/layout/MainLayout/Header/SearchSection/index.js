@@ -197,6 +197,7 @@ const SearchSection = () => {
           )}
         </PopupState>
       </Box>
+
       <Box sx={{ display: { xs: "none", md: "block" } }}>
         <OutlineInputStyle
           id="input-search-header"

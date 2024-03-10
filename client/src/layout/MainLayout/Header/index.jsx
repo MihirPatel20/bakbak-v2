@@ -60,11 +60,10 @@ const Header = ({ handleLeftDrawerToggle }) => {
         </ButtonBase>
       </Box>
 
-      <Box sx={{ display: { xs: "none", md: "block" }, flexGrow: 1 }} />
-      <Box sx={{ display: { xs: "block", md: "none" } }}>
+      <Box sx={{ display: { xs: "block", md: "none" }  }}>
         <BakbakLogo sx={{ fontSize: "1.2rem" }} />
       </Box>
-      <Box sx={{ display: { xs: "none", md: "block" }, flexGrow: 1 }} />
+      <Box sx={{  display: { xs: "none", sm: "block" } , flexGrow: 1 }} />
 
       {/* header search */}
       <SearchSection />

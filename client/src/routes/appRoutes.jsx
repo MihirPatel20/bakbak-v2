@@ -1,5 +1,6 @@
 import AdminPanel from "pages/auth/AdminPanel";
 import icons from "assets/tabler-icons";
+import Home from "views/home/Home";
 
 const appRoutes = [
   {
@@ -7,7 +8,7 @@ const appRoutes = [
     id: "home",
     url: "/home",
     icon: icons.IconHome,
-    element: <div>Welcome to Home</div>,
+    element: <Home />,
   },
   {
     title: "Explore",

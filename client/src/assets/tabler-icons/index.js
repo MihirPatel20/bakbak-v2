@@ -21,5 +21,16 @@ const icons = {
   IconShieldLock,
 };
 
+const menuIcons = {
+  Home: IconHome,
+  BrandSafari: IconBrandSafari,
+  BrandMessenger: IconBrandMessenger,
+  Notification: IconNotification,
+  SquareRoundedPlus: IconSquareRoundedPlus,
+  UserCircle: IconUserCircle,
+  Settings: IconSettings,
+  ShieldLock: IconShieldLock,
+};
+
 // Export the icons object as default
 export default icons;
