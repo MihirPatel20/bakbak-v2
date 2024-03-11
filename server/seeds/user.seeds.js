@@ -15,7 +15,7 @@ const users = new Array(USERS_COUNT).fill("_").map(() => ({
     url: faker.image.avatar(),
     localPath: "",
   },
-  username: faker.internet.userName().substring(0, 20),
+  username: faker.internet.userName().substring(0, 12),
   email: faker.internet.email(),
   password: "1234",
   isEmailVerified: true,
@@ -36,6 +36,12 @@ const seedUsers = asyncHandler(async (req, res, next) => {
   await SocialProfile.deleteMany({}); // delete dependent model documents as well
  // remove cred json
   removeLocalFile("./public/temp/seed-credentials.json"); // remove old credentials
+
+  
+  // Seed default users
+  await seedDefaultUsers();
+
+  console.log("here")
 
   const credentials = [];
 
@@ -68,6 +74,24 @@ const seedUsers = asyncHandler(async (req, res, next) => {
   // proceed with the request
   next();
 });
+
+
+/**
+ * @description Function to seed default users from a JSON file
+ */
+const seedDefaultUsers = async () => {
+  try {
+    const defaultUsers = JSON.parse(
+      fs.readFileSync("./public/temp/default-users.json", "utf8")
+    );
+
+    // Create default users
+    console.log("defaultUsers: ", defaultUsers)
+    await User.create(defaultUsers);
+  } catch (error) {
+    throw new ApiError(500, "Error seeding default users: " + error.message);
+  }
+};
 
 /**
  * @description This api gives the saved credentials generated while seeding.

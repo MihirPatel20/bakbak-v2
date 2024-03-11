@@ -36,6 +36,7 @@ export default defineConfig({
       reducer: "/src/reducer",
       config: "/src/config",
       constants: "/src/constants",
+      utils: "/src/utils",
       "ui-component": "/src/ui-component",
       "menu-items": "/src/menu-items",
     },

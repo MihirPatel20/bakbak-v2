@@ -39,7 +39,7 @@ const NavBar = () => {
           </Typography>
           <Avatar
             alt={auth?.user?.username}
-            src={auth?.user?.avatar?.url}
+            src={userAvatarUrl}
             onClick={handleClick}
           />
           <Menu

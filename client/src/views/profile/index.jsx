@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import { LocationOn, Email, Phone } from "@mui/icons-material";
 import api from "api";
+import { getUserAvatarUrl } from "utils/getImageUrl";
 
 const ProfilePage = () => {
   const [profile, setProfile] = useState(null);
@@ -35,21 +36,13 @@ const ProfilePage = () => {
   const { bio, location, email, phoneNumber, account } = profile;
   const fullName = `${profile.firstName} ${profile.lastName}`;
 
-  const coverImageUrl = profile?.coverImage?.localPath
-    ? `${
-        import.meta.env.VITE_SERVER_BASE_URI +
-        "/" +
-        profile?.coverImage?.localPath
-      }`
-    : profile?.coverImage?.url;
-
   return (
     <Box>
       <Box
         sx={{
           position: "relative",
           height: "250px",
-          backgroundImage: `url(${coverImageUrl})`,
+          backgroundImage: `url(${getUserAvatarUrl(profile?.coverImage)})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
@@ -67,7 +60,7 @@ const ProfilePage = () => {
           }}
         >
           <Avatar
-            src={account.avatar.url}
+            src={getUserAvatarUrl(profile?.account?.avatar)}
             sx={{ width: 150, height: 150, border: "5px solid white" }}
           />
           <Button variant="contained" sx={{ mt: 1 }}>

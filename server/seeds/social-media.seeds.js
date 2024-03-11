@@ -1,4 +1,5 @@
 import { faker } from "@faker-js/faker";
+import fs from "fs";
 import { User } from "../models/user.models.js";
 import { SocialBookmark } from "../models/bookmark.models.js";
 import { SocialComment } from "../models/comment.models.js";
@@ -43,7 +44,6 @@ const comments = new Array(SOCIAL_COMMENTS_COUNT).fill("_").map(() => {
     }),
   };
 });
-
 const seedSocialProfiles = async () => {
   const profiles = await SocialProfile.find(); // Social profile is being created while user is created
   const profileUpdatePromise = profiles.map(async (profile) => {
@@ -59,10 +59,44 @@ const seedSocialProfiles = async () => {
         location: `${faker.location.city()}, ${faker.location.country()}`,
         countryCode: "+91",
         phoneNumber: faker.phone.number(),
+        coverImage: { localPath: `images/cover/post${getRandomNumber(7)}.jpg` },
       },
     });
   });
-  await Promise.all(profileUpdatePromise); // resolve all promises
+
+  return Promise.all(profileUpdatePromise); // resolve all promises
+};
+
+const seedDefaultProfiles = async () => {
+  const defaultUsers = JSON.parse(
+    fs.readFileSync("./public/temp/default-users.json", "utf8")
+  );
+
+  const defaultProfilePromises = defaultUsers.map(async (userData) => {
+    const existingUser = await User.findOne({ username: userData.username });
+    if (!existingUser) return; // If user doesn't exist in database, skip
+
+    // Update profile if user exists
+    await SocialProfile.findOneAndUpdate(
+      { owner: existingUser._id },
+      {
+        $set: {
+          firstName: userData.firstname,
+          lastName: userData.lastname,
+          bio: userData.bio,
+          dob: userData.dob,
+          location: userData.location,
+          countryCode: userData.countryCode,
+          phoneNumber: userData.phoneNumber,
+          coverImage: {
+            localPath: `images/cover/post${getRandomNumber(7)}.jpg`,
+          },
+        },
+      }
+    );
+  });
+
+  return Promise.all(defaultProfilePromises); // resolve all promises
 };
 
 const seedSocialPosts = async () => {
@@ -209,6 +243,7 @@ const seedSocialBookmarks = async () => {
 
 const seedSocialMedia = asyncHandler(async (req, res) => {
   await seedSocialProfiles();
+  await seedDefaultProfiles();
   await seedSocialPosts();
   await seedSocialComments();
   await seedSocialLikes();

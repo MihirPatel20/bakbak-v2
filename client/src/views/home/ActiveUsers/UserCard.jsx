@@ -1,6 +1,7 @@
 import React from "react";
 import { Avatar, Box, Card, Grid, Typography } from "@mui/material";
 import { useTheme } from "@emotion/react";
+import { getUserAvatarUrl } from "utils/getImageUrl";
 
 const UserCard = ({ user, onClick }) => {
   const theme = useTheme();
@@ -18,7 +19,7 @@ const UserCard = ({ user, onClick }) => {
       onClick={onClick}
     >
       <Avatar
-        src={user.avatar.url}
+        src={getUserAvatarUrl(user.avatar)}
         alt={user.username}
         sx={{ width: 48, height: 48, margin: 1 }}
       />

@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import ImageCarousel from "./ImageCarousel";
 import PostIcons from "assets/tabler-icons/post-icons";
+import { getUserAvatarUrl } from "utils/getImageUrl";
 
 const PostItem = ({ post }) => {
   const theme = useTheme();
@@ -35,7 +36,10 @@ const PostItem = ({ post }) => {
       <Card sx={{ bgcolor: theme.palette.primary.light }}>
         <CardContent sx={{ p: { xs: 2, lg: 2.5 } }}>
           <Box display="flex" alignItems="center" gap={2} mb={1}>
-            <Avatar src={post.author.account.avatar.url} alt="author avatar" />
+            <Avatar
+              src={getUserAvatarUrl(post.author.account.avatar)}
+              alt="author avatar"
+            />
             <Typography variant="body2">
               Posted by {post.author.firstName} {post.author.lastName}
             </Typography>

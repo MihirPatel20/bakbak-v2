@@ -44,6 +44,7 @@ import {
   IconUser,
 } from "@tabler/icons-react";
 import { logoutUser } from "reducer/auth/auth.thunk";
+import { getUserAvatarUrl } from "utils/getImageUrl";
 
 // ==============================|| PROFILE MENU ||============================== //
 
@@ -52,8 +53,6 @@ const ProfileSection = () => {
   const dispatch = useDispatch();
   const customization = useSelector((state) => state.customization);
   const auth = useSelector((state) => state.auth);
-
-  const userAvatar = auth?.user?.avatar?.localPath || auth?.user?.avatar?.url;
 
   const navigate = useNavigate();
 
@@ -123,7 +122,7 @@ const ProfileSection = () => {
         }}
         icon={
           <Avatar
-            src={userAvatar}
+            src={getUserAvatarUrl(auth?.user?.avatar)}
             sx={{
               ...theme.typography.mediumAvatar,
               margin: "8px 0 8px 8px !important",
