@@ -1,6 +1,7 @@
 import AdminPanel from "pages/auth/AdminPanel";
 import icons from "assets/tabler-icons";
 import Home from "views/home/Home";
+import ProfilePage from "views/profile";
 
 const appRoutes = [
   {
@@ -43,7 +44,7 @@ const appRoutes = [
     id: "profile",
     url: "/profile",
     icon: icons.IconUserCircle,
-    element: <div>Welcome to Profile</div>,
+    element: <ProfilePage />,
   },
   {
     title: "Settings",

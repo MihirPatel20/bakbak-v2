@@ -4,6 +4,7 @@
   "description": "",
   "type": "module",
   "main": "index.js",
+  "proxy": "http://192.168.33.34:8080/",
   "scripts": {
     "start": "nodemon -r dotenv/config index.js",
     "test": "echo \"Error: no test specified\" && exit 1"

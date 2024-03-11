@@ -22,7 +22,7 @@ const Login = () => {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      email: "malvina_miller60@hotmail.com",
+      email: "herman_morissette@yahoo.com",
       password: "1234",
     },
   });
