@@ -28,9 +28,7 @@
     "mongoose-aggregate-paginate-v2": "^1.0.7",
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.8",
-    "socket.io": "^4.7.4"
-  },
-  "devDependencies": {
+    "socket.io": "^4.7.4",
     "nodemon": "^3.1.0"
   }
 }
