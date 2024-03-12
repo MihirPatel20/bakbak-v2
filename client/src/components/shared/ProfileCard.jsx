@@ -1,12 +1,14 @@
 import React from "react";
-import { Avatar, Box, Card, Grid, Typography } from "@mui/material";
+import { Avatar, Box, Button, Card, Grid, Typography } from "@mui/material";
 import { useTheme } from "@emotion/react";
 import { getUserAvatarUrl } from "utils/getImageUrl";
+import api from "api";
+import FolllowButton from "./FolllowButton";
 
-const UserCard = ({ user, onClick }) => {
+const ProfileCard = ({ profile, onClick, showFollowButton }) => {
   const theme = useTheme();
 
-  if (!user) return null;
+  if (!profile) return null;
 
   return (
     <Card
@@ -21,22 +23,28 @@ const UserCard = ({ user, onClick }) => {
       onClick={onClick}
     >
       <Avatar
-        src={getUserAvatarUrl(user.avatar)}
-        alt={user.username}
+        src={getUserAvatarUrl(profile.account.avatar)}
+        alt={profile.username}
         sx={{ width: 48, height: 48, margin: 1 }}
       />
       <Box>
         <Grid container direction="column">
           <Typography variant="body1" component="div">
-            {user.username}
+            {profile.firstName} {profile.lastName}
           </Typography>
           <Typography variant="body2" color="text.secondary" noWrap>
-            {user.email}
+            @{profile.account.username}
           </Typography>
         </Grid>
       </Box>
+
+      {showFollowButton && (
+        <Box sx={{ marginLeft: "auto", marginRight: 2 }}>
+          <FolllowButton profile={profile} />
+        </Box>
+      )}
     </Card>
   );
 };
 
-export default UserCard;
+export default ProfileCard;

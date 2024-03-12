@@ -3,6 +3,7 @@ import icons from "assets/tabler-icons";
 import Home from "views/home";
 import ProfilePage from "views/profile";
 import MessagesPage from "views/messages";
+import ExplorePage from "views/explore";
 
 const dashboardRoutes = [
   {
@@ -17,7 +18,7 @@ const dashboardRoutes = [
     id: "explore",
     url: "/explore",
     icon: icons.IconBrandSafari,
-    element: <div>Welcome to Explore</div>,
+    element: <ExplorePage />,
   },
   {
     title: "Messages",

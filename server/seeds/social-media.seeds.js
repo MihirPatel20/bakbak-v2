@@ -24,14 +24,16 @@ const posts = new Array(SOCIAL_POSTS_COUNT).fill("_").map(() => {
   return {
     content: faker.lorem.lines({ min: 2, max: 5 }),
     tags: faker.lorem.words({ min: 3, max: 8 }).split(" "),
-    images: new Array(SOCIAL_POST_IMAGES_COUNT).fill("_").map(() => {
-      return {
-        url: faker.image.urlLoremFlickr({
-          category: "food",
-        }),
-        localPath: "",
-      };
-    }),
+    images: new Array(getRandomNumber(SOCIAL_POST_IMAGES_COUNT))
+      .fill("_")
+      .map(() => {
+        return {
+          url: faker.image.urlLoremFlickr({
+            category: "food",
+          }),
+          localPath: "",
+        };
+      }),
   };
 });
 

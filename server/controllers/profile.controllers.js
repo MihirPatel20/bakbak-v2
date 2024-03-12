@@ -106,6 +106,19 @@ const getMySocialProfile = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, profile, "User profile fetched successfully"));
 });
 
+const getAllUserProfiles = async (req) => {
+  const users = await User.find({});
+
+  const profiles = await Promise.all(
+    users.map(async (user) => {
+      const userProfile = await getUserSocialProfile(user._id, req);
+      return userProfile;
+    })
+  );
+
+  return profiles;
+};
+
 // Public route
 const getProfileByUserName = asyncHandler(async (req, res) => {
   const { username } = req.params;
@@ -197,6 +210,7 @@ const updateCoverImage = asyncHandler(async (req, res) => {
 
 export {
   getMySocialProfile,
+  getAllUserProfiles,
   getProfileByUserName,
   updateSocialProfile,
   updateCoverImage,

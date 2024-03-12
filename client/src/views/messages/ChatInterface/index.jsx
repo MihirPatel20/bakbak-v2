@@ -7,6 +7,7 @@ import MessageBubble from "components/shared/MessageBubble";
 import { ChatEventEnum } from "constants";
 import api from "api";
 import { useLocation, useParams } from "react-router-dom";
+import { AppBarHeight } from "constants";
 
 const ChatInterface = () => {
   const [activeChat, setActiveChat] = useState(null); // State to track the active chat [1]
@@ -139,8 +140,8 @@ const ChatInterface = () => {
       variant="outlined"
       sx={{
         height: {
-          xs: "calc(100vh - 72px)",
-          sm: "calc(100vh - 80px)",
+          xs: `calc(100vh - ${AppBarHeight}px)`,
+          sm: `calc(100vh - ${AppBarHeight}px) - 30px`,
         },
         width: "100%",
         maxWidth: "600px",

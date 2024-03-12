@@ -24,7 +24,7 @@ const withDualPaneLayout = (LeftPaneComponent, RightPaneComponent) => {
               display: "flex",
               justifyContent: "center",
               height: !matchUpMd
-                ? "calc(100vh - 56px)"
+                ? `calc(100vh - ${AppBarHeight}px)`
                 : `calc(100vh - ${AppBarHeight}px)`,
             }}
           >

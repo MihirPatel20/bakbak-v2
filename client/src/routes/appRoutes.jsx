@@ -4,7 +4,7 @@ import ProfilePage from "views/profile";
 const appRoutes = [
   {
     desc: "profile page for user with id :userId",
-    url: "/profile/:userId",
+    url: "/profile/:username",
     element: <ProfilePage />,
   },
   {

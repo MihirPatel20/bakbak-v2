@@ -38,7 +38,7 @@ const Sidebar = ({ drawerOpen, drawerToggle, window }) => {
           component="div"
           style={{
             height: !matchUpMd
-              ? "calc(100vh - 56px)"
+              ? `calc(100vh - ${ 500}px)`
               : `calc(100vh - ${AppBarHeight}px)`,
             paddingLeft: "16px",
             paddingRight: "16px",
