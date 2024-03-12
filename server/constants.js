@@ -68,7 +68,7 @@ export const UserRolesEnum = {
   export const MAXIMUM_SUB_IMAGE_COUNT = 4;
   export const MAXIMUM_SOCIAL_POST_IMAGE_COUNT = 6;
   
-  export const DB_NAME = "chat-app-socket-io";
+  export const DB_NAME = "bakbak";
   
   export const paypalBaseUrl = {
     sandbox: "https://api-m.sandbox.paypal.com",
