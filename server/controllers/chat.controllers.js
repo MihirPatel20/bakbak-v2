@@ -5,6 +5,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { emitSocketEvent } from "../socket.js";
 import { ChatEventEnum } from "../constants.js";
+import { ApiError } from "../utils/ApiError.js";
 
 /**
  * @description Utility function which returns the pipeline stages to structure the chat schema with common lookups

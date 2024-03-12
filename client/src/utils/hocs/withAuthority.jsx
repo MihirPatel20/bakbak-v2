@@ -3,7 +3,6 @@ import { useSelector } from "react-redux";
 
 export const withAuthority = (WrappedComponent) => {
   const AuthorityContainer = ({ id, children }) => {
-    console.log("id: ", id)
     const authUser = useSelector((state) => state.auth.user);
 
     // Check if the authenticated user exists and if the provided id matches the user's id

@@ -25,8 +25,6 @@ const mountJoinChatEvent = (socket) => {
  */
 const mountParticipantTypingEvent = (socket) => {
   socket.on(ChatEventEnum.TYPING_EVENT, (chatId) => {
-    console.log("typing: ", chatId)
-    console.log("socket: ", socket)
     socket.in(chatId).emit(ChatEventEnum.TYPING_EVENT, chatId);
   });
 };
@@ -37,7 +35,6 @@ const mountParticipantTypingEvent = (socket) => {
  */
 const mountParticipantStoppedTypingEvent = (socket) => {
   socket.on(ChatEventEnum.STOP_TYPING_EVENT, (chatId) => {
-    console.log("stopped typing: ", chatId)
     socket.in(chatId).emit(ChatEventEnum.STOP_TYPING_EVENT, chatId);
   });
 };

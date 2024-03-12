@@ -1,7 +1,8 @@
 import AdminPanel from "pages/auth/AdminPanel";
 import icons from "assets/tabler-icons";
-import Home from "views/home/Home";
+import Home from "views/home";
 import ProfilePage from "views/profile";
+import MessagesPage from "views/messages";
 
 const dashboardRoutes = [
   {
@@ -23,7 +24,7 @@ const dashboardRoutes = [
     id: "messages",
     url: "/messages",
     icon: icons.IconBrandMessenger,
-    element: <div>Welcome to Messages</div>,
+    element: <MessagesPage />,
   },
   {
     title: "Notifications",

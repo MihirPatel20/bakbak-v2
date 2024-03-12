@@ -24,7 +24,6 @@ const ProfilePage = () => {
       try {
         const response = await api.get(`profile/u/${currentProfileUsername}`);
         setProfile(response.data.data);
-        console.log("profile: ", response.data.data);
       } catch (error) {
         console.error("Failed to fetch profile:", error);
       }
@@ -36,6 +35,15 @@ const ProfilePage = () => {
   if (!profile) {
     return <Typography variant="h6">Loading...</Typography>;
   }
+
+  const getOrCreateChat = async (userId) => {
+    try {
+      const response = await api.post(`/chats/c/${userId}`);
+      navigate(`/messages/direct/u/${userId}`);
+    } catch (error) {
+      console.error("Error fetching chat:", error);
+    }
+  };
 
   const { followersCount, followingCount } = profile;
   const { bio, location, phoneNumber, account } = profile;
@@ -97,9 +105,9 @@ const ProfilePage = () => {
             <Button
               variant="contained"
               sx={{ mt: 1 }}
-              onClick={() =>
-                navigate(`/messages/direct/u/${profile.account._id}`)
-              }
+              onClick={() => {
+                getOrCreateChat(profile.account._id);
+              }}
             >
               Message
             </Button>

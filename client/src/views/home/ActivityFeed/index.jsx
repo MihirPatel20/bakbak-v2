@@ -12,7 +12,6 @@ const PostFeed = () => {
       try {
         const response = await api.get("post");
         setPosts(response.data.data.posts);
-        console.log("Posts:", response.data.data.posts[0]);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching posts:", error);

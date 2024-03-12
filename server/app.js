@@ -95,6 +95,7 @@ import { DB_NAME } from "./constants.js";
 import { ApiError } from "./utils/ApiError.js";
 import { ApiResponse } from "./utils/ApiResponse.js";
 import path from "path";
+import { seedChatApp } from "./seeds/chat-app.seeds.js";
 
 app.post(
   "/api/v1/seed/social-media",
@@ -102,6 +103,7 @@ app.post(
   seedUsers,
   seedSocialMedia
 );
+app.post("/api/v1/seed/chat-app", avoidInProduction, seedUsers, seedChatApp);
 
 // ! 🚫 Danger Zone
 app.delete("/api/v1/reset-db", avoidInProduction, async (req, res) => {

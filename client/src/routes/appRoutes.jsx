@@ -1,3 +1,4 @@
+import DirectMessage from "views/messages/DirectMessage";
 import ProfilePage from "views/profile";
 
 const appRoutes = [
@@ -9,7 +10,7 @@ const appRoutes = [
   {
     desc: "direct messages with user with id :userId",
     url: "messages/direct/u/:userId",
-    element: <div>direct</div>,
+    element: <DirectMessage />,
   },
 ];
 

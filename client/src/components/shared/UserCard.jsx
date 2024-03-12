@@ -1,22 +1,27 @@
 import React from "react";
 import { Avatar, Box, Card, Grid, Typography } from "@mui/material";
+import { useTheme } from "@emotion/react";
+import { getUserAvatarUrl } from "utils/getImageUrl";
 
 const UserCard = ({ user, onClick }) => {
+  const theme = useTheme();
+  
+  if (!user) return null;
+
   return (
     <Card
       elevation={0}
       sx={{
+        bgcolor: theme.palette.primary.light,
         display: "flex",
         alignItems: "center",
-        width: "auto",
-        border: "1px solid grey",
         cursor: "pointer",
         minHeight: 70,
       }}
       onClick={onClick}
     >
       <Avatar
-        src={user.avatar.url}
+        src={getUserAvatarUrl(user.avatar)}
         alt={user.username}
         sx={{ width: 48, height: 48, margin: 1 }}
       />
@@ -25,7 +30,7 @@ const UserCard = ({ user, onClick }) => {
           <Typography variant="body1" component="div">
             {user.username}
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" color="text.secondary" noWrap>
             {user.email}
           </Typography>
         </Grid>

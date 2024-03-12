@@ -19,7 +19,6 @@ const ActiveUsers = () => {
           `follow/list/following/${auth.user.username}`
         );
         setUsers(res.data.data.following);
-        console.log("first user: ", res.data.data.following);
       } catch (error) {
         console.log("error: ", error);
       }

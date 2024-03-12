@@ -24,7 +24,6 @@ const UsersList = ({ setActiveChat }) => {
   const createNewChat = async (reciepentId) => {
     try {
       const response = await api.post("/chats/c/" + reciepentId);
-      console.log(response.data);
     } catch (error) {
       console.log(error);
     }

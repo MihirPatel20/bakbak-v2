@@ -14,7 +14,6 @@ import { logoutUser } from "reducer/auth/auth.thunk";
 const NavBar = () => {
   const auth = useSelector((state) => state?.auth);
   const dispatch = useDispatch();
-  // console.log("auth: ", auth);
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleClick = (event) => {
