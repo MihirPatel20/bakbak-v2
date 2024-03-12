@@ -18,7 +18,7 @@ import ListItemText from "@mui/material/ListItemText";
 // Component imports
 import { drawerWidth } from "@/constants";
 import BakbakLogo from "components/global/BakbakLogo";
-import AppRoutes from "@/routes/appRoutes";
+import dashboardRoutes from "@/routes/dashboardRoutes";
 import authenticationRoutes from "@/routes/authenticationRoutes";
 
 const Sidebar = ({
@@ -41,7 +41,7 @@ const Sidebar = ({
       </Toolbar>
       <Divider />
       <List>
-        {AppRoutes.map((route) => (
+        {dashboardRoutes.map((route) => (
           <ListItem key={route.key} disablePadding>
             <ListItemButton onClick={() => navigate(route.path)}>
               <ListItemIcon>{route.icon}</ListItemIcon>

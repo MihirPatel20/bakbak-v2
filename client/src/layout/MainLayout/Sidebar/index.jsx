@@ -12,7 +12,7 @@ import { BrowserView, MobileView } from "react-device-detect";
 import LogoSection from "../LogoSection";
 import MenuCard from "./MenuCard.jsx";
 import { drawerWidth } from "reducer/customization/constant";
-import appRoutes from "@/routes/appRoutes";
+import dashboardRoutes from "@/routes/dashboardRoutes";
 import NavItem from "./NavItem";
 import { AppBarHeight } from "constants";
 
@@ -22,7 +22,7 @@ const Sidebar = ({ drawerOpen, drawerToggle, window }) => {
   const theme = useTheme();
   const matchUpMd = useMediaQuery(theme.breakpoints.up("md"));
 
-  const menuList = appRoutes.map((item) => (
+  const menuList = dashboardRoutes.map((item) => (
     <NavItem key={item.id} item={item} level={1} />
   ));
 

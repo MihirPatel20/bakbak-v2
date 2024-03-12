@@ -3,17 +3,23 @@ import api from "api";
 import UserCard from "./UserCard";
 import { AppBarHeight } from "constants";
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const ActiveUsers = () => {
-  const dispatch = useDispatch();
+  const auth = useSelector((state) => state.auth);
   const [users, setUsers] = useState([]);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await api.get("chats/users");
-        setUsers(res.data.data);
+        const res = await api.get(
+          `follow/list/following/${auth.user.username}`
+        );
+        setUsers(res.data.data.following);
+        console.log("first user: ", res.data.data.following);
       } catch (error) {
         console.log("error: ", error);
       }
@@ -37,7 +43,7 @@ const ActiveUsers = () => {
           component="div"
           sx={{ paddingLeft: 1, paddingTop: 1 }}
         >
-          Active Users
+          Friends
         </Typography>
 
         <Divider sx={{ mt: 1.5 }} />
@@ -47,9 +53,7 @@ const ActiveUsers = () => {
         <UserCard
           key={user._id}
           user={user}
-          onClick={() => {
-            createNewChat(user._id);
-          }}
+          onClick={() => navigate(`/profile/${user._id}`, { state: { user } })}
         />
       ))}
     </Box>

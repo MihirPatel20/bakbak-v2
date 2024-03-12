@@ -25,19 +25,6 @@ export const authenticationRoutes = [
   },
 ];
 
-export const additionalRoutes = [
-  {
-    title: "Ecommerce",
-    id: "ecommerce",
-    icon: null,
-    element: <div>Welcome to Ecommerce</div>,
-  },
-  {
-    title: "More",
-    id: "more",
-    icon: null,
-    element: <div>Welcome to More</div>,
-  },
-];
+
 
 export default authenticationRoutes;

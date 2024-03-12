@@ -1,39 +1,44 @@
 import React, { useEffect, useState } from "react";
-import {
-  Box,
-  Typography,
-  Avatar,
-  IconButton,
-  Divider,
-  Grid,
-  Button,
-} from "@mui/material";
+import { Box, Typography, Avatar, Divider, Grid, Button } from "@mui/material";
 import { LocationOn, Email, Phone } from "@mui/icons-material";
 import api from "api";
 import { getUserAvatarUrl } from "utils/getImageUrl";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import {
+  OwnerComponent,
+  VisitorComponent,
+} from "utils/AuthorizationComponents";
 
 const ProfilePage = () => {
   const [profile, setProfile] = useState(null);
+  const auth = useSelector((state) => state.auth);
+  const navigate = useNavigate();
+  const pathLocation = useLocation();
+
+  const currentProfileUsername =
+    pathLocation?.state?.user?.username || auth.user.username;
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await api.get("profile");
+        const response = await api.get(`profile/u/${currentProfileUsername}`);
         setProfile(response.data.data);
+        console.log("profile: ", response.data.data);
       } catch (error) {
         console.error("Failed to fetch profile:", error);
       }
     };
 
     fetchProfile();
-  }, []);
+  }, [currentProfileUsername]);
 
   if (!profile) {
     return <Typography variant="h6">Loading...</Typography>;
   }
 
-  const { firstName, lastName, followersCount, followingCount } = profile;
-  const { bio, location, email, phoneNumber, account } = profile;
+  const { followersCount, followingCount } = profile;
+  const { bio, location, phoneNumber, account } = profile;
   const fullName = `${profile.firstName} ${profile.lastName}`;
 
   return (
@@ -63,9 +68,11 @@ const ProfilePage = () => {
             src={getUserAvatarUrl(profile?.account?.avatar)}
             sx={{ width: 150, height: 150, border: "5px solid white" }}
           />
-          <Button variant="contained" sx={{ mt: 1 }}>
-            Edit Profile
-          </Button>
+          <OwnerComponent id={profile.account._id}>
+            <Button variant="contained" sx={{ mt: 1 }}>
+              Edit Profile
+            </Button>
+          </OwnerComponent>
         </Box>
 
         <Box sx={{ ml: 5, display: "flex", flexDirection: "column" }}>
@@ -78,6 +85,26 @@ const ProfilePage = () => {
             {bio}
           </Typography>
         </Box>
+
+        <VisitorComponent id={profile.account._id}>
+          <Box sx={{ ml: 5, display: "flex", alignItems: "start", gap: 2 }}>
+            <Button
+              variant={profile.isFollowing ? "outlined" : "contained"}
+              sx={{ mt: 1 }}
+            >
+              {profile.isFollowing ? "Unfollow" : "Follow"}
+            </Button>
+            <Button
+              variant="contained"
+              sx={{ mt: 1 }}
+              onClick={() =>
+                navigate(`/messages/direct/u/${profile.account._id}`)
+              }
+            >
+              Message
+            </Button>
+          </Box>
+        </VisitorComponent>
       </Box>
 
       <Divider sx={{ my: 2 }} />
