@@ -1,4 +1,11 @@
-import { Box, Button, Paper, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  IconButton,
+  Paper,
+  TextField,
+  Typography,
+} from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
 import { useSocket } from "context/SocketContext";
 import SendIcon from "@mui/icons-material/Send";
@@ -23,6 +30,34 @@ const ChatInterface = () => {
   const chatContainerRef = useRef(null);
 
   const { userId } = useParams();
+  if (!userId) {
+    console.log("here");
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          bgcolor: "primary.light",
+          borderRadius: 4,
+          height: {
+            xs: `calc(100vh - ${AppBarHeight}px)`,
+            sm: `calc(100vh - ${AppBarHeight}px) - 30px`,
+          },
+          width: "100%",
+          maxWidth: "600px",
+        }}
+      >
+        <Typography variant="h4" align="center">
+          Select a chat
+        </Typography>
+        <Typography variant="h4" align="center">
+          to start messaging
+        </Typography>
+      </Box>
+    );
+  }
 
   const getMessages = async (chatId) => {
     try {
@@ -136,9 +171,10 @@ const ChatInterface = () => {
   }, [messages]);
 
   return (
-    <Paper
-      variant="outlined"
+    <Box
       sx={{
+        bgcolor: "primary.light",
+        borderRadius: 4,
         height: {
           xs: `calc(100vh - ${AppBarHeight}px)`,
           sm: `calc(100vh - ${AppBarHeight}px) - 30px`,
@@ -155,9 +191,6 @@ const ChatInterface = () => {
           padding: 1,
         }}
       >
-        <Typography variant="h5" textAlign="center" gutterBottom>
-          Chat Interface
-        </Typography>
         <Box
           ref={chatContainerRef}
           sx={{
@@ -194,12 +227,12 @@ const ChatInterface = () => {
             value={newMessage} // Bind value to state
             onChange={handleOnMessageChange} // Handle input change
           />
-          <Button type="submit" sx={{ ml: 1 }} variant="contained">
+          <IconButton type="submit" sx={{ ml: 1 }} color="primary">
             <SendIcon />
-          </Button>
+          </IconButton>
         </Box>
       </Box>
-    </Paper>
+    </Box>
   );
 };
 
