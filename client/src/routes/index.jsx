@@ -1,4 +1,3 @@
-import AppLayout from "@/layout/app";
 import { useRoutes } from "react-router-dom";
 
 import ProtectedRoutes from "@/utils/ProtectedRoutes";

@@ -1,9 +1,9 @@
-import AdminPanel from "pages/auth/AdminPanel";
 import icons from "assets/tabler-icons";
 import Home from "views/home";
 import ProfilePage from "views/profile";
 import MessagesPage from "views/messages";
 import ExplorePage from "views/explore";
+import AdminPanel from "views/admin";
 
 const dashboardRoutes = [
   {
