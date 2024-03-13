@@ -1,4 +1,14 @@
+import { lazy } from "react";
+
 import Login from "pages/auth/Login";
+
+import Loadable from "ui-component/Loadable";
+const AuthLogin3 = Loadable(
+  lazy(() => import("views/authentication/authentication3/Login3"))
+);
+const AuthRegister3 = Loadable(
+  lazy(() => import("views/authentication/authentication3/Register3"))
+);
 
 // Array of authentication routes
 export const authenticationRoutes = [
@@ -7,14 +17,14 @@ export const authenticationRoutes = [
     id: "login",
     icon: null,
     url: "/login",
-    element: <Login />,
+    element: <AuthLogin3 />,
   },
   {
     title: "Register",
     id: "register",
     icon: null,
     url: "/register",
-    element: <div>Register</div>,
+    element: <AuthRegister3 />,
   },
   {
     title: "Forgot Password",
@@ -24,7 +34,5 @@ export const authenticationRoutes = [
     element: <div>Forgot Password</div>,
   },
 ];
-
-
 
 export default authenticationRoutes;

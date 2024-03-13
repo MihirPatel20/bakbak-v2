@@ -31,8 +31,7 @@ const ExplorePage = () => {
         {users &&
           users.map((user) => {
             if (auth.user._id === user.account._id) return null;
-            console.log("user: ", user);
-
+            
             return (
               <Grid item xs={12} sm={6} lg={4} key={user._id}>
                 <ProfileCard
