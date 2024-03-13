@@ -9,7 +9,7 @@ const appRoutes = [
   },
   {
     desc: "direct messages with user with id :userId",
-    url: "messages/direct/u/:userId",
+    url: "messages/direct/u/:chatId",
     element: <DirectMessage />,
   },
 ];

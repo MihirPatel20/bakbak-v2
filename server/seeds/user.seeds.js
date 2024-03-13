@@ -41,8 +41,6 @@ const seedUsers = asyncHandler(async (req, res, next) => {
   // Seed default users
   await seedDefaultUsers();
 
-  console.log("here")
-
   const credentials = [];
 
   // create Promise array

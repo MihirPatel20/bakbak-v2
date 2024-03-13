@@ -13,6 +13,7 @@ const ChatList = ({ setActiveChat }) => {
   const navigate = useNavigate();
   const auth = useSelector((state) => state.auth);
   const [chats, setChats] = useState([]);
+  const [followingUsers, setFollowingUsers] = useState([]);
 
   const deleteChat = async (chatId) => {
     try {
@@ -33,7 +34,20 @@ const ChatList = ({ setActiveChat }) => {
         console.log(error);
       }
     };
+    const fetchFollowingUsers = async () => {
+      try {
+        const res = await api.get(
+          `follow/list/following/${auth.user.username}`
+        );
+        setFollowingUsers(res.data.data.following);
+        console.log("following: ", res.data.data.following[0]);
+      } catch (error) {
+        console.log("error: ", error);
+      }
+    };
+
     fetchChats();
+    fetchFollowingUsers();
   }, []);
 
   // Listen for new messages from the server
@@ -60,7 +74,7 @@ const ChatList = ({ setActiveChat }) => {
     try {
       const response = await api.post(`/chats/c/${userId}`);
       const chat = response.data.data;
-      navigate(`/messages/direct/u/${chat._id}`);
+      navigate(`/messages/direct/u/${chat._id}`, { state: { chat } });
     } catch (error) {
       console.error("Error fetching chat:", error);
     }
@@ -103,12 +117,41 @@ const ChatList = ({ setActiveChat }) => {
           );
         })
       ) : (
-        <Box>
+        <Box mb={4}>
           <Typography variant="body1" component="div" textAlign={"center"}>
             No chats found
           </Typography>
         </Box>
       )}
+
+      <Box
+        sx={{
+          position: "sticky",
+          top: 0,
+          zIndex: 1,
+          bgcolor: "background.paper",
+        }}
+      >
+        <Typography
+          variant="h3"
+          component="div"
+          sx={{ paddingLeft: 1, paddingTop: 1 }}
+        >
+          Start New Chat
+        </Typography>
+
+        <Divider sx={{ mt: 1.5 }} />
+      </Box>
+
+      {followingUsers.length > 0
+        ? followingUsers.map((user) => (
+            <UserCard
+              key={user._id}
+              user={user}
+              onClick={() => getOrCreateChat(user._id)}
+            />
+          ))
+        : null}
     </Box>
   );
 };

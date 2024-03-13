@@ -44,7 +44,7 @@ const withDualPaneLayout = (LeftPaneComponent, RightPaneComponent) => {
             component="div"
             style={{
               height: !matchUpMd
-                ? "calc(100vh - 56px)"
+                ? `calc(100vh - ${AppBarHeight}px)`
                 : `calc(100vh - ${AppBarHeight}px)`,
             }}
           >

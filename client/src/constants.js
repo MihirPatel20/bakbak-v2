@@ -1,6 +1,7 @@
 export const drawerWidth = 240;
 
 export const AppBarHeight = 72;
+export const MobileHeightBuffer = 72;
 
 export const loadingTimer = 500;
 

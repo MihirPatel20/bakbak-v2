@@ -53,7 +53,7 @@ const ActiveUsers = () => {
         <UserCard
           key={user._id}
           user={user}
-          onClick={() => navigate(`/profile/${user._id}`, { state: { user } })}
+          onClick={() => navigate(`/profile/${user.username}`, { state: { user } })}
         />
       ))}
     </Box>

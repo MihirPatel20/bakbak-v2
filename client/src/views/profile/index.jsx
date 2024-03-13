@@ -40,7 +40,8 @@ const ProfilePage = () => {
   const getOrCreateChat = async (userId) => {
     try {
       const response = await api.post(`/chats/c/${userId}`);
-      navigate(`/messages/direct/u/${userId}`);
+      const chat = response.data.data;
+      navigate(`/messages/direct/u/${chat._id}`, { state: { chat } });
     } catch (error) {
       console.error("Error fetching chat:", error);
     }

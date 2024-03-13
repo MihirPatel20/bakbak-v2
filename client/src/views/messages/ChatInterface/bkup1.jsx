@@ -19,8 +19,6 @@ import api from "api";
 import { useLocation, useParams } from "react-router-dom";
 import { AppBarHeight } from "constants";
 import { getUserAvatarUrl } from "utils/getImageUrl";
-import PerfectScrollbar from "react-perfect-scrollbar";
-import { MobileHeightBuffer } from "constants";
 
 const ChatInterface = () => {
   const [activeChat, setActiveChat] = useState(null); // State to track the active chat [1]
@@ -193,65 +191,51 @@ const ChatInterface = () => {
   }, [messages]);
 
   return (
-    <Box
-      sx={{
-        bgcolor: "primary.light",
-        borderRadius: 4,
-        height: {
-          xs: `calc(100vh - ${AppBarHeight + MobileHeightBuffer}px)`,
-          sm: `calc(100vh - ${AppBarHeight}px)`,
-        },
-        width: "100%",
+    <Grid
+      container
+      style={{
+        height: `calc(100vh - ${AppBarHeight}px)`,
         maxWidth: "600px",
         overflow: "hidden",
       }}
     >
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          height: "100%",
-        }}
+      <Grid
+        item
+        xs={12}
+        style={{ display: "flex", flexDirection: "column", height: "100%" }}
       >
-        <Box
-          sx={{
-            bgcolor: "primary.light",
-            // position: "sticky",
-            top: 0,
-            display: "flex",
-            alignItems: "center",
-            gap: 2,
-            cursor: "pointer",
-            borderBottom: 1,
-            p: 2,
-          }}
-        >
-          <Avatar
-            src={getUserAvatarUrl(recipient.avatar)}
-            alt={recipient.username}
-            sx={{ width: 40, height: 40 }}
-          />
-          <Box>
-            <Grid container direction="column">
-              <Typography variant="body1" component="div">
-                {recipient.username}
-              </Typography>
-            </Grid>
-          </Box>
-        </Box>
-
-        <PerfectScrollbar
-          component="div"
-          ref={chatContainerRef}
+        <Grid
+          item
+          xs={12}
           style={{
             flex: 1,
+            overflowY: "auto",
+            gap: "4px",
             display: "flex",
             flexDirection: "column",
-            gap: "4px",
-            padding: "16px",
           }}
         >
-          {messages.map((message) => ( 
+          <Grid
+            item
+            xs={12}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 2,
+              cursor: "pointer",
+              borderBottom: 1,
+              padding: 2,
+            }}
+          >
+            <Avatar
+              src={getUserAvatarUrl(recipient.avatar)}
+              alt={recipient.username}
+              style={{ width: 40, height: 40 }}
+            />
+            <Typography variant="body1">{recipient.username}</Typography>
+          </Grid>
+
+          {messages.map((message) => (
             <MessageBubble
               key={message._id}
               message={message}
@@ -260,32 +244,27 @@ const ChatInterface = () => {
           ))}
           {/* Display typing indicator if someone is typing */}
           {isTyping && <Typography variant="body2">Typing...</Typography>}
-        </PerfectScrollbar>
-
-        <Box
-          component="form"
-          noValidate
-          autoComplete="off"
-          display="flex"
-          alignItems="center"
+        </Grid>
+        <Grid
+          item
+          xs={12}
+          style={{ display: "flex", alignItems: "center" }}
           onSubmit={sendMessage}
-          p={2}
-          borderTop={1}
         >
           <TextField
             name="message"
             label="Message"
             size="small"
             fullWidth
-            value={newMessage} // Bind value to state
-            onChange={handleOnMessageChange} // Handle input change
+            value={newMessage}
+            onChange={handleOnMessageChange}
           />
-          <IconButton type="submit" sx={{ ml: 1 }} color="primary">
+          <IconButton type="submit" style={{ marginLeft: 1 }} color="primary">
             <SendIcon />
           </IconButton>
-        </Box>
-      </Box>
-    </Box>
+        </Grid>
+      </Grid>
+    </Grid>
   );
 };
 
