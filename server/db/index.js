@@ -4,10 +4,15 @@ import { DB_NAME } from "../constants.js";
 /** @type {typeof mongoose | undefined} */
 export let dbInstance = undefined;
 
+const mongoDbConnectionUri =
+  process.env.NODE_ENV === "production"
+    ? process.env.MONGODB_URI
+    : "mongodb://localhost:27017";
+
 const connectDB = async () => {
   try {
     const connectionInstance = await mongoose.connect(
-      `${process.env.MONGODB_URI}/${DB_NAME}`
+      `${mongoDbConnectionUri}/${DB_NAME}`
     );
     dbInstance = connectionInstance;
     console.log(
