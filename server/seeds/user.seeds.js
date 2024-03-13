@@ -34,10 +34,9 @@ const seedUsers = asyncHandler(async (req, res, next) => {
   }
   await User.deleteMany({}); // delete all the existing users from previous seedings
   await SocialProfile.deleteMany({}); // delete dependent model documents as well
- // remove cred json
+  // remove cred json
   removeLocalFile("./public/temp/seed-credentials.json"); // remove old credentials
 
-  
   // Seed default users
   await seedDefaultUsers();
 
@@ -73,7 +72,6 @@ const seedUsers = asyncHandler(async (req, res, next) => {
   next();
 });
 
-
 /**
  * @description Function to seed default users from a JSON file
  */
@@ -84,7 +82,7 @@ const seedDefaultUsers = async () => {
     );
 
     // Create default users
-    console.log("defaultUsers: ", defaultUsers)
+    console.log("defaultUsers: ", defaultUsers);
     await User.create(defaultUsers);
   } catch (error) {
     throw new ApiError(500, "Error seeding default users: " + error.message);

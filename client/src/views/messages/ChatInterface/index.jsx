@@ -1,11 +1,8 @@
 import {
   Avatar,
   Box,
-  Button,
-  Divider,
   Grid,
   IconButton,
-  Paper,
   TextField,
   Typography,
 } from "@mui/material";
@@ -21,9 +18,9 @@ import { AppBarHeight } from "constants";
 import { getUserAvatarUrl } from "utils/getImageUrl";
 import PerfectScrollbar from "react-perfect-scrollbar";
 import { MobileHeightBuffer } from "constants";
+import ChatMessageLayout from "./ChatMessageLayout";
 
 const ChatInterface = () => {
-  const [activeChat, setActiveChat] = useState(null); // State to track the active chat [1]
   const { socket } = useSocket();
   const { user } = useSelector((state) => state.auth);
   const [messages, setMessages] = useState([]);
@@ -43,9 +40,11 @@ const ChatInterface = () => {
     (participant) => participant._id !== user._id
   );
 
+  const activeChat = location.state?.chat;
+
   console.log("recipient: ", recipient);
 
-  if (!chatId) {
+  if (!activeChat) {
     return (
       <Box
         sx={{
@@ -192,11 +191,14 @@ const ChatInterface = () => {
     }
   }, [messages]);
 
+  console.log("message: ", messages[0]);
+  console.log("activeChat: ", activeChat);
+
   return (
     <Box
       sx={{
         bgcolor: "primary.light",
-        borderRadius: 4,
+        borderRadius: 3,
         height: {
           xs: `calc(100vh - ${AppBarHeight + MobileHeightBuffer}px)`,
           sm: `calc(100vh - ${AppBarHeight}px)`,
@@ -223,7 +225,8 @@ const ChatInterface = () => {
             gap: 2,
             cursor: "pointer",
             borderBottom: 1,
-            p: 2,
+            borderBottomColor: "grey.400",
+            p: "8px 14px",
           }}
         >
           <Avatar
@@ -243,22 +246,10 @@ const ChatInterface = () => {
         <PerfectScrollbar
           component="div"
           ref={chatContainerRef}
-          style={{
-            flex: 1,
-            display: "flex",
-            flexDirection: "column",
-            gap: "4px",
-            padding: "16px",
-          }}
+          style={{ padding: "16px" }}
         >
-          {messages.map((message) => ( 
-            <MessageBubble
-              key={message._id}
-              message={message}
-              userId={user._id}
-            />
-          ))}
-          {/* Display typing indicator if someone is typing */}
+          <ChatMessageLayout chat={activeChat} messages={messages} />
+
           {isTyping && <Typography variant="body2">Typing...</Typography>}
         </PerfectScrollbar>
 
@@ -271,6 +262,7 @@ const ChatInterface = () => {
           onSubmit={sendMessage}
           p={2}
           borderTop={1}
+          borderTopColor="grey.400"
         >
           <TextField
             name="message"
