@@ -5,6 +5,7 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 import rateLimit from "express-rate-limit";
 import cookieParser from "cookie-parser";
+import webPush from "web-push";
 
 const app = express();
 const httpServer = createServer(app);
@@ -54,9 +55,18 @@ app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(express.static("public")); // configure static file to save images locally
 app.use(cookieParser());
 
+// Initialize web-push with your VAPID keys
+webPush.setVapidDetails(
+  `mailto:${process.env.EMAIL_ADDRESS}`,
+  process.env.VAPID_PUBLIC_KEY,
+  process.env.VAPID_PRIVATE_KEY
+);
+
 // * App routes
 import userRouter from "./routes/user.routes.js";
 import profileRouter from "./routes/profile.routes.js";
+import notificationRouter from "./routes/notificationSubscription.routes.js";
+
 import followRouter from "./routes/follow.routes.js";
 import postRouter from "./routes/post.routes.js";
 import bookmarkRouter from "./routes/bookmark.routes.js";
@@ -72,6 +82,7 @@ import { initializeSocketIO } from "./socket.js";
 // * App apis
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/profile", profileRouter);
+app.use("/api/v1/notification", notificationRouter);
 
 app.use("/api/v1/follow", followRouter);
 app.use("/api/v1/post", postRouter);
