@@ -56,67 +56,80 @@ const ProfilePage = () => {
       <Box
         sx={{
           position: "relative",
-          height: "250px",
+          // height:  "250px" ,
+          height: { xs: "150px", sm: "250px" },
           backgroundImage: `url(${getUserAvatarUrl(profile?.coverImage)})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
       />
 
-      <Box sx={{ display: "flex" }}>
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            // alignItems: "center",
-            justifyContent: "center",
-            mt: -8,
-            ml: 4,
-          }}
+      <Grid container spacing={2}>
+        <Grid
+          item
+          //  sx={{ flex: { xs: 1, sm: 0 } }}
         >
-          <Avatar
-            src={getUserAvatarUrl(profile?.account?.avatar)}
-            sx={{ width: 150, height: 150, border: "5px solid white" }}
-          />
-          <OwnerComponent id={profile.account._id}>
-            <Button variant="contained" sx={{ mt: 1 }}>
-              Edit Profile
-            </Button>
-          </OwnerComponent>
-        </Box>
-
-        <Box sx={{ ml: 5, display: "flex", flexDirection: "column" }}>
-          <Typography variant="h1">{fullName}</Typography>
-          <Typography variant="body1" gutterBottom>
-            @{account.username}
-          </Typography>
-
-          <Typography variant="body1" gutterBottom>
-            {bio}
-          </Typography>
-        </Box>
-
-        <VisitorComponent id={profile.account._id}>
           <Box
-            sx={{ ml: 5, display: "flex", alignItems: "start", gap: 2, mt: 2 }}
+            sx={{
+              display: "flex",
+              // flexDirection: { xs: "column", sm: "row" },
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+              mt: -9 ,
+              ml:3
+            }}
           >
-            <FolllowButton profile={profile} />
-
-            <Button
-              disableElevation
-              size="small"
-              variant="contained"
-              onClick={() => {
-                getOrCreateChat(profile.account._id);
-              }}
-            >
-              Message
-            </Button>
+            <Avatar
+              src={getUserAvatarUrl(profile?.account?.avatar)}
+              sx={{ width: 150, height: 150, border: "5px solid white" }}
+            />
+            <OwnerComponent id={profile.account._id}>
+              <Button variant="contained">Edit Profile</Button>
+            </OwnerComponent>
           </Box>
-        </VisitorComponent>
-      </Box>
+        </Grid>
+
+        <Grid item>
+          <Box
+            sx={{
+              ml: { xs: 0, sm: 5 },
+              mt: { xs: 2, sm: 2 },
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <Typography variant="h1">{fullName}</Typography>
+            <Typography variant="body1" gutterBottom>
+              @{account.username}
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+              {bio}
+            </Typography>
+          </Box>
+        </Grid>
+
+        <Grid item>
+          <VisitorComponent id={profile.account._id}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 2, mt: 2 }}>
+              <FolllowButton profile={profile} />
+              <Button
+                disableElevation
+                size="small"
+                variant="contained"
+                onClick={() => {
+                  getOrCreateChat(profile.account._id);
+                }}
+              >
+                Message
+              </Button>
+            </Box>
+          </VisitorComponent>
+        </Grid>
+      </Grid>
 
       <Divider sx={{ my: 2 }} />
+
       <Grid container spacing={2}>
         <Grid item xs={4} sx={{ textAlign: "center" }}>
           <Typography variant="h6">{followersCount}</Typography>
@@ -155,18 +168,26 @@ const ProfilePage = () => {
 
       <Divider sx={{ my: 2 }} />
 
-      <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-        <LocationOn sx={{ mr: 1 }} />
-        <Typography variant="body1">{location}</Typography>
-      </Box>
-      <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-        <Phone sx={{ mr: 1 }} />
-        <Typography variant="body1">{phoneNumber}</Typography>
-      </Box>
-      <Box sx={{ display: "flex", alignItems: "center" }}>
-        <Email sx={{ mr: 1 }} />
-        <Typography variant="body1">{account.email}</Typography>
-      </Box>
+      <Grid container spacing={2}>
+        <Grid item xs={12} sm={4}>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <LocationOn sx={{ mr: 1 }} />
+            <Typography variant="body1">{location}</Typography>
+          </Box>
+        </Grid>
+        <Grid item xs={12} sm={4}>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <Phone sx={{ mr: 1 }} />
+            <Typography variant="body1">{phoneNumber}</Typography>
+          </Box>
+        </Grid>
+        <Grid item xs={12} sm={4}>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <Email sx={{ mr: 1 }} />
+            <Typography variant="body1">{account.email}</Typography>
+          </Box>
+        </Grid>
+      </Grid>
     </Box>
   );
 };

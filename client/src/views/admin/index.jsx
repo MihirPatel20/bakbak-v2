@@ -7,15 +7,9 @@ import {
   DialogContentText,
   DialogTitle,
   Typography,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
   Box,
 } from "@mui/material";
+import { DataGrid } from "@mui/x-data-grid";
 import api from "api";
 
 const AdminPanel = () => {
@@ -47,48 +41,68 @@ const AdminPanel = () => {
     setOpen(false);
   };
 
+  const handleSeedSocialMedia = async () => {
+    try {
+      await api.post("/seed/social-media");
+      console.log("Social media seeded successfully");
+      // Optionally, you can fetch updated statistics or users after seeding
+      // Example:
+      // await api.get("admin/users").then((res) => setUsers(res.data.data));
+      // await api.get("admin/stats").then((res) => setStats(res.data.data));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const columns = [
+    { field: "username", headerName: "Username", width: 150 },
+    { field: "email", headerName: "Email", width: 250 },
+    { field: "role", headerName: "Role", width: 150 },
+  ];
+
+  const getRowId = (row) => row._id; // Specify _id as the unique identifier
+
   return (
-    <Box sx={{ p: 3, display: "flex", flexDirection: "column", gap: 2 }}>
-      <div>
-        <Typography variant="h5" component="div">
-          Statistics
-        </Typography>
-        <Typography variant="body1" component="div">
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+      <Box sx={{ display: "flex", gap: 2 }}>
+        <Typography
+          variant="body1"
+          fontSize={16}
+          fontWeight={600}
+          component="div"
+        >
           Total Users: {stats.totalUsers}
         </Typography>
-        <Typography variant="body1" component="div">
+        <Typography
+          variant="body1"
+          fontSize={16}
+          fontWeight={600}
+          component="div"
+        >
           Total Chats: {stats.totalChats}
         </Typography>
-      </div>
+      </Box>
 
-      <div>
-        <Typography variant="h5" component="div">
-          User Management
-        </Typography>
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Username</TableCell>
-                <TableCell>Email</TableCell>
-                <TableCell>Role</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {users?.map((user) => (
-                <TableRow key={user._id}>
-                  <TableCell>{user.username}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>{user.role}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+      <div style={{ height: 400, width: "100%" }}>
+        <DataGrid
+          rows={users}
+          columns={columns}
+          pageSize={5}
+          rowsPerPageOptions={[5, 10, 20]}
+          disableSelectionOnClick
+          getRowId={getRowId}
+        />
       </div>
 
       <Button variant="contained" color="secondary" onClick={handleClickOpen}>
         Drop Chats Collection
+      </Button>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleSeedSocialMedia}
+      >
+        Seed Social Media
       </Button>
       <Dialog
         open={open}
