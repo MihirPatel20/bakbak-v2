@@ -4,6 +4,7 @@ import ProfilePage from "views/profile";
 import MessagesPage from "views/messages";
 import ExplorePage from "views/explore";
 import AdminPanel from "views/admin";
+import NotificationView from "views/notification";
 
 const dashboardRoutes = [
   {
@@ -32,7 +33,7 @@ const dashboardRoutes = [
     id: "notifications",
     url: "/notifications",
     icon: icons.IconNotification,
-    element: <div>Welcome to Notifications</div>,
+    element: <NotificationView />,
   },
   {
     title: "Create",
