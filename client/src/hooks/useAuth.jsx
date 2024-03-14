@@ -17,19 +17,23 @@ const useAuth = () => {
   const dispatch = useDispatch();
   const { user, token, isLoading, error } = useSelector((state) => state.auth);
 
-  const register = (userData) => dispatch(registerUser(userData));
-  const login = (userData) => dispatch(loginUser(userData));
-  const refreshToken = () => dispatch(refreshAccessToken());
-  const verifyEmailToken = (verificationToken) =>
+  const register = async (userData) => dispatch(registerUser(userData));
+  const login = async (userData) => dispatch(loginUser(userData));
+  const refreshToken = async () => dispatch(refreshAccessToken());
+  const verifyEmailToken = async (verificationToken) =>
     dispatch(verifyEmail(verificationToken));
-  const forgotPasswordRequest = (email) => dispatch(forgotPassword(email));
-  const resetPassword = ({ resetPassToken, newPassword }) =>
+  const forgotPasswordRequest = async (email) =>
+    dispatch(forgotPassword(email));
+  const resetPassword = async ({ resetPassToken, newPassword }) =>
     dispatch(resetForgottenPassword({ resetPassToken, newPassword }));
-  const logout = () => dispatch(logoutUser());
-  const getProfile = () => dispatch(getUserProfile());
-  const updateAvatar = (avatarFile) => dispatch(updateUserAvatar(avatarFile));
-  const resendVerificationEmail = () => dispatch(resendEmailVerification());
-  const setProfile = (profileData) => dispatch(setUserProfile(profileData));
+  const logout = async () => dispatch(logoutUser());
+  const getProfile = async () => dispatch(getUserProfile());
+  const updateAvatar = async (avatarFile) =>
+    dispatch(updateUserAvatar(avatarFile));
+  const resendVerificationEmail = async () =>
+    dispatch(resendEmailVerification());
+  const setProfile = async (profileData) =>
+    dispatch(setUserProfile(profileData));
 
   return {
     user,

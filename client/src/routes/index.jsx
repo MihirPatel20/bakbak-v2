@@ -1,4 +1,4 @@
-import { useRoutes } from "react-router-dom";
+import { Navigate, useRoutes } from "react-router-dom";
 
 import ProtectedRoutes from "@/utils/ProtectedRoutes";
 import dashboardRoutes from "./dashboardRoutes";
@@ -10,6 +10,10 @@ import appRoutes from "./appRoutes";
 
 export default function Routes() {
   return useRoutes([
+    {
+      path: "/",
+      element: <Navigate to="/home" replace />,
+    },
     {
       path: "",
       element: <ProtectedRoutes />,

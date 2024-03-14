@@ -156,7 +156,7 @@ const FirebaseLogin = ({ ...others }) => {
           try {
             console.log("values: ", values);
             if (scriptedRef.current) {
-              login(values);
+              await login(values);
               navigate("/home");
               setStatus({ success: true });
               setSubmitting(false);
