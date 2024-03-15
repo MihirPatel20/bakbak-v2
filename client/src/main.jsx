@@ -5,9 +5,10 @@ import store from "reducer/store.js";
 import { Provider } from "react-redux";
 import { SocketProvider } from "context/SocketContext.jsx";
 import { BrowserRouter } from "react-router-dom";
+import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 
-import 'assets/scss/style.scss';
-import 'assets/scss/keyframes.scss';
+import "assets/scss/style.scss";
+import "assets/scss/keyframes.scss";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <Provider store={store}>
@@ -18,3 +19,5 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     </SocketProvider>
   </Provider>
 );
+
+serviceWorkerRegistration.registerSW();

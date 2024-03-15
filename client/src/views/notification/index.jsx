@@ -1,7 +1,6 @@
-import { Box, Typography } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import api from "api";
 import React, { useEffect, useState } from "react";
-import { registerSW, requestNotificationPermission } from "utils/swUtils";
 
 const NotificationView = () => {
   const [subscriptions, setSubscriptions] = useState([]); // Add this line
@@ -16,11 +15,6 @@ const NotificationView = () => {
   };
 
   useEffect(() => {
-    const main = async () => {
-      await requestNotificationPermission();
-      await registerSW();
-    };
-    main();
     getAllSubscriptions();
   }, []);
 
@@ -28,9 +22,9 @@ const NotificationView = () => {
     const options = {
       title: "You received a new message!",
       body: "Mihir has sent you a new message!",
-      icon: "/bakbak.ico",
-      badge: "/bakbak.ico",
-      image: "/post1.jpg",
+      icon: "icons/bakbak.ico",
+      badge: "icons/bakbak.ico",
+      // image: "/post1.jpg",
       actions: [
         { action: "open", title: "Open App" },
         { action: "dismiss", title: "Dismiss" },
@@ -40,18 +34,13 @@ const NotificationView = () => {
     };
 
     try {
-      const response = await fetch(
+      const response = await api.post(
         `${
           import.meta.env.VITE_SERVER_API_URI
         }/notification/send-push/${recipientId}`,
-        {
-          method: "POST",
-          headers: { "Content-type": "application/json" },
-          body: JSON.stringify(options),
-          credentials: "include",
-        }
+        options
       );
-      const data = await response.json();
+      const data = await response;
       console.log("Notification sent:", data);
     } catch (error) {
       console.error("Error sending notification:", error);
@@ -64,9 +53,10 @@ const NotificationView = () => {
       {/* Your chat application components */}
 
       {subscriptions.length !== 0 ? (
-        <Box>
+        <Grid container>
           {subscriptions.map((subscription) => (
-            <Box
+            <Grid
+              item
               key={subscription._id}
               sx={{
                 bgcolor: "primary.light",
@@ -74,21 +64,17 @@ const NotificationView = () => {
                 p: 1,
                 cursor: "pointer",
               }}
-              onClick={() => {
-                sendNotification(subscription.user);
-              }}
+              onClick={() => sendNotification(subscription.user)}
             >
               <Typography variant="body1">
                 User ID: {subscription?.user}
               </Typography>
-            </Box>
+            </Grid>
           ))}
-        </Box>
+        </Grid>
       ) : (
         <p>No subscriptions found</p>
       )}
-
-      <button onClick={sendNotification}>Send Notification</button>
     </div>
   );
 };
