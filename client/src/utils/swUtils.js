@@ -1,43 +1,15 @@
-export const saveSubscription = async (subscription) => {
-  try {
-    const response = await fetch("http://localhost:8080/subscribe", {
-      method: "POST",
-      headers: { "Content-type": "application/json" },
-      body: JSON.stringify(subscription),
-    });
-    return response.json();
-  } catch (error) {
-    console.error("Error saving subscription:", error);
-    throw error;
-  }
-};
+export const urlBase64ToUint8Array = (base64String) => {
+  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding)
+    .replace(/\-/g, "+")
+    .replace(/_/g, "/");
 
-export const registerSW = async () => {
-  try {
-    if (!("serviceWorker" in navigator)) {
-      throw new Error("No support for service worker!");
-    }
-    const registration = await navigator.serviceWorker.register("/serviceWorker.js");
-    console.log("Service worker registered:", registration);
-    return registration;
-  } catch (error) {
-    console.error("Error registering service worker:", error);
-    throw error;
-  }
-};
+  const rawData = atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
 
-export const requestNotificationPermission = async () => {
-  try {
-    if (!("Notification" in window)) {
-      throw new Error("No support for notification API");
-    }
-    const permission = await Notification.requestPermission();
-    if (permission !== "granted") {
-      throw new Error("Notification permission not granted");
-    }
-    console.log("Notification permission granted");
-  } catch (error) {
-    console.error("Error requesting notification permission:", error);
-    throw error;
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
   }
+
+  return outputArray;
 };
