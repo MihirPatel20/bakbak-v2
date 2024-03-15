@@ -1,6 +1,7 @@
 import { Grid, Typography } from "@mui/material";
 import api from "api";
 import React, { useEffect, useState } from "react";
+import * as serviceWorkerRegistration from "@/serviceWorkerRegistration";
 
 const NotificationView = () => {
   const [subscriptions, setSubscriptions] = useState([]); // Add this line
@@ -15,6 +16,7 @@ const NotificationView = () => {
   };
 
   useEffect(() => {
+    serviceWorkerRegistration.registerSW();
     getAllSubscriptions();
   }, []);
 
