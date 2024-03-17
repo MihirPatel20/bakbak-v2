@@ -32,12 +32,6 @@ const Header = ({ handleLeftDrawerToggle }) => {
           },
         }}
       >
-        <Box
-          component="span"
-          sx={{ display: { xs: "none", md: "block" }, flexGrow: 1 }}
-        >
-          <LogoSection />
-        </Box>
         <ButtonBase sx={{ borderRadius: "6px", overflow: "hidden" }}>
           <Avatar
             variant="rounded"
@@ -58,12 +52,24 @@ const Header = ({ handleLeftDrawerToggle }) => {
             <IconMenu2 stroke={1.5} size="1.3rem" />
           </Avatar>
         </ButtonBase>
+
+        <Box
+          component="span"
+          sx={{ display: { xs: "none", md: "block" }, ml: 2 }}
+        >
+          <LogoSection />
+        </Box>
       </Box>
 
-      <Box sx={{ display: { xs: "block", md: "none" }  }}>
+      <Box sx={{ display: { xs: "block", md: "none" } }}>
         <BakbakLogo sx={{ fontSize: "1.2rem" }} />
       </Box>
-      <Box sx={{  display: { xs: "none", sm: "block" } , flexGrow: 1 }} />
+      <Box
+        sx={{
+          // display: { xs: "none", sm: "block" },
+          flexGrow: 1,
+        }}
+      />
 
       {/* header search */}
       <SearchSection />

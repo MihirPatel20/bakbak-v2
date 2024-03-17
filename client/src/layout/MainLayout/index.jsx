@@ -83,7 +83,7 @@ const MainLayout = () => {
             : "none",
         }}
       >
-        <Toolbar sx={{ gap: { xs: 1, md: 2 } }}>
+        <Toolbar sx={{ gap: { xs: 1, md: 2 }, px: {  md: 2 } }}>
           <Header handleLeftDrawerToggle={handleLeftDrawerToggle} />
         </Toolbar>
       </AppBar>
