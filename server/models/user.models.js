@@ -61,6 +61,14 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    online: {
+      type: Boolean,
+      default: false,
+    },
+    lastSeen: {
+      type: Date,
+      default: Date.now,
+    },
     refreshToken: {
       type: String,
     },

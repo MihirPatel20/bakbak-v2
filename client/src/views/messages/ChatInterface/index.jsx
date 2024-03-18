@@ -30,19 +30,15 @@ const ChatInterface = () => {
   const [selfTyping, setSelfTyping] = useState(false); // To track if the current user is typing
 
   const typingTimeoutRef = useRef(null);
-  const chatContainerRef = useRef(null);
 
   const location = useLocation();
   const { chatId } = useParams();
-  console.log("chat: ", chatId);
 
   const recipient = location.state?.chat.participants.find(
     (participant) => participant._id !== user._id
   );
 
   const activeChat = location.state?.chat;
-
-  console.log("recipient: ", recipient);
 
   if (!activeChat) {
     return (
@@ -75,15 +71,6 @@ const ChatInterface = () => {
   const getMessages = async (chatId) => {
     try {
       const response = await api.get(`/messages/${chatId}`);
-      setMessages(response.data.data); // Update state with fetched messages
-    } catch (error) {
-      console.error("Error fetching messages:", error);
-    }
-  };
-
-  const getChatInfo = async (chatId) => {
-    try {
-      const response = await api.get(`/chats/${chatId}`);
       setMessages(response.data.data); // Update state with fetched messages
     } catch (error) {
       console.error("Error fetching messages:", error);
@@ -174,25 +161,8 @@ const ChatInterface = () => {
     }
   }, [socket, chatId]);
 
-  useEffect(() => {
-    // Scroll to the bottom of the chat interface when messages change
-    const chatContainer = chatContainerRef.current;
-    const lastMessage = chatContainer.lastElementChild;
-
-    // Check if there are new messages and if the user is not looking at previous messages
-    const isNewMessages =
-      messages.length > 0 &&
-      chatContainer.scrollTop + chatContainer.clientHeight >=
-        chatContainer.scrollHeight - 200;
-
-    // Scroll to the bottom of the chat interface when there are new messages and the user is already viewing the latest messages
-    if (isNewMessages) {
-      lastMessage.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [messages]);
-
-  console.log("message: ", messages[0]);
-  console.log("activeChat: ", activeChat);
+  // console.log("message: ", messages[0]);
+  // console.log("activeChat: ", activeChat);
 
   return (
     <Box
@@ -243,11 +213,7 @@ const ChatInterface = () => {
           </Box>
         </Box>
 
-        <PerfectScrollbar
-          component="div"
-          ref={chatContainerRef}
-          style={{ padding: "16px" }}
-        >
+        <PerfectScrollbar component="div" style={{ padding: "16px" }}>
           <ChatMessageLayout chat={activeChat} messages={messages} />
 
           {isTyping && <Typography variant="body2">Typing...</Typography>}

@@ -100,6 +100,10 @@ export const UserRolesEnum = {
     STOP_TYPING_EVENT: "stopTyping",
     // ? when participant starts typing
     TYPING_EVENT: "typing",
+    // ? when user comes online
+    USER_ONLINE_EVENT: "userOnline",
+    // ? when user goes offline
+    USER_OFFLINE_EVENT: "userOffline"
   });
   
   export const AvailableChatEvents = Object.values(ChatEventEnum);

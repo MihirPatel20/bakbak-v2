@@ -71,13 +71,20 @@ const initializeSocketIO = (io) => {
       if (!user) {
         throw new ApiError(401, "Un-authorized handshake. Token is invalid");
       }
-      socket.user = user; // mount the user object to the socket
 
+      // Update user's online status to true
+      await User.findByIdAndUpdate(user._id, { online: true });
+
+      socket.user = user; // mount the user object to the socket
       // We are creating a room with user id so that if user is joined but does not have any active chat going on.
       // still we want to emit some socket events to the user.
       // so that the client can catch the event and show the notifications.
       socket.join(user._id.toString());
       socket.emit(ChatEventEnum.CONNECTED_EVENT); // emit the connected event so that client is aware
+
+      // Emit event to notify other users that this user is online
+      io.emit(ChatEventEnum.USER_ONLINE_EVENT, user);
+
       console.log("User connected 🗼. userId: ", user._id.toString());
 
       // Common events that needs to be mounted on the initialization
@@ -85,9 +92,17 @@ const initializeSocketIO = (io) => {
       mountParticipantTypingEvent(socket);
       mountParticipantStoppedTypingEvent(socket);
 
-      socket.on(ChatEventEnum.DISCONNECT_EVENT, () => {
+      socket.on(ChatEventEnum.DISCONNECT_EVENT, async () => {
         console.log("user has disconnected 🚫. userId: " + socket.user?._id);
         if (socket.user?._id) {
+          // Update user's online status to false
+          await User.findByIdAndUpdate(socket.user._id, { online: false });
+
+          // Emit event to notify other users that this user is offline
+          io.emit(ChatEventEnum.USER_OFFLINE_EVENT, {
+            user,
+          });
+
           socket.leave(socket.user._id);
         }
       });

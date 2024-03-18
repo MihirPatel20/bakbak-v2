@@ -3,6 +3,7 @@ import {
   forgotPasswordRequest,
   getAllUsers,
   getCurrentUser,
+  getOnlineUsers,
   loginUser,
   logoutUser,
   refreshAccessToken,
@@ -32,6 +33,7 @@ router.route("/reset-password/:resetToken").post(resetForgottenPassword);
 router.route("/logout").post(verifyJWT, logoutUser);
 router.route("/current-user").get(verifyJWT, getCurrentUser);
 router.route("/all-users").get(verifyJWT, getAllUsers);
+router.route("/online-users").get(verifyJWT, getOnlineUsers);
 
 router
   .route("/avatar")

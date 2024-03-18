@@ -498,6 +498,17 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, updatedUser, "Avatar updated successfully"));
 });
 
+const getOnlineUsers = asyncHandler(async (req, res) => {
+  // Fetch all users who are currently online
+  const onlineUsers = await User.find({ online: true }).select(
+    "avatar username email"
+  );
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, onlineUsers, "List of online users"));
+});
+
 export {
   assignRole,
   changeCurrentPassword,
@@ -513,4 +524,5 @@ export {
   resetForgottenPassword,
   updateUserAvatar,
   verifyEmail,
+  getOnlineUsers,
 };
