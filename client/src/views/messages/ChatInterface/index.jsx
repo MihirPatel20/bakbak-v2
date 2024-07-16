@@ -213,11 +213,8 @@ const ChatInterface = () => {
           </Box>
         </Box>
 
-        <PerfectScrollbar component="div" style={{ padding: "16px" }}>
-          <ChatMessageLayout chat={activeChat} messages={messages} />
-
-          {isTyping && <Typography variant="body2">Typing...</Typography>}
-        </PerfectScrollbar>
+        <ChatMessageLayout chat={activeChat} messages={messages} isTyping={isTyping} />
+        {/* {isTyping && <Typography variant="body2">Typing...</Typography>} */}
 
         <Box
           component="form"

@@ -2,38 +2,28 @@ import React, { useEffect, useRef } from "react";
 import { Box, Typography, Avatar } from "@mui/material";
 import { formatDistanceToNow } from "date-fns";
 import useAuth from "hooks/useAuth";
+import PerfectScrollbar from "react-perfect-scrollbar";
 import { getUserAvatarUrl } from "utils/getImageUrl";
+import TypingBubble from "./TypingBubble";
 
-const ChatMessageLayout = ({ chat, messages }) => {
+const ChatMessageLayout = ({ chat, messages, isTyping }) => {
   const { user } = useAuth();
   const chatContainerRef = useRef(null);
 
   const getMessageTime = (createdAt) => {
     return formatDistanceToNow(new Date(createdAt), { addSuffix: true });
   };
-
   useEffect(() => {
-    // Scroll to the bottom of the chat interface when messages change
-    const chatContainer = chatContainerRef?.current;
-    const lastMessage = chatContainer?.lastElementChild;
-    
-    lastMessage?.scrollIntoView({ behavior: "smooth" });
-    chatContainer.scrollTop = chatContainer.scrollHeight;
-
-    // Check if there are new messages and if the user is not looking at previous messages
-    const isNewMessages =
-      messages.length > 0 &&
-      chatContainer.scrollTop + chatContainer.clientHeight >=
-        chatContainer.scrollHeight - 200;
-
-    // Scroll to the bottom of the chat interface when there are new messages and the user is already viewing the latest messages
-    if (isNewMessages) {
-      lastMessage.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [messages]);
+    const chatContainer = chatContainerRef.current._container;
+    if (chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
+  }, [messages, isTyping]);
 
   return (
-    <Box ref={chatContainerRef}>
+    <PerfectScrollbar
+      ref={chatContainerRef}
+      component="div"
+      style={{ padding: "16px" }}
+    >
       {messages.map((message, index) => {
         const isSender = message.sender._id === user._id;
         const isFirstMessage =
@@ -101,7 +91,9 @@ const ChatMessageLayout = ({ chat, messages }) => {
           </Box>
         );
       })}
-    </Box>
+
+      {isTyping && <TypingBubble />}
+    </PerfectScrollbar>
   );
 };
 
