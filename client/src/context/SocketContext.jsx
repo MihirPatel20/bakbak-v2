@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import socketio from "socket.io-client";
 import { LocalStorage } from "../utils/LocalStorage";
+import { ChatEventEnum } from "constants";
 
 // Function to establish a socket connection with authorization token
 const getSocket = () => {
@@ -29,7 +30,23 @@ const SocketProvider = ({ children }) => {
 
   // Set up the socket connection when the component mounts
   useEffect(() => {
-    setSocket(getSocket());
+    const socketInstance = getSocket();
+    setSocket(socketInstance);
+
+    // Handle connection events
+    socketInstance.on(ChatEventEnum.CONNECTED_EVENT, () => {
+      console.log("Connected to socket server");
+    });
+
+    socketInstance.on(ChatEventEnum.DISCONNECT_EVENT, () => {
+      console.log("Disconnected from socket server");
+    });
+
+    // Clean up the socket connection when the component unmounts
+    return () => {
+      socketInstance.disconnect();
+      console.log("Disconnected from socket server");
+    };
   }, []);
 
   return (

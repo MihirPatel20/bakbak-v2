@@ -5,6 +5,7 @@ import { Outlet, Navigate } from "react-router-dom";
 // Redux-related imports
 import { useSelector, useDispatch } from "react-redux";
 import { getUserProfile } from "@/reducer/auth/auth.thunk";
+import { SocketProvider } from "context/SocketContext";
 
 // Component imports
 import PageLoading from "components/global/PageLoading";
@@ -33,7 +34,11 @@ const ProtectedRoutes = () => {
     return <Navigate to="/login" replace />;
   }
 
-  return <Outlet />;
+  return (
+    <SocketProvider>
+      <Outlet />
+    </SocketProvider>
+  );
 };
 
 export default ProtectedRoutes;
