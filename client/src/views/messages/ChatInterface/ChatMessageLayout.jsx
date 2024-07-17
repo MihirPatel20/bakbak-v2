@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Box, Typography, Avatar } from "@mui/material";
 import { formatDistanceToNow } from "date-fns";
 import useAuth from "hooks/useAuth";
@@ -9,14 +9,46 @@ import TypingBubble from "./TypingBubble";
 const ChatMessageLayout = ({ chat, messages, isTyping }) => {
   const { user } = useAuth();
   const chatContainerRef = useRef(null);
+  const [showScrollToBottom, setShowScrollToBottom] = useState(false);
 
   const getMessageTime = (createdAt) => {
     return formatDistanceToNow(new Date(createdAt), { addSuffix: true });
   };
-  useEffect(() => {
+
+  const handleScroll = () => {
+    const chatContainer = chatContainerRef.current._container;
+    if (!chatContainer) return;
+
+    const shouldShow =
+      chatContainer.scrollHeight -
+        chatContainer.scrollTop -
+        chatContainer.clientHeight >
+      350;
+    setShowScrollToBottom(shouldShow);
+  };
+
+  const scrollToBottom = () => {
     const chatContainer = chatContainerRef.current._container;
     if (chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
-  }, [messages, isTyping]);
+  };
+
+  useEffect(() => {
+    const chatContainer = chatContainerRef.current._container;
+    if (chatContainer) {
+      chatContainer.addEventListener("scroll", handleScroll);
+    }
+    return () => {
+      if (chatContainer) {
+        chatContainer.removeEventListener("scroll", handleScroll);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!showScrollToBottom) {
+      scrollToBottom();
+    }
+  }, [messages]);
 
   return (
     <PerfectScrollbar
@@ -24,6 +56,30 @@ const ChatMessageLayout = ({ chat, messages, isTyping }) => {
       component="div"
       style={{ padding: "16px" }}
     >
+      {showScrollToBottom && (
+        <Box
+          onClick={scrollToBottom}
+          sx={{
+            position: "fixed",
+            bottom: "100px",
+            right: "50%",
+            transform: "translateX(50%)",
+            backgroundColor: "primary.main",
+            color: "white",
+            borderRadius: "50%",
+            width: "40px",
+            // width: "100%",
+            height: "40px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: "pointer",
+          }}
+        >
+          ↓
+        </Box>
+      )}
+
       {messages.map((message, index) => {
         const isSender = message.sender._id === user._id;
         const isFirstMessage =
