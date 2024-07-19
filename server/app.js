@@ -65,7 +65,8 @@ webPush.setVapidDetails(
 // * App routes
 import userRouter from "./routes/user.routes.js";
 import profileRouter from "./routes/profile.routes.js";
-import notificationRouter from "./routes/notificationSubscription.routes.js";
+import notificationSubscriptionRouter from "./routes/notificationSubscription.routes.js";
+import notificationRouter from "./routes/notification.routes.js";
 
 import followRouter from "./routes/follow.routes.js";
 import postRouter from "./routes/post.routes.js";
@@ -82,7 +83,8 @@ import { initializeSocketIO } from "./socket.js";
 // * App apis
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/profile", profileRouter);
-app.use("/api/v1/notification", notificationRouter);
+app.use("/api/v1/notificationSubscription", notificationSubscriptionRouter);
+app.use("/api/v1/notifications", notificationRouter);
 
 app.use("/api/v1/follow", followRouter);
 app.use("/api/v1/post", postRouter);

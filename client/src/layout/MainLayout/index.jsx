@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Outlet } from "react-router-dom";
 
@@ -16,6 +17,8 @@ import Header from "./Header";
 import Sidebar from "./Sidebar";
 import { SET_MENU } from "reducer/customization/actions";
 import { drawerWidth } from "reducer/customization/constant";
+import useSocketDispatch from "hooks/useSocketDispatch";
+import { fetchNotifications } from "reducer/notification/notification.thunk";
 
 // assets
 
@@ -58,14 +61,23 @@ const Main = styled("main", {
 // ==============================|| MAIN LAYOUT ||============================== //
 
 const MainLayout = () => {
+  const dispatch = useDispatch();
   const theme = useTheme();
+
   const matchDownMd = useMediaQuery(theme.breakpoints.down("md"));
   // Handle left drawer
   const leftDrawerOpened = useSelector((state) => state.customization.opened);
-  const dispatch = useDispatch();
   const handleLeftDrawerToggle = () => {
     dispatch({ type: SET_MENU, opened: !leftDrawerOpened });
   };
+
+  // Use the socket dispatch hook only when user data is available
+  useSocketDispatch();
+
+  // Fetch notifications on component mount
+  useEffect(() => {
+    dispatch(fetchNotifications());
+  }, [dispatch]);
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -83,7 +95,7 @@ const MainLayout = () => {
             : "none",
         }}
       >
-        <Toolbar sx={{ gap: { xs: 1, md: 2 }, px: {  md: 2 } }}>
+        <Toolbar sx={{ gap: { xs: 1, md: 2 }, px: { md: 2 } }}>
           <Header handleLeftDrawerToggle={handleLeftDrawerToggle} />
         </Toolbar>
       </AppBar>

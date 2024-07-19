@@ -1,0 +1,23 @@
+@startuml
+actor User1 as Sender
+actor User2 as Receiver
+participant "Chat Service" as ChatService
+participant "Database" as DB
+participant "Socket Server" as SocketServer
+
+Sender -> ChatService : Open Chat
+ChatService -> SocketServer : Join Room(chatId)
+Sender -> ChatService : Send Message(content)
+ChatService -> DB : Store Message(chatId, content)
+ChatService -> SocketServer : Emit Message(chatId, content)
+alt User2 in Room
+  SocketServer -> Receiver : Receive Message(content)
+else User2 not in Room
+  ChatService -> DB : Create Notification
+  ChatService -> Receiver : Send Notification
+end
+Receiver -> ChatService : Open Chat Later
+ChatService -> DB : Retrieve Messages(chatId)
+DB -> ChatService : Return Messages
+ChatService -> Receiver : Display Messages
+@enduml

@@ -9,7 +9,7 @@ import {
   Button,
   ButtonBase,
   CardActions,
-  Chip,
+  Badge,
   ClickAwayListener,
   Divider,
   Grid,
@@ -29,6 +29,10 @@ import MainCard from "ui-component/cards/MainCard";
 import Transitions from "ui-component/extended/Transitions";
 import NotificationList from "./NotificationList";
 
+// redux imports
+import { useDispatch, useSelector } from "react-redux";
+import { markAllAsRead } from "reducer/notification/notification.thunk";
+
 // assets
 import { IconBell } from "@tabler/icons-react";
 
@@ -36,11 +40,11 @@ import { IconBell } from "@tabler/icons-react";
 const status = [
   {
     value: "all",
-    label: "All Notification",
+    label: "All Notifications",
   },
   {
-    value: "new",
-    label: "New",
+    value: "newest",
+    label: "Newest",
   },
   {
     value: "unread",
@@ -55,6 +59,12 @@ const status = [
 // ==============================|| NOTIFICATION ||============================== //
 
 const NotificationSection = () => {
+  const dispatch = useDispatch();
+  const anchorRef = useRef(null);
+  const notificationsCount = useSelector(
+    (state) => state.notifications.totalCount
+  );
+
   const theme = useTheme();
   const matchesXs = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -63,7 +73,6 @@ const NotificationSection = () => {
   /**
    * anchorRef is used on different componets and specifying one type leads to other components throwing an error
    * */
-  const anchorRef = useRef(null);
 
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen);
@@ -88,6 +97,14 @@ const NotificationSection = () => {
     if (event?.target.value) setValue(event?.target.value);
   };
 
+  const handleMarkAllAsRead = async () => {
+    try {
+      await dispatch(markAllAsRead()).unwrap();
+    } catch (err) {
+      console.error("Failed to mark all notifications as read:", err);
+    }
+  };
+
   return (
     <>
       <Box
@@ -96,27 +113,36 @@ const NotificationSection = () => {
         }}
       >
         <ButtonBase sx={{ borderRadius: "12px" }}>
-          <Avatar
-            variant="rounded"
-            sx={{
-              ...theme.typography.commonAvatar,
-              ...theme.typography.mediumAvatar,
-              transition: "all .2s ease-in-out",
-              background: theme.palette.primary.light,
-              color: theme.palette.primary.dark,
-              '&[aria-controls="menu-list-grow"],&:hover': {
-                background: theme.palette.primary.dark,
-                color: theme.palette.primary.light,
-              },
+          <Badge
+            badgeContent={notificationsCount}
+            color="secondary"
+            anchorOrigin={{
+              vertical: "top",
+              horizontal: "right",
             }}
-            ref={anchorRef}
-            aria-controls={open ? "menu-list-grow" : undefined}
-            aria-haspopup="true"
-            onClick={handleToggle}
-            color="inherit"
           >
-            <IconBell stroke={1.5} size="1.3rem" />
-          </Avatar>
+            <Avatar
+              variant="rounded"
+              sx={{
+                ...theme.typography.commonAvatar,
+                ...theme.typography.mediumAvatar,
+                transition: "all .2s ease-in-out",
+                background: theme.palette.primary.light,
+                color: theme.palette.primary.dark,
+                '&[aria-controls="menu-list-grow"],&:hover': {
+                  background: theme.palette.primary.dark,
+                  color: theme.palette.primary.light,
+                },
+              }}
+              ref={anchorRef}
+              aria-controls={open ? "menu-list-grow" : undefined}
+              aria-haspopup="true"
+              onClick={handleToggle}
+              color="inherit"
+            >
+              <IconBell stroke={1.5} size="1.3rem" />
+            </Avatar>
+          </Badge>
         </ButtonBase>
       </Box>
       <Popper
@@ -163,16 +189,8 @@ const NotificationSection = () => {
                         <Grid item>
                           <Stack direction="row" spacing={2}>
                             <Typography variant="subtitle1">
-                              All Notification
+                              Notifications
                             </Typography>
-                            <Chip
-                              size="small"
-                              label="01"
-                              sx={{
-                                color: theme.palette.background.default,
-                                bgcolor: theme.palette.warning.dark,
-                              }}
-                            />
                           </Stack>
                         </Grid>
                         <Grid item>
@@ -181,6 +199,8 @@ const NotificationSection = () => {
                             to="#"
                             variant="subtitle2"
                             color="primary"
+                            onClick={handleMarkAllAsRead}
+                            sx={{ textDecoration: "none" }}
                           >
                             Mark as all read
                           </Typography>
@@ -192,7 +212,7 @@ const NotificationSection = () => {
                         style={{
                           height: "100%",
                           maxHeight: "calc(100vh - 205px)",
-                          overflowX: "hidden",
+                          // overflowX: "hidden",
                         }}
                       >
                         <Grid container direction="column" spacing={2}>
@@ -223,6 +243,7 @@ const NotificationSection = () => {
                             <Divider sx={{ my: 0 }} />
                           </Grid>
                         </Grid>
+
                         <NotificationList />
                       </PerfectScrollbar>
                     </Grid>

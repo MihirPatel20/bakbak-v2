@@ -1,12 +1,13 @@
-import { NotificationSubscription } from "../models/notificationSubscription.models.js";
 import webPush from "web-push";
+import { NotificationSubscription } from "../models/notificationSubscription.models.js";
+
 // Controller to save a subscription
 const subscribeNotifications = async (req, res) => {
   const { endpoint, keys } = req.body;
   const user = req.user;
 
   console.log("body: ", req.body);
-  console.log("user: ", user)
+  console.log("user: ", user);
 
   try {
     const subscription = await NotificationSubscription.create({
@@ -28,7 +29,9 @@ const sendPushNotification = async (req, res) => {
   const options = req.body;
   const { recipientId } = req.params;
 
-  const subscriptions = await NotificationSubscription.find({ user: recipientId });
+  const subscriptions = await NotificationSubscription.find({
+    user: recipientId,
+  });
 
   subscriptions.forEach((subscription) => {
     webPush
@@ -41,7 +44,7 @@ const sendPushNotification = async (req, res) => {
 };
 
 const getAllSubscriptions = async (req, res) => {
-  const subscriptions = await NotificationSubscription.find();
+  const subscriptions = await NotificationSubscription.find().populate("user");
   res.json(subscriptions);
 };
 

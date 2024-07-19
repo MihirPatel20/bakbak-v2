@@ -1,15 +1,20 @@
 import mongoose from "mongoose";
-import { ChatEventEnum } from "../constants.js";
+import {
+  ChatEventEnum,
+  NotificationTypes,
+  ReferenceModel,
+} from "../constants.js";
+import { User } from "../models/user.models.js";
 import { Chat } from "../models/chat.models.js";
 import { ChatMessage } from "../models/message.models.js";
-import { emitSocketEvent } from "../socket.js";
+import { NotificationSubscription } from "../models/notificationSubscription.models.js";
+import { emitSocketEvent, isUserInChatRoom } from "../socket.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { getLocalPath, getStaticFilePath } from "../utils/helpers.js";
+import { createNotification } from "./notification.controllers.js";
 import webPush from "web-push";
-import { NotificationSubscription } from "../models/notificationSubscription.models.js";
-import { User } from "../models/user.models.js";
 
 /**
  * @description Utility function which returns the pipeline stages to structure the chat message schema with common lookups
@@ -146,13 +151,19 @@ const sendMessage = asyncHandler(async (req, res) => {
 
     // Check if the participant is online
     const participant = await User.findOne({ _id: participantObjectId });
-    
+
     if (!participant) {
       throw new ApiError(404, "Recipient not found");
     }
 
-    if (participant.online) {
-      // emit the receive message event to the other participants with received message as the payload
+    // Check if the participant is in the chat room
+    const isParticipantInRoom = isUserInChatRoom(
+      req,
+      chatId,
+      participantObjectId.toString()
+    );
+
+    if (isParticipantInRoom) {
       emitSocketEvent(
         req,
         participantObjectId.toString(),
@@ -160,6 +171,17 @@ const sendMessage = asyncHandler(async (req, res) => {
         receivedMessage
       );
     } else {
+      // Create notification in database and send to the recipient
+      await createNotification(
+        req,
+        participantObjectId.toString(), //receiver id
+        receivedMessage.sender, // sender id
+        receivedMessage.content, //preview
+        NotificationTypes.MESSAGE, //type
+        receivedMessage._id, //referenceId
+        ReferenceModel.MESSAGE // referenceModel
+      );
+
       // Find the subscription for the participant
       const subscription = await NotificationSubscription.findOne({
         user: participantObjectId,
@@ -178,7 +200,7 @@ const sendMessage = asyncHandler(async (req, res) => {
               // image: "/post1.jpg",
             })
           ) // Send chatId as notification payload
-          .then(() => console.log("Notification sent"))
+          .then(() => console.log("Notification sent for incoming message"))
           .catch((error) =>
             console.error("Error sending notification:", error)
           );

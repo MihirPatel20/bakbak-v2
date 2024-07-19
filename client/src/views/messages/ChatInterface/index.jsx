@@ -82,8 +82,13 @@ const ChatInterface = () => {
       socket?.emit(ChatEventEnum.JOIN_CHAT_EVENT, chatId);
 
       getMessages(chatId);
+
+      // Cleanup function to leave chat when component unmounts or chatId changes
+      return () => {
+        socket?.emit(ChatEventEnum.LEAVE_CHAT_EVENT, chatId);
+      };
     }
-  }, [chatId]);
+  }, [chatId, socket]);
 
   const sendMessage = async (event) => {
     event.preventDefault();
@@ -213,7 +218,11 @@ const ChatInterface = () => {
           </Box>
         </Box>
 
-        <ChatMessageLayout chat={activeChat} messages={messages} isTyping={isTyping} />
+        <ChatMessageLayout
+          chat={activeChat}
+          messages={messages}
+          isTyping={isTyping}
+        />
         {/* {isTyping && <Typography variant="body2">Typing...</Typography>} */}
 
         <Box

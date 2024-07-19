@@ -20,6 +20,17 @@ const mountJoinChatEvent = (socket) => {
 };
 
 /**
+ * @description This function is responsible for allowing a user to leave the chat represented by chatId.
+ * @param {Socket<import("socket.io/dist/typed-events").DefaultEventsMap, import("socket.io/dist/typed-events").DefaultEventsMap, import("socket.io/dist/typed-events").DefaultEventsMap, any>} socket
+ */
+const mountLeaveChatEvent = (socket) => {
+  socket.on(ChatEventEnum.LEAVE_CHAT_EVENT, (chatId) => {
+    console.log(`User left the chat 🚪🏃‍♂️‍➡️. chatId: `, chatId);
+    socket.leave(chatId);
+  });
+};
+
+/**
  * @description This function is responsible to emit the typing event to the other participants of the chat
  * @param {Socket<import("socket.io/dist/typed-events").DefaultEventsMap, import("socket.io/dist/typed-events").DefaultEventsMap, import("socket.io/dist/typed-events").DefaultEventsMap, any>} socket
  */
@@ -89,6 +100,7 @@ const initializeSocketIO = (io) => {
 
       // Common events that needs to be mounted on the initialization
       mountJoinChatEvent(socket);
+      mountLeaveChatEvent(socket);
       mountParticipantTypingEvent(socket);
       mountParticipantStoppedTypingEvent(socket);
 
@@ -103,7 +115,7 @@ const initializeSocketIO = (io) => {
             user,
           });
 
-          socket.leave(socket.user._id);
+          socket.leave(socket.user._id.toString());
         }
       });
     } catch (error) {
@@ -127,4 +139,40 @@ const emitSocketEvent = (req, roomId, event, payload) => {
   req.app.get("io").in(roomId).emit(event, payload);
 };
 
-export { initializeSocketIO, emitSocketEvent };
+const emitNotification = (req, userId, event, payload) => {
+  req.app.get("io").to(userId).emit(event, payload);
+};
+
+/**
+ * Checks if a user is currently in a specific chat room.
+ * @param {Server} io - The Socket.IO server instance
+ * @param {string} chatId - The ID of the chat room
+ * @param {string} userId - The ID of the user to check
+ * @returns {boolean} True if the user is in the chat room, false otherwise
+ */
+const isUserInChatRoom = (req, chatId, userId) => {
+  // Get the Socket.IO server instance
+  const io = req.app.get("io");
+
+  // Get the set of socket IDs in the chat room
+  const socketsInRoom = io.sockets.adapter.rooms.get(chatId);
+
+  if (!socketsInRoom) {
+    return false; // Room doesn't exist or is empty
+  }
+
+  // Check if the user's ID is in the room
+  return Array.from(socketsInRoom).some((socketId) => {
+    const socket = io.sockets.sockets.get(socketId);
+    return (
+      socket && socket.user && socket.user._id.toString() === userId.toString()
+    );
+  });
+};
+
+export {
+  initializeSocketIO,
+  emitSocketEvent,
+  emitNotification,
+  isUserInChatRoom,
+};
