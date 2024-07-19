@@ -14,7 +14,9 @@ const saveSubscription = async (subscription) => {
   console.log("subscription: ", subscription);
   try {
     const response = await api.post(
-      `${import.meta.env.VITE_SERVER_API_URI}/notification/subscribe`,
+      `${
+        import.meta.env.VITE_SERVER_API_URI
+      }/notificationSubscription/subscribe`,
       subscription
     );
     return response;
