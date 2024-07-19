@@ -32,6 +32,14 @@ const userSchema = new Schema(
       maxlength: 20,
       index: true,
     },
+    firstName: {
+      type: String,
+      trim: true,
+    },
+    lastName: {
+      type: String,
+      trim: true,
+    },
     email: {
       type: String,
       required: [true, "Please provide an email"],

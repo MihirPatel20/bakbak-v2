@@ -31,5 +31,9 @@ export const ChatEventEnum = Object.freeze({
   // ? when user comes online
   USER_ONLINE_EVENT: "userOnline",
   // ? when user goes offline
-  USER_OFFLINE_EVENT: "userOffline"
+  USER_OFFLINE_EVENT: "userOffline",
+  // Combined event for both sending and receiving notifications
+  NOTIFICATION_EVENT: "notification",
+  // ? when the notification is updated
+  NOTIFICATION_UPDATE_EVENT: "notificationUpdate",
 });

@@ -7,6 +7,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { User } from "../models/user.models.js";
 import {
   getLocalPath,
+  getRandomNumber,
   getStaticFilePath,
   removeLocalFile,
 } from "../utils/helpers.js";
@@ -52,6 +53,10 @@ const registerUser = asyncHandler(async (req, res) => {
     password,
     username,
     isEmailVerified: false,
+    avatar: {
+      url: "",
+      localPath: `/images/avatars/toy-${getRandomNumber(0, 17)}.jpg`,
+    },
     role: role || UserRolesEnum.USER,
   });
 

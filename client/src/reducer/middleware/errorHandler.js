@@ -5,8 +5,8 @@ const errorSnackbarMiddleware =
   ({ dispatch }) =>
   (next) =>
   (action) => {
-    if (isRejected(action) && action?.error?.message)
-      dispatch(showSnackbar("error", action?.error?.message));
+    if (isRejected(action) && action?.payload?.message)
+      dispatch(showSnackbar("error", action?.payload?.message));
 
     return next(action);
   };

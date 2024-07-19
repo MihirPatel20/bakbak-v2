@@ -19,6 +19,8 @@ export const validate = (req, res, next) => {
   }
   const extractedErrors = [];
   errors.array().map((err) => extractedErrors.push({ [err.path]: err.msg }));
+  console.error("extractedErrors", extractedErrors);
+  console.error("request body:", req.body);
 
   // 422: Unprocessable Entity
   throw new ApiError(422, "Received data is not valid", extractedErrors);
