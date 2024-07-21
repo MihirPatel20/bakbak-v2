@@ -504,14 +504,23 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
 });
 
 const getOnlineUsers = asyncHandler(async (req, res) => {
-  // Fetch all users who are currently online
-  const onlineUsers = await User.find({ online: true }).select(
-    "avatar username email"
-  );
+  const currentUser = req.user; // Assuming user is added to req by authentication middleware
+
+  // Fetch all users who are currently online, excluding the current user
+  const onlineUsers = await User.find({
+    online: true,
+    _id: { $ne: currentUser._id }, // Exclude current user by ID
+  }).select("avatar username email");
 
   res
     .status(200)
-    .json(new ApiResponse(200, onlineUsers, "List of online users"));
+    .json( 
+      new ApiResponse(
+        200,
+        onlineUsers,
+        "List of online users excluding current user"
+      )
+    );
 });
 
 export {

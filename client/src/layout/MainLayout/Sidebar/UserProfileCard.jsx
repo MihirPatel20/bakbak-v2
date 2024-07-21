@@ -106,7 +106,7 @@ const UserProfileCard = () => {
             />
           </Box>
 
-          <BorderLinearProgress variant="determinate" />
+          <BorderLinearProgress variant="determinate" value={100} />
         </List>
       </CardContent>
     </CardStyle>

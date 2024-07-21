@@ -1,12 +1,12 @@
-import { Box, Divider, Typography } from "@mui/material";
+import { Box, Card, Divider, Typography } from "@mui/material";
 import api from "api";
 import UserCard from "./UserCard";
-import { AppBarHeight } from "constants";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useSocket } from "context/SocketContext";
 import { ChatEventEnum } from "constants";
+import NoOnlineUsersCard from "./NoOnlineUsersCard";
 
 const ActiveUsers = () => {
   const { socket } = useSocket();
@@ -46,7 +46,13 @@ const ActiveUsers = () => {
   useEffect(() => {
     if (socket) {
       socket.on(ChatEventEnum.USER_ONLINE_EVENT, (user) => {
-        setOnlineUsers((prev) => [...prev, user]);
+        if (user._id !== auth.user._id)
+          setOnlineUsers((prev) => {
+            // Check if the user is already in the list
+            const isUserAlreadyOnline = prev.some((u) => u._id === user._id);
+            // If not, add them to the list
+            return isUserAlreadyOnline ? prev : [...prev, user];
+          });
       });
       socket.on(ChatEventEnum.USER_OFFLINE_EVENT, ({ user }) => {
         setOnlineUsers((prev) => prev.filter((u) => u._id !== user._id));
@@ -54,39 +60,41 @@ const ActiveUsers = () => {
     }
   }, [socket]);
 
+  console.log("onlineUsers: ", onlineUsers);
+
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-      {onlineUsers.length >= 0 && (
-        <>
-          <Box
-            sx={{
-              position: "sticky",
-              top: 0,
-              zIndex: 1,
-              bgcolor: "background.paper",
-            }}
-          >
-            <Typography
-              variant="h3"
-              component="div"
-              sx={{ paddingLeft: 1, paddingTop: 1 }}
-            >
-              Online Users
-            </Typography>
+      <Box
+        sx={{
+          position: "sticky",
+          top: 0,
+          zIndex: 1,
+          bgcolor: "background.paper",
+        }}
+      >
+        <Typography
+          variant="h3"
+          component="div"
+          sx={{ paddingLeft: 1, paddingTop: 1 }}
+        >
+          Online Users
+        </Typography>
 
-            <Divider sx={{ mt: 1.5 }} />
-          </Box>
+        <Divider sx={{ mt: 1.5 }} />
+      </Box>
 
-          {onlineUsers.map((user) => (
-            <UserCard
-              key={user._id}
-              user={user}
-              onClick={() =>
-                navigate(`/profile/${user.username}`, { state: { user } })
-              }
-            />
-          ))}
-        </>
+      {onlineUsers.length > 0 ? (
+        onlineUsers.map((user,index) => (
+          <UserCard
+            key={index}
+            user={user}
+            onClick={() =>
+              navigate(`/profile/${user.username}`, { state: { user } })
+            }
+          />
+        ))
+      ) : (
+        <NoOnlineUsersCard />
       )}
 
       <Box
