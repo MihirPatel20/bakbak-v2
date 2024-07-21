@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { Box, Grid, Typography } from "@mui/material";
 
 import api from "api";
-import * as serviceWorkerRegistration from "@/serviceWorkerRegistration";
 
 const NotificationView = () => {
   const [subscriptions, setSubscriptions] = useState([]);
@@ -19,7 +18,6 @@ const NotificationView = () => {
   };
 
   useEffect(() => {
-    serviceWorkerRegistration.registerSW();
     getAllSubscriptions();
   }, []);
 

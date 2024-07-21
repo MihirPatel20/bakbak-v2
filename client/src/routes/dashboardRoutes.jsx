@@ -5,6 +5,7 @@ import MessagesPage from "views/messages";
 import ExplorePage from "views/explore";
 import AdminPanel from "views/admin";
 import NotificationView from "views/notification";
+import SettingsView from "views/settings";
 
 const dashboardRoutes = [
   {
@@ -54,7 +55,7 @@ const dashboardRoutes = [
     id: "settings",
     url: "/settings",
     icon: icons.IconSettings,
-    element: <div>Welcome to Settings</div>,
+    element: <SettingsView />,
   },
   {
     title: "Admin Panel",

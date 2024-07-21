@@ -27,8 +27,6 @@ import {
   markAsRead,
 } from "@/reducer/notification/notification.thunk";
 
-import * as serviceWorkerRegistration from "@/serviceWorkerRegistration";
-
 // assets
 import { IconPhoto } from "@tabler/icons-react";
 import User1 from "assets/images/users/user-round.svg";
@@ -59,7 +57,6 @@ const NotificationList = () => {
 
   // Fetch notifications on component mount
   useEffect(() => {
-    serviceWorkerRegistration.registerSW();
     dispatch(fetchNotifications());
   }, [dispatch]);
 

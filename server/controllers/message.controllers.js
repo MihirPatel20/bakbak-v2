@@ -14,7 +14,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { getLocalPath, getStaticFilePath } from "../utils/helpers.js";
 import { createNotification } from "./notification.controllers.js";
-import webPush from "web-push";
+import { sendPushNotification } from "./notificationSubscription.controllers.js";
 
 /**
  * @description Utility function which returns the pipeline stages to structure the chat message schema with common lookups
@@ -183,28 +183,16 @@ const sendMessage = asyncHandler(async (req, res) => {
       );
 
       // Find the subscription for the participant
-      const subscription = await NotificationSubscription.findOne({
-        user: participantObjectId,
-      });
+      const options = {
+        title: `${receivedMessage.sender.username} sent a message!`,
+        body: `${receivedMessage.content}`,
+        icon: "icons/bakbak.ico",
+        badge: "icons/bakbak.ico",
+        tag: "message",
+        data: { url: `/messages/direct/u/${chat._id}` },
+      };
 
-      // Send push notification to the participant
-      if (subscription) {
-        webPush
-          .sendNotification(
-            subscription,
-            JSON.stringify({
-              title: `${receivedMessage.sender.username} sent a message!`,
-              body: `${receivedMessage.content}`,
-              icon: "icons/bakbak.ico",
-              badge: "icons/bakbak.ico",
-              // image: "/post1.jpg",
-            })
-          ) // Send chatId as notification payload
-          .then(() => console.log("Notification sent for incoming message"))
-          .catch((error) =>
-            console.error("Error sending notification:", error)
-          );
-      }
+      await sendPushNotification(participantObjectId, options);
     }
   });
 

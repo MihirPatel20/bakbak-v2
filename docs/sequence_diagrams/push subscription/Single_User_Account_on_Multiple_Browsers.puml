@@ -1,0 +1,43 @@
+@startuml
+
+== Single User Account on Multiple Browsers ==
+
+actor User
+participant BrowserA
+participant BrowserB
+participant ServiceWorkerA
+participant ServiceWorkerB
+participant Server
+database Database
+
+note right of BrowserB
+A user can have multiple active subscriptions
+across different browsers simultaneously.
+end note
+
+User -> BrowserA: Log in
+BrowserA -> ServiceWorkerA: Request subscription
+ServiceWorkerA -> BrowserA: Generate subscription (Endpoint A)
+BrowserA -> Server: Send subscription (Endpoint A)
+Server -> Database: Store subscription (User ID, Endpoint A)
+
+User -> BrowserB: Log in
+BrowserB -> ServiceWorkerB: Request subscription
+ServiceWorkerB -> BrowserB: Generate subscription (Endpoint B)
+BrowserB -> Server: Send subscription (Endpoint B)
+Server -> Database: Store subscription (User ID, Endpoint B)
+
+note right of Server
+Push notifications are sent to all active
+subscriptions where the user is logged in.
+end note
+
+User -> BrowserA: Log out
+BrowserA -> Server: Send logout request (Endpoint A)
+Server -> Database: Mark subscription (Endpoint A) as inactive
+
+User -> BrowserB: Log out
+BrowserB -> Server: Send logout request (Endpoint B)
+Server -> Database: Mark subscription (Endpoint B) as inactive
+
+@enduml

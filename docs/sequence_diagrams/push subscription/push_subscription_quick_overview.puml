@@ -1,0 +1,42 @@
+@startuml
+
+== Subscribing to Push Notifications ==
+actor User1
+actor User2
+participant Browser
+participant ServiceWorker
+participant Server
+database Database
+
+User1 -> Browser: Request notification permission
+Browser -> User1: Show permission dialog
+User1 -> Browser: Grant permission
+
+Browser -> ServiceWorker: Generate subscription
+ServiceWorker -> Browser: Return subscription
+
+Browser -> Server: Send subscription
+Server -> Database: Store subscription
+
+== Managing Login/Logout ==
+User1 -> Browser: Log in
+Browser -> Server: Send login request
+Server -> Database: Mark subscription as active
+
+User1 -> Browser: Log out
+Browser -> Server: Send logout request
+Server -> Database: Mark subscription as inactive
+
+== Sending/Receiving Notification ==
+
+User2 -> Browser: Send message to User1
+Browser -> Server: Send message request
+Server -> Database: Store message
+Server -> Database: Check active subscriptions for User1
+Server -> Database: Retrieve active subscriptions for User1
+
+Server -> ServiceWorker: Send push notification
+ServiceWorker -> Browser: Receive push notification
+Browser -> User1: Display notification
+
+@enduml

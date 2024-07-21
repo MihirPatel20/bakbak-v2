@@ -12,13 +12,18 @@ import {
   resendEmailVerification,
 } from "reducer/auth/auth.thunk.js";
 import { setUserProfile } from "reducer/auth/auth.slice.js";
+import { updatePushSubscriptionStatus } from "@/serviceWorkerRegistration";
 
 const useAuth = () => {
   const dispatch = useDispatch();
-  const { user, token, isLoading, error } = useSelector((state) => state.auth);
+  const auth = useSelector((state) => state.auth);
+  const { user, token, isLoading, error } = auth;
 
   const register = async (userData) => dispatch(registerUser(userData));
-  const login = async (userData) => dispatch(loginUser(userData));
+  const login = async (userData) => {
+    await dispatch(loginUser(userData));
+    await updatePushSubscriptionStatus("activate");
+  };
   const refreshToken = async () => dispatch(refreshAccessToken());
   const verifyEmailToken = async (verificationToken) =>
     dispatch(verifyEmail(verificationToken));
@@ -26,7 +31,7 @@ const useAuth = () => {
     dispatch(forgotPassword(email));
   const resetPassword = async ({ resetPassToken, newPassword }) =>
     dispatch(resetForgottenPassword({ resetPassToken, newPassword }));
-  const logout = async () => dispatch(logoutUser());
+
   const getProfile = async () => dispatch(getUserProfile());
   const updateAvatar = async (avatarFile) =>
     dispatch(updateUserAvatar(avatarFile));
@@ -35,7 +40,13 @@ const useAuth = () => {
   const setProfile = async (profileData) =>
     dispatch(setUserProfile(profileData));
 
+  const logout = async () => {
+    await updatePushSubscriptionStatus("deactivate");
+    await dispatch(logoutUser());
+  };
+
   return {
+    auth,
     user,
     token,
     isLoading,

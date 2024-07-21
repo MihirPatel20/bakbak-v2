@@ -20,6 +20,12 @@ const notificationSubscriptionSchema = new Schema({
       required: true,
     },
   },
+  active: {
+    type: Boolean,
+    default: true,
+  },
+
+  //expirationTime: { type: Date, default: null },
 });
 
 export const NotificationSubscription = model(

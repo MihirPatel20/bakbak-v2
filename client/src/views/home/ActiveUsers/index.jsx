@@ -45,7 +45,6 @@ const ActiveUsers = () => {
 
   useEffect(() => {
     if (socket) {
-      console.log("socket: ", socket);
       socket.on(ChatEventEnum.USER_ONLINE_EVENT, (user) => {
         setOnlineUsers((prev) => [...prev, user]);
       });

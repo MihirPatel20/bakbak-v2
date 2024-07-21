@@ -57,23 +57,28 @@ const notificationsSlice = createSlice({
         state.error = action.error.message;
       })
       .addCase(markAsRead.fulfilled, (state, action) => {
-        const { id } = action.payload;
-        const index = state.notifications.findIndex(
-          (notification) => notification._id === id
-        );
-        if (index !== -1) {
-          state.notifications[index].isRead = true;
-          state.totalCount -= 1;
-        }
+        const id = action.payload.notification._id;
+        // Filter out the notification if its type is "message"
+        state.notifications = state.notifications.filter((notification) => {
+          return !(notification._id === id && notification.type === "message");
+        });
+
+        // Recalculate totalCount based on the filtered notifications
+        state.totalCount = state.notifications.length;
       })
       .addCase(markAllAsRead.fulfilled, (state) => {
+        // Filter out notifications of type "message"
         state.notifications = state.notifications.filter(
           (notification) => notification.type !== "message"
         );
+
+        // Mark the remaining notifications as read
         state.notifications.forEach(
           (notification) => (notification.isRead = true)
         );
-        state.totalCount = 0;
+
+        // Update totalCount based on the remaining notifications
+        state.totalCount = state.notifications.length;
       });
   },
 });

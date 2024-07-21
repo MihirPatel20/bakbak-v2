@@ -34,7 +34,6 @@ import PerfectScrollbar from "react-perfect-scrollbar";
 import MainCard from "ui-component/cards/MainCard";
 import Transitions from "ui-component/extended/Transitions";
 import UpgradePlanCard from "./UpgradePlanCard";
-import User1 from "assets/images/users/user-round.svg";
 
 // assets
 import {
@@ -43,17 +42,16 @@ import {
   IconSettings,
   IconUser,
 } from "@tabler/icons-react";
-import { logoutUser } from "reducer/auth/auth.thunk";
 import { getUserAvatarUrl } from "utils/getImageUrl";
 import { AppBarHeight } from "constants";
+import useAuth from "hooks/useAuth";
 
 // ==============================|| PROFILE MENU ||============================== //
 
 const ProfileSection = () => {
   const theme = useTheme();
-  const dispatch = useDispatch();
   const customization = useSelector((state) => state.customization);
-  const auth = useSelector((state) => state.auth);
+  const { auth, logout } = useAuth();
 
   const navigate = useNavigate();
 
@@ -67,7 +65,7 @@ const ProfileSection = () => {
    * */
   const anchorRef = useRef(null);
   const handleLogout = async () => {
-    dispatch(logoutUser());
+    logout();
   };
 
   const handleClose = (event) => {

@@ -35,7 +35,7 @@ const SocketProvider = ({ children }) => {
 
     // Handle connection events
     socketInstance.on(ChatEventEnum.CONNECTED_EVENT, () => {
-      console.log("Connected to socket server");
+      console.log("Connected to socket server ⚡");
     });
 
     socketInstance.on(ChatEventEnum.DISCONNECT_EVENT, () => {

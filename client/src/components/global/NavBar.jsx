@@ -9,10 +9,10 @@ import {
   MenuItem,
   Box,
 } from "@mui/material";
-import { logoutUser } from "reducer/auth/auth.thunk";
+import useAuth from "hooks/useAuth";
 
 const NavBar = () => {
-  const auth = useSelector((state) => state?.auth);
+  const { auth, logout } = useAuth();
   const dispatch = useDispatch();
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -21,7 +21,7 @@ const NavBar = () => {
   };
 
   const handleClose = () => {
-    dispatch(logoutUser());
+    dispatch(logout());
     setAnchorEl(null);
   };
 

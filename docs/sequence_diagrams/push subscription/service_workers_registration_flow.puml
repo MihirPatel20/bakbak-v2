@@ -1,0 +1,46 @@
+@startuml
+
+title Push Notifications Subscription Flow
+
+actor User
+participant Browser
+participant ServiceWorker
+participant Server
+database Database
+
+== Initial Check ==
+
+User -> Browser: Visit site
+Browser -> Browser: Check service worker registration
+alt Service worker not registered
+    Browser -> ServiceWorker: Register service worker
+end
+
+Browser -> Browser: Check notification permission
+alt Notifications off
+    Browser -> User: Prompt to enable notifications
+end
+
+Browser -> Browser: Check for push subscription
+alt Not subscribed
+    Browser -> User: Prompt to subscribe
+    User -> Browser: Subscribe
+    Browser -> ServiceWorker: Request subscription
+    ServiceWorker -> Browser: Provide subscription (Endpoint X)
+    Browser -> Server: Send subscription details
+    Server -> Database: Store subscription details
+end
+
+alt Notifications on
+    Browser -> Server: Check subscription status
+    alt Subscription found
+        Browser -> Server: Check user login status
+        alt User logged in
+            Server -> Database: Mark subscription as active
+        else User logged out
+            Server -> Database: Mark subscription as inactive
+        end
+    end
+end
+
+@enduml

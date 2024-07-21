@@ -1,0 +1,42 @@
+@startuml
+
+== Different User Accounts on a Single Browser ==
+
+actor UserA
+actor UserB
+participant Browser
+participant ServiceWorker
+participant Server
+database Database
+
+UserA -> Browser: Log in (User A)
+Browser -> ServiceWorker: Request subscription
+ServiceWorker -> Browser: Generate subscription (Endpoint X)
+Browser -> Server: Send subscription (User A, Endpoint X)
+Server -> Database: Store subscription (User A, Endpoint X)
+
+UserA -> Browser: Log out (User A)
+Browser -> Server: Send logout request (Endpoint X)
+Server -> Database: Mark subscription (User A, Endpoint X) as inactive
+
+note right of Server
+A user can only be logged in with one account
+per browser at a time.
+end note
+
+UserB -> Browser: Log in (User B)
+Browser -> ServiceWorker: Request subscription
+ServiceWorker -> Browser: Generate new subscription (Endpoint X)
+Browser -> Server: Send subscription (User B, Endpoint X)
+Server -> Database: Store subscription (User B, Endpoint X)
+
+UserB -> Browser: Log out (User B)
+Browser -> Server: Send logout request (Endpoint X)
+Server -> Database: Mark subscription (Endpoint X) as inactive
+
+note right of Browser
+Only the currently logged-in user's subscription
+will be active in the browser.
+end note
+
+@enduml
