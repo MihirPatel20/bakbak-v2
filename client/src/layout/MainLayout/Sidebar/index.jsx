@@ -10,12 +10,12 @@ import { BrowserView, MobileView } from "react-device-detect";
 
 // project imports
 import LogoSection from "../LogoSection";
-import MenuCard from "./MenuCard.jsx";
 import { drawerWidth } from "reducer/customization/constant";
 import dashboardRoutes from "@/routes/dashboardRoutes";
 import NavItem from "./NavItem";
 import { AppBarHeight } from "constants";
 import getFilteredRoutes from "utils/getFilteredRoutes";
+import UserProfileCard from "./UserProfileCard";
 
 // ==============================|| SIDEBAR DRAWER ||============================== //
 
@@ -24,6 +24,8 @@ const Sidebar = ({ drawerOpen, drawerToggle, window }) => {
   const matchUpMd = useMediaQuery(theme.breakpoints.up("md"));
 
   const filteredRoutes = getFilteredRoutes(dashboardRoutes);
+
+  console.log("react app version: ", import.meta.env.REACT_APP_VERSION);
 
   const menuList = filteredRoutes.map((item) => (
     <NavItem key={item.id} item={item} level={1} />
@@ -49,7 +51,7 @@ const Sidebar = ({ drawerOpen, drawerToggle, window }) => {
         >
           {menuList}
 
-          <MenuCard />
+          <UserProfileCard />
           <Stack direction="row" justifyContent="center" sx={{ mb: 2 }}>
             <Chip
               label={import.meta.env.REACT_APP_VERSION}
@@ -65,7 +67,7 @@ const Sidebar = ({ drawerOpen, drawerToggle, window }) => {
         <Box sx={{ px: 2 }}>
           {menuList}
 
-          <MenuCard />
+          <UserProfileCard />
           <Stack direction="row" justifyContent="center" sx={{ mb: 2 }}>
             <Chip
               label={import.meta.env.REACT_APP_VERSION}
