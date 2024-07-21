@@ -4,6 +4,7 @@ import {
   createOrGetAOneOnOneChat,
   deleteOneOnOneChat,
   getAllChats,
+  getChatById,
   searchAvailableUsers,
 } from "../controllers/chat.controllers.js";
 import { validate } from "../validators/validate.js";
@@ -18,12 +19,14 @@ router.route("/").get(getAllChats);
 router.route("/users").get(searchAvailableUsers);
 
 router
-  .route("/c/:receiverId")
+  .route("/c/:receiverId") // Create or get a one-on-one chat with a user
   .post(
     mongoIdPathVariableValidator("receiverId"),
     validate,
     createOrGetAOneOnOneChat
   );
+
+router.get("/c/:chatId", getChatById); // Get a chat by ID
 
 router
   .route("/remove/:chatId")

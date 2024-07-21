@@ -32,6 +32,7 @@ import { IconPhoto } from "@tabler/icons-react";
 import User1 from "assets/images/users/user-round.svg";
 import { getUserAvatarUrl } from "utils/getImageUrl";
 import { getRelativeTime } from "utils/getRelativeTime";
+import { useNavigate } from "react-router-dom";
 
 // styles
 const ListItemWrapper = styled("div")(({ theme }) => ({
@@ -104,8 +105,15 @@ const NotificationList = () => {
   };
 
   const MessageNotification = ({ notification }) => {
+    const url = `messages/direct/u/${notification.referenceId.chat}`;
+
+    const navigate = useNavigate();
+    const handleClick = () => {
+      navigate(url);
+    };
+
     return (
-      <ListItemWrapper key={notification._id}>
+      <ListItemWrapper key={notification._id} onClick={handleClick}>
         <ListItem alignItems="center">
           <ListItemAvatar>
             <Avatar

@@ -10,19 +10,19 @@ import React, { useEffect, useRef, useState } from "react";
 import { useSocket } from "context/SocketContext";
 import SendIcon from "@mui/icons-material/Send";
 import { useSelector } from "react-redux";
-import MessageBubble from "components/shared/MessageBubble";
 import { ChatEventEnum } from "constants";
 import api from "api";
 import { useLocation, useParams } from "react-router-dom";
 import { AppBarHeight } from "constants";
 import { getUserAvatarUrl } from "utils/getImageUrl";
-import PerfectScrollbar from "react-perfect-scrollbar";
 import { MobileHeightBuffer } from "constants";
 import ChatMessageLayout from "./ChatMessageLayout";
 
 const ChatInterface = () => {
   const { socket } = useSocket();
   const { user } = useSelector((state) => state.auth);
+  const [activeChat, setActiveChat] = useState(null);
+  const [recipient, setRecipient] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState(""); // State to handle message input
 
@@ -34,54 +34,33 @@ const ChatInterface = () => {
   const location = useLocation();
   const { chatId } = useParams();
 
-  const recipient = location.state?.chat.participants.find(
-    (participant) => participant._id !== user._id
-  );
-
-  const activeChat = location.state?.chat;
-
-  if (!activeChat) {
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          bgcolor: "primary.light",
-          borderRadius: 4,
-          height: {
-            xs: `calc(100vh - ${AppBarHeight}px)`,
-            sm: `calc(100vh - ${AppBarHeight}px)`,
-          },
-          width: "100%",
-          maxWidth: "600px",
-        }}
-      >
-        <Typography variant="h4" align="center">
-          Select a chat
-        </Typography>
-        <Typography variant="h4" align="center">
-          to start messaging
-        </Typography>
-      </Box>
-    );
-  }
-
-  const getMessages = async (chatId) => {
-    try {
-      const response = await api.get(`/messages/${chatId}`);
-      setMessages(response.data.data); // Update state with fetched messages
-    } catch (error) {
-      console.error("Error fetching messages:", error);
-    }
-  };
-
   useEffect(() => {
-    if (chatId) {
-      socket?.emit(ChatEventEnum.JOIN_CHAT_EVENT, chatId);
+    const getActiveChat = async (chatId) => {
+      try {
+        const response = await api.get(`/chats/c/${chatId}`);
+        const chat = response.data.data;
+        setActiveChat(chat);
+        setRecipient(
+          chat.participants.find((participant) => participant._id !== user._id)
+        );
+      } catch (error) {
+        console.error("Error fetching chat:", error);
+      }
+    };
 
+    const getMessages = async (chatId) => {
+      try {
+        const response = await api.get(`/messages/${chatId}`);
+        setMessages(response.data.data); // Update state with fetched messages
+      } catch (error) {
+        console.error("Error fetching messages:", error);
+      }
+    };
+
+    if (chatId) {
+      getActiveChat(chatId);
       getMessages(chatId);
+      socket?.emit(ChatEventEnum.JOIN_CHAT_EVENT, chatId);
 
       // Cleanup function to leave chat when component unmounts or chatId changes
       return () => {
@@ -89,6 +68,26 @@ const ChatInterface = () => {
       };
     }
   }, [chatId, socket]);
+
+  useEffect(() => {
+    if (socket) {
+      const handleMessageReceived = (payload) => {
+        setMessages((prevMessages) => [...prevMessages, payload]);
+      };
+      const handleTyping = () => setIsTyping(true);
+      const handleStopTyping = () => setIsTyping(false);
+
+      socket.on(ChatEventEnum.MESSAGE_RECEIVED_EVENT, handleMessageReceived);
+      socket.on(ChatEventEnum.TYPING_EVENT, handleTyping);
+      socket.on(ChatEventEnum.STOP_TYPING_EVENT, handleStopTyping);
+
+      return () => {
+        socket.off(ChatEventEnum.MESSAGE_RECEIVED_EVENT, handleMessageReceived);
+        socket.off(ChatEventEnum.TYPING_EVENT, handleTyping);
+        socket.off(ChatEventEnum.STOP_TYPING_EVENT, handleStopTyping);
+      };
+    }
+  }, [socket]);
 
   const sendMessage = async (event) => {
     event.preventDefault();
@@ -145,29 +144,33 @@ const ChatInterface = () => {
     }, timerLength);
   };
 
-  useEffect(() => {
-    if (socket) {
-      socket.on(ChatEventEnum.MESSAGE_RECEIVED_EVENT, (payload) => {
-        setMessages((prevMessages) => [...prevMessages, payload]);
-      });
-      socket.on(ChatEventEnum.TYPING_EVENT, (chatId) => {
-        // if (chatId !== activeChat._id) return;
-        setIsTyping(true);
-      });
-      socket.on(ChatEventEnum.STOP_TYPING_EVENT, (chatId) => {
-        // if (chatId !== activeChat._id) return;
-        setIsTyping(false);
-      });
-      return () => {
-        socket.off(ChatEventEnum.MESSAGE_RECEIVED_EVENT);
-        socket.off(ChatEventEnum.TYPING_EVENT);
-        socket.off(ChatEventEnum.STOP_TYPING_EVENT);
-      };
-    }
-  }, [socket, chatId]);
-
-  // console.log("message: ", messages[0]);
-  // console.log("activeChat: ", activeChat);
+  if (!activeChat) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          bgcolor: "primary.light",
+          borderRadius: 4,
+          height: {
+            xs: `calc(100vh - ${AppBarHeight}px)`,
+            sm: `calc(100vh - ${AppBarHeight}px)`,
+          },
+          width: "100%",
+          maxWidth: "600px",
+        }}
+      >
+        <Typography variant="h4" align="center">
+          Select a chat
+        </Typography>
+        <Typography variant="h4" align="center">
+          to start messaging
+        </Typography>
+      </Box>
+    );
+  }
 
   return (
     <Box
@@ -193,7 +196,6 @@ const ChatInterface = () => {
         <Box
           sx={{
             bgcolor: "primary.light",
-            // position: "sticky",
             top: 0,
             display: "flex",
             alignItems: "center",
@@ -223,7 +225,6 @@ const ChatInterface = () => {
           messages={messages}
           isTyping={isTyping}
         />
-        {/* {isTyping && <Typography variant="body2">Typing...</Typography>} */}
 
         <Box
           component="form"

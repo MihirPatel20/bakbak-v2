@@ -247,9 +247,35 @@ const getAllChats = asyncHandler(async (req, res) => {
     );
 });
 
+const getChatById = asyncHandler(async (req, res) => {
+  const { chatId } = req.params; // Extract chatId from URL parameters
+
+  // Attempt to find the chat by ID, ensuring the requesting user is a participant
+  const chat = await Chat.aggregate([
+    {
+      $match: {
+        _id: new mongoose.Types.ObjectId(chatId),
+        participants: { $elemMatch: { $eq: req.user._id } }, // Ensure the user is a participant
+      },
+    },
+    ...chatCommonAggregation(),
+  ]);
+
+  // If no chat is found, return a 404 error
+  if (!chat || chat.length === 0) {
+    return res.status(404).json(new ApiResponse(404, {}, "Chat not found"));
+  }
+
+  // Return the found chat
+  return res.status(200).json(new ApiResponse(200, chat[0], "Chat fetched successfully"));
+});
+
+
+
 export {
   searchAvailableUsers,
   createOrGetAOneOnOneChat,
   deleteOneOnOneChat,
   getAllChats,
+  getChatById,
 };
