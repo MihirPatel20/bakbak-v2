@@ -5,6 +5,8 @@ import dashboardRoutes from "./dashboardRoutes";
 import AuthenticationRoutes from "./authenticationRoutes";
 import MainLayout from "@/layout/MainLayout";
 import appRoutes from "./appRoutes";
+import RoleProtectedRoute from "utils/RoleProtectedRoutes";
+import NotFound from "components/NotFound";
 
 // ==============================|| ROUTING RENDER ||============================== //
 
@@ -23,7 +25,11 @@ export default function Routes() {
           element: <MainLayout />,
           children: dashboardRoutes.map((route) => ({
             path: route.url,
-            element: route.element,
+            element: (
+              <RoleProtectedRoute allowedRole={route.role}>
+                {route.element}
+              </RoleProtectedRoute>
+            ),
           })),
         },
       ],
@@ -51,7 +57,7 @@ export default function Routes() {
     },
     {
       path: "*",
-      element: <div>This page is not available</div>,
+      element: <NotFound/>,
     },
   ]);
 }

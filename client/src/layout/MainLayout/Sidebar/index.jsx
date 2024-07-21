@@ -15,6 +15,7 @@ import { drawerWidth } from "reducer/customization/constant";
 import dashboardRoutes from "@/routes/dashboardRoutes";
 import NavItem from "./NavItem";
 import { AppBarHeight } from "constants";
+import getFilteredRoutes from "utils/getFilteredRoutes";
 
 // ==============================|| SIDEBAR DRAWER ||============================== //
 
@@ -22,7 +23,9 @@ const Sidebar = ({ drawerOpen, drawerToggle, window }) => {
   const theme = useTheme();
   const matchUpMd = useMediaQuery(theme.breakpoints.up("md"));
 
-  const menuList = dashboardRoutes.map((item) => (
+  const filteredRoutes = getFilteredRoutes(dashboardRoutes);
+
+  const menuList = filteredRoutes.map((item) => (
     <NavItem key={item.id} item={item} level={1} />
   ));
 

@@ -212,6 +212,7 @@ const NotificationSection = () => {
                         style={{
                           height: "100%",
                           maxHeight: "calc(100vh - 205px)",
+                          minWidth: "300px",
                           // overflowX: "hidden",
                         }}
                       >

@@ -63,6 +63,7 @@ const dashboardRoutes = [
     url: "/admin",
     icon: icons.IconShieldLock,
     element: <AdminPanel />,
+    role: "ADMIN",
   },
 ];
 
