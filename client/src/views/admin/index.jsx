@@ -17,36 +17,13 @@ import {
 } from "@mui/icons-material";
 import { pink } from "@mui/material/colors";
 
-// Chart.js components
-import { Line } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-} from "chart.js";
-
 // Local imports
 import api from "api";
 import UserAccordion from "./UserAccordion";
 import ConfirmationDialog from "components/shared/ConfirmationDialog";
 import StatWidget from "./StatWidget";
 import TopPostsSection from "./TopPostsSection";
-
-// Register Chart.js components
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-);
+import UserActivityChart from "./UserActivityChart";
 
 export const adminApi = {
   getStatistics: () => api.get(`/admin/stats`),
@@ -100,72 +77,6 @@ const AdminPanel = () => {
     handleCloseDialog();
   };
 
-  const userChartData = {
-    labels: [
-      "Active (24h)",
-      "Active (7d)",
-      "Active (30d)",
-      "New (Day)",
-      "New (Week)",
-      "New (Month)",
-    ],
-    datasets: [
-      {
-        label: "Active Users",
-        data: [
-          stats.activeUsers24h,
-          stats.activeUsers7d,
-          stats.activeUsers30d,
-          null,
-          null,
-          null,
-        ],
-        borderColor: "#8884d8",
-        tension: 0.4, // Adjust the curve smoothness
-        fill: false,
-      },
-      {
-        label: "New Users",
-        data: [
-          null,
-          null,
-          null,
-          stats.newUsersDay,
-          stats.newUsersWeek,
-          stats.newUsersMonth,
-        ],
-        borderColor: "#82ca9d",
-        tension: 0.4, // Adjust the curve smoothness
-        fill: false,
-      },
-    ],
-  };
-
-  const userChartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: false, // Hide the legend
-      },
-      title: {
-        display: false, // Hide the title
-      },
-    },
-    scales: {
-      x: {
-        grid: {
-          display: false,
-        },
-      },
-      y: {
-        grid: {
-          display: false,
-        },
-      },
-    },
-  };
-
   const basicStats = [
     { title: "Total Users", value: stats.totalUsers, color: "#3f51b5" },
     { title: "Total Chats", value: stats.totalChats, color: "#f50057" },
@@ -184,7 +95,7 @@ const AdminPanel = () => {
         </IconButton>
       </Box>
 
-      <Grid container spacing={{ xs: 1,  md: 3 }} mt={0}>
+      <Grid container spacing={{ xs: 1, md: 3 }} mt={0}>
         {basicStats.map((card, index) => (
           <Grid item xs={6} sm={3} key={index}>
             <StatWidget
@@ -198,14 +109,7 @@ const AdminPanel = () => {
 
       <Grid container spacing={3} mt={0}>
         <Grid item xs={12}>
-          <Paper variant="outlined" sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom>
-              User Activity
-            </Typography>
-            <Box height={300}>
-              <Line data={userChartData} options={userChartOptions} />
-            </Box>
-          </Paper>
+          <UserActivityChart data={stats} />
         </Grid>
       </Grid>
 

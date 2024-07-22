@@ -14,6 +14,29 @@ import themes from "@/themes";
 import { useSelector } from "react-redux";
 import SnackbarAlert from "components/global/Snackbar.jsx";
 
+// Chart.js components
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+
+// Register Chart.js components
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
+
 const App = () => {
   const customization = useSelector((state) => state.customization);
 
