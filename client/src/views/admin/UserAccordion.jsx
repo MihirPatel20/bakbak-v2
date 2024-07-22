@@ -196,6 +196,7 @@ const UserAccordion = () => {
 
       <Box mt={2} display="flex" justifyContent="flex-end">
         <Pagination
+          size={isMobile ? "small" : "medium"}
           count={Math.ceil(totalUsers / usersPerPage)}
           page={page}
           onChange={handleChangePage}

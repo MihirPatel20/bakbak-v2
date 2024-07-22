@@ -3,7 +3,7 @@ import React from "react";
 
 const StatWidget = ({ title, value, color }) => (
   <Card variant="outlined">
-    <CardContent>
+    <CardContent sx={{ p: { xs: 2, md: 3 } }}>
       <Typography color="textSecondary" gutterBottom>
         {title}
       </Typography>

@@ -19,6 +19,8 @@ import { SET_MENU } from "reducer/customization/actions";
 import { drawerWidth } from "reducer/customization/constant";
 import useSocketDispatch from "hooks/useSocketDispatch";
 import { fetchNotifications } from "reducer/notification/notification.thunk";
+import PerfectScrollbar from "react-perfect-scrollbar";
+import { AppBarHeight } from "constants";
 
 // assets
 
@@ -42,19 +44,19 @@ const Main = styled("main", {
         }
   ),
   [theme.breakpoints.up("md")]: {
-    marginLeft: open ? 0 : -(drawerWidth - 20),
+    paddingLeft: open ? 0 : -(drawerWidth - 20),
     width: `calc(100% - ${drawerWidth}px)`,
   },
   [theme.breakpoints.down("md")]: {
-    marginLeft: "20px",
+    // paddingLeft: "20px",
     width: `calc(100% - ${drawerWidth}px)`,
     // padding: "16px",
   },
   [theme.breakpoints.down("sm")]: {
-    marginLeft: "16px",
+    paddingLeft: "0px",
     width: `calc(100% - ${drawerWidth}px)`,
     // padding: "16px",
-    marginRight: "16px",
+    paddingRight: "0px",
   },
 }));
 
@@ -65,6 +67,7 @@ const MainLayout = () => {
   const theme = useTheme();
 
   const matchDownMd = useMediaQuery(theme.breakpoints.down("md"));
+  const matchUpMd = useMediaQuery(theme.breakpoints.up("md"));
   // Handle left drawer
   const leftDrawerOpened = useSelector((state) => state.customization.opened);
   const handleLeftDrawerToggle = () => {
@@ -108,7 +111,16 @@ const MainLayout = () => {
 
       {/* main content */}
       <Main theme={theme} open={leftDrawerOpened}>
-        <Outlet />
+        <PerfectScrollbar
+          component="div"
+          style={{
+            height: !matchUpMd
+              ? `calc(100vh - ${AppBarHeight}px)`
+              : `calc(100vh - ${AppBarHeight}px)`,
+          }}
+        >
+          <Outlet />
+        </PerfectScrollbar>
       </Main>
     </Box>
   );

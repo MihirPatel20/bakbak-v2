@@ -60,10 +60,16 @@ const ActiveUsers = () => {
     }
   }, [socket]);
 
-  console.log("onlineUsers: ", onlineUsers);
-
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        gap: 1,
+        pr: "12px",
+        pl: "6px",
+      }}
+    >
       <Box
         sx={{
           position: "sticky",
@@ -84,7 +90,7 @@ const ActiveUsers = () => {
       </Box>
 
       {onlineUsers.length > 0 ? (
-        onlineUsers.map((user,index) => (
+        onlineUsers.map((user, index) => (
           <UserCard
             key={index}
             user={user}

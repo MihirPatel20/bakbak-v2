@@ -96,7 +96,7 @@ export default function themeTypography(theme) {
       flexGrow: 1,
       // padding: '20px',
       marginTop: `${AppBarHeight}px`,
-      marginRight: "20px",
+      // marginRight: "20px",
       // borderRadius: `${theme?.customization?.borderRadius}px`
     },
     menuCaption: {

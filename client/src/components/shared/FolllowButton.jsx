@@ -9,7 +9,8 @@ const FolllowButton = (props) => {
 
   if (!profile) return null;
 
-  const handleFollowClick = async () => {
+  const handleFollowClick = async (e) => {
+    e.stopPropagation();
     try {
       const response = await api.post(`/follow/${profile.account._id}`);
       setIsFollowing(response.data.data.following);

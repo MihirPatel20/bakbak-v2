@@ -184,9 +184,9 @@ const AdminPanel = () => {
         </IconButton>
       </Box>
 
-      <Grid container spacing={3} mt={0}>
+      <Grid container spacing={{ xs: 1,  md: 3 }} mt={0}>
         {basicStats.map((card, index) => (
-          <Grid item xs={12} sm={6} md={3} key={index}>
+          <Grid item xs={6} sm={3} key={index}>
             <StatWidget
               title={card.title}
               value={card.value}

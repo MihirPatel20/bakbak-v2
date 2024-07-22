@@ -34,7 +34,10 @@ const withDualPaneLayout = (LeftPaneComponent, RightPaneComponent) => {
 
         <Box
           sx={{
-            display: { xs: "none", sm: "block" },
+            display: "none", // Hide by default
+            "@media (min-width:745px)": {
+              display: "block", // Display as block on screens wider than 745px
+            },
             flexGrow: 1,
             flexBasis: "300px",
             maxWidth: "300px",

@@ -1,9 +1,13 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
-import { Box, CircularProgress, Grid } from "@mui/material";
+import { Box, CircularProgress, Grid, useMediaQuery } from "@mui/material";
 import api from "api";
 import PostItem from "./PostItem";
+import { useTheme } from "@emotion/react";
 
 const PostFeed = () => {
+  const theme = useTheme();
+  const matchDownSM = useMediaQuery(theme.breakpoints.down("sm"));
+
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -43,9 +47,14 @@ const PostFeed = () => {
   useEffect(() => {
     fetchPosts(page);
   }, [fetchPosts, page]);
-
+  
   return (
-    <Box sx={{ maxWidth: "560px", pr: "4px" }}>
+    <Box
+      sx={{
+        maxWidth: "560px",
+        px: matchDownSM ? 2 : 1,
+      }}
+    >
       {loading && page === 1 ? (
         <Box
           display="flex"
