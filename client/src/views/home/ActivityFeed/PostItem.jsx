@@ -1,4 +1,4 @@
-import React from "react";
+import React, { forwardRef } from "react";
 import {
   Box,
   Typography,
@@ -12,7 +12,7 @@ import ImageCarousel from "./ImageCarousel";
 import PostIcons from "assets/tabler-icons/post-icons";
 import { getUserAvatarUrl } from "utils/getImageUrl";
 
-const PostItem = ({ post }) => {
+const PostItem = forwardRef(({ post }, ref) => {
   const theme = useTheme();
 
   const handleLikeClick = () => {
@@ -32,7 +32,7 @@ const PostItem = ({ post }) => {
   };
 
   return (
-    <Grid item xs={12}>
+    <Grid item xs={12} ref={ref}>
       <Card sx={{ bgcolor: theme.palette.primary.light }}>
         <CardContent sx={{ p: { xs: 2, lg: 2.5 } }}>
           <Box display="flex" alignItems="center" gap={2} mb={1}>
@@ -92,6 +92,6 @@ const PostItem = ({ post }) => {
       </Card>
     </Grid>
   );
-};
+});
 
 export default PostItem;

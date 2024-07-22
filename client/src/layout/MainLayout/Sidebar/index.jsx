@@ -25,8 +25,6 @@ const Sidebar = ({ drawerOpen, drawerToggle, window }) => {
 
   const filteredRoutes = getFilteredRoutes(dashboardRoutes);
 
-  console.log("react app version: ", import.meta.env.REACT_APP_VERSION);
-
   const menuList = filteredRoutes.map((item) => (
     <NavItem key={item.id} item={item} level={1} />
   ));

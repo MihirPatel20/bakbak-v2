@@ -8,6 +8,7 @@ import {
   getPostById,
   getPostsByTag,
   getPostsByUsername,
+  getUserFeed,
   removePostImage,
   updatePost,
 } from "../controllers/post.controllers.js";
@@ -41,6 +42,7 @@ router
   );
 
 router.route("/get/my").get(verifyJWT, getMyPosts);
+router.route("/feed").get(verifyJWT, getUserFeed);
 
 router
   .route("/get/u/:username")
@@ -78,7 +80,12 @@ router
     validate,
     updatePost
   )
-  .delete(verifyJWT, mongoIdPathVariableValidator("postId"), validate, deletePost);
+  .delete(
+    verifyJWT,
+    mongoIdPathVariableValidator("postId"),
+    validate,
+    deletePost
+  );
 
 router
   .route("/remove/image/:postId/:imageId")

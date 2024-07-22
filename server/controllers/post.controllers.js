@@ -12,13 +12,14 @@ import {
   getStaticFilePath,
   removeLocalFile,
 } from "../utils/helpers.js";
+import { SocialFollow } from "../models/follow.models.js";
 
 /**
  * @param {import("express").Request} req
  * @description Utility function which returns the pipeline stages to structure the social post schema with calculations like, likes count, comments count, isLiked, isBookmarked etc
  * @returns {mongoose.PipelineStage[]}
  */
-const postCommonAggregation = (req) => {
+export const postCommonAggregation = (req) => {
   return [
     {
       $lookup: {
@@ -312,21 +313,76 @@ const getAllPosts = asyncHandler(async (req, res) => {
   const { page = 1, limit = 10 } = req.query;
   const postAggregation = SocialPost.aggregate([...postCommonAggregation(req)]);
 
-  const posts = await SocialPost.aggregatePaginate(
-    postAggregation,
-    getMongoosePaginationOptions({
-      page,
-      limit,
-      customLabels: {
-        totalDocs: "totalPosts",
-        docs: "posts",
-      },
-    })
-  );
+  const options = {
+    page: parseInt(page),
+    limit: parseInt(limit),
+    customLabels: {
+      totalDocs: "totalPosts",
+      docs: "posts",
+    },
+  };
+
+  const posts = await SocialPost.aggregatePaginate(postAggregation, options);
 
   return res
     .status(200)
     .json(new ApiResponse(200, posts, "Posts fetched successfully"));
+});
+
+const getUserFeed = asyncHandler(async (req, res) => {
+  const { page = 1, limit = 10 } = req.query;
+
+  try {
+    // Step 1: Get the IDs of users the current user follows
+    const followingList = await SocialFollow.aggregate([
+      {
+        $match: { followerId: new mongoose.Types.ObjectId(req.user._id) },
+      },
+      {
+        $project: {
+          _id: 0,
+          followeeId: 1,
+        },
+      },
+    ]);
+
+    const followingUserIds = followingList.map((follow) => follow.followeeId);
+
+    console.log("Following user IDs:", followingUserIds);
+
+    // Step 2: Set up the aggregation pipeline
+    const postAggregation = SocialPost.aggregate([
+      {
+        $match: {
+          author: { $in: followingUserIds }, // Match posts from followed users
+        },
+      },
+      ...postCommonAggregation(req), // Reuse the common aggregation pipeline
+      { $sort: { createdAt: -1 } }, // Sort posts by creation date (newest first)
+    ]);
+
+    // Step 3: Set up pagination options
+    const options = {
+      page: parseInt(page),
+      limit: parseInt(limit),
+      customLabels: {
+        totalDocs: "totalPosts",
+        docs: "posts",
+      },
+    };
+
+    // Step 4: Fetch paginated posts
+    const posts = await SocialPost.aggregatePaginate(postAggregation, options);
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, posts, "Posts fetched successfully"));
+  } catch (error) {
+    console.error("Error fetching user feed:", error);
+    return res
+      .status(500)
+      .json(new ApiResponse(500, null, "Failed to fetch feed"));
+  }
 });
 
 const getPostsByUsername = asyncHandler(async (req, res) => {
@@ -547,4 +603,5 @@ export {
   removePostImage,
   updatePost,
   getPostsByTag,
+  getUserFeed,
 };
