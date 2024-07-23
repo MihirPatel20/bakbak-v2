@@ -348,8 +348,6 @@ const getUserFeed = asyncHandler(async (req, res) => {
 
     const followingUserIds = followingList.map((follow) => follow.followeeId);
 
-    console.log("Following user IDs:", followingUserIds);
-
     // Step 2: Set up the aggregation pipeline
     const postAggregation = SocialPost.aggregate([
       {

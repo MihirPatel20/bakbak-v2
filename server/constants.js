@@ -130,4 +130,37 @@ export const ReferenceModel = Object.freeze({
   follow_request: "SocialFollow",
 });
 
+export const USER_ACTIVITY_TYPES = Object.freeze({
+  USER_REGISTRATION: "user_registration",
+  USER_LOGIN: "user_login",
+  USER_LOGOUT: "user_logout",
+  RETRIEVE_POST_DATA: "retrieve_post_data",
+  LIKE_A_POST: "like_a_post",
+  COMMENT_ON_POST: "comment_on_post",
+  SEND_MESSAGE: "send_message",
+  EMAIL_VERIFICATION: "email_verification",
+  EDIT_PROFILE: "edit_profile",
+  RESET_PASSWORD: "reset_password",
+  SYSTEM_CRASH: "system_crash",
+  API_FAILURE: "api_failure",
+  CLIENT_ERROR: "client_error",
+  SYSTEM_ERROR: "system_error",
+  START_SESSION: "start_session",
+  SESSION_END: "session_end",
+
+  FORGOT_PASSWORD_REQUEST: "forgot_password_request",
+  FORGOT_PASSWORD_EMAIL_SENT: "forgot_password_email_sent",
+  PASSWORD_RESET_SUCCESS: "password_reset_success",
+  FORGOT_PASSWORD_FAILURE: "forgot_password_failure",
+
+  NOTIFICATION_SENT: "notification_sent",
+  NOTIFICATION_RECEIVED: "notification_received",
+  CLICK_NOTIFICATION: "click_notification",
+  NOTIFICATION_IGNORED: "notification_ignored",
+  SUBSCRIBE_TO_NOTIFICATIONS: "subscribe_to_notifications",
+  UNSUBSCRIBE_FROM_NOTIFICATIONS: "unsubscribe_from_notifications",
+
+  TESTING_API: "testing_api",
+});
+
 export const AvailableChatEvents = Object.values(ChatEventEnum);

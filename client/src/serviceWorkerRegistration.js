@@ -110,7 +110,6 @@ const subscribeToPushNotifications = async (swRegistration) => {
         subscriptionOptions
       );
       const res = await sendSubscriptionToServer(subscription);
-      console.log("Subscription saved:", res);
     } else {
       console.log("Already subscribed:", existingSubscription);
     }
@@ -166,7 +165,6 @@ const unsubscribeFromPushNotifications = async () => {
     if (subscription) {
       await subscription.unsubscribe();
       const res = await removeSubscriptionFromServer(subscription);
-      console.log("Subscription removed:", res);
     } else {
       console.log("No subscription found to unsubscribe.");
     }

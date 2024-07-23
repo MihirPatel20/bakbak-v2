@@ -166,7 +166,6 @@ const FirebaseRegister = ({ ...others }) => {
           try {
             if (scriptedRef.current) {
               const res = await register(values);
-              console.log("res: ", res);
 
               if (res.payload.success === true) {
                 dispatch(

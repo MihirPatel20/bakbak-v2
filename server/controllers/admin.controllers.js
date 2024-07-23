@@ -10,6 +10,44 @@ import { SocialComment } from "../models/comment.models.js";
 import { SocialLike } from "../models/like.models.js";
 import { postCommonAggregation } from "./post.controllers.js";
 
+import { subDays } from "date-fns";
+import { getInteractionStats } from "../utils/logAnalyzer.js";
+import { USER_ACTIVITY_TYPES } from "../constants.js";
+
+export const testAdminApi = asyncHandler(async (req, res) => {
+  // Set default dates
+  const defaultEndDate = new Date();
+  const defaultStartDate = subDays(defaultEndDate, 7);
+
+  // Use provided dates or defaults
+  const endDate = req.query.endDate
+    ? new Date(req.query.endDate)
+    : defaultEndDate;
+  const startDate = req.query.startDate
+    ? new Date(req.query.startDate)
+    : defaultStartDate;
+
+  // Format dates to ISO string (YYYY-MM-DD)
+  const formattedStartDate = startDate.toISOString().split("T")[0];
+  const formattedEndDate = endDate.toISOString().split("T")[0];
+
+  const interactionStats = await getInteractionStats(
+    formattedStartDate,
+    formattedEndDate
+  );
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        interactionStats,
+        "Enhanced statistics retrieved successfully",
+        USER_ACTIVITY_TYPES.TESTING_API
+      )
+    );
+});
+
 const getEnhancedStatistics = asyncHandler(async (req, res) => {
   // User Activity
   const activeUsers24h = await User.countDocuments({
@@ -156,15 +194,6 @@ const getAllUserDetails = asyncHandler(async (req, res) => {
     );
 });
 
-const getStatistics = asyncHandler(async (req, res) => {
-  const totalUsers = await User.countDocuments({});
-  const totalChats = await Chat.countDocuments({});
-  const stats = { totalUsers, totalChats };
-  return res
-    .status(200)
-    .json(new ApiResponse(200, stats, "Statistics retrieved successfully"));
-});
-
 const changeUserRole = asyncHandler(async (req, res) => {
   const { userId, newRole } = req.body;
 
@@ -228,7 +257,6 @@ export {
   deleteAllNotifications,
   deleteAllNotificationSubscriptions,
   getAllUserDetails,
-  getStatistics,
   getTopPosts,
   changeUserRole,
   getEnhancedStatistics,

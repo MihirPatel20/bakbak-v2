@@ -7,8 +7,8 @@ import {
   deleteAllChats,
   getAllUserDetails,
   getEnhancedStatistics,
-  getStatistics,
   getTopPosts,
+  testAdminApi,
 } from "../controllers/admin.controllers.js";
 const router = Router();
 
@@ -19,5 +19,7 @@ router.route("/top-posts").get(getTopPosts);
 
 router.route("/chats").delete(deleteAllChats);
 router.route("/users/role").put(changeUserRole);
+
+router.route("/test").get(testAdminApi);
 
 export default router;
