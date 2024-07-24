@@ -5,6 +5,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { getMongoosePaginationOptions } from "../utils/helpers.js";
+import { USER_ACTIVITY_TYPES } from "../constants.js";
 
 const followUnFollowUser = asyncHandler(async (req, res) => {
   const { toBeFollowedUserId } = req.params;
@@ -33,15 +34,16 @@ const followUnFollowUser = asyncHandler(async (req, res) => {
       followerId: req.user._id,
       followeeId: toBeFollowed._id,
     });
-    return res.status(200).json(
-      new ApiResponse(
-        200,
-        {
-          following: false,
-        },
-        "Un-followed successfully"
-      )
-    );
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          { following: false },
+          "Un-followed successfully",
+          USER_ACTIVITY_TYPES.UNFOLLOW_USER
+        )
+      );
   } else {
     // if no, then create a follow entry
     await SocialFollow.create({
@@ -54,7 +56,8 @@ const followUnFollowUser = asyncHandler(async (req, res) => {
         {
           following: true,
         },
-        "Followed successfully"
+        "Followed successfully",
+        USER_ACTIVITY_TYPES.FOLLOW_USER
       )
     );
   }
@@ -229,7 +232,8 @@ const getFollowersListByUserName = asyncHandler(async (req, res) => {
       new ApiResponse(
         200,
         { user, ...followersList },
-        "Followers list fetched successfully"
+        "Followers list fetched successfully",
+        USER_ACTIVITY_TYPES.RETRIEVE_DATA
       )
     );
 });
@@ -401,7 +405,8 @@ const getFollowingListByUserName = asyncHandler(async (req, res) => {
       new ApiResponse(
         200,
         { user, ...followingList },
-        "Following list fetched successfully"
+        "Following list fetched successfully",
+        USER_ACTIVITY_TYPES.RETRIEVE_DATA
       )
     );
 });

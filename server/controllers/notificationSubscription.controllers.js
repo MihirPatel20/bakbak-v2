@@ -1,129 +1,155 @@
 import webPush from "web-push";
 import { NotificationSubscription } from "../models/notificationSubscription.models.js";
+import { USER_ACTIVITY_TYPES } from "../constants.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
+import { ApiError } from "../utils/ApiError.js";
 
-const getAllSubscriptions = async (req, res) => {
+const getAllSubscriptions = asyncHandler(async (req, res) => {
   const subscriptions = await NotificationSubscription.find().populate("user");
-  res.json(subscriptions);
-};
+
+  return res.json(
+    new ApiResponse(
+      200,
+      { subscriptions },
+      "Subscriptions retrieved successfully",
+      USER_ACTIVITY_TYPES.RETRIEVE_DATA
+    )
+  );
+});
 
 // Controller to save a subscription
-const subscribeNotifications = async (req, res) => {
+const subscribeNotifications = asyncHandler(async (req, res) => {
   const { endpoint, keys } = req.body;
   const user = req.user;
 
-  try {
-    const subscription = await NotificationSubscription.create({
-      user,
-      endpoint,
-      keys,
-    });
+  const subscription = await NotificationSubscription.create({
+    user,
+    endpoint,
+    keys,
+  });
 
-    res
-      .status(201)
-      .json({ message: "Subscription saved successfully", subscription });
-  } catch (error) {
-    console.error("Error saving subscription:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
+  res
+    .status(201)
+    .json(
+      new ApiResponse(
+        200,
+        subscription,
+        "Subscription saved successfully",
+        USER_ACTIVITY_TYPES.SUBSCRIBE_TO_NOTIFICATIONS
+      )
+    );
+});
 
 // Controller to remove a subscription
-const unsubscribeNotifications = async (req, res) => {
+const unsubscribeNotifications = asyncHandler(async (req, res) => {
   const { endpoint } = req.body;
 
-  try {
-    const subscription = await NotificationSubscription.findOneAndDelete({
-      endpoint,
-    });
-    if (subscription) {
-      console.log("Subscription removed:", subscription);
-      res.json({ message: "Subscription removed successfully" });
-    } else {
-      res.status(404).json({ error: "Subscription not found" });
-    }
-  } catch (error) {
-    console.error("Error removing subscription:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
+  const subscription = await NotificationSubscription.findOneAndDelete({
+    endpoint,
+  });
 
+  if (!subscription) {
+    throw new ApiError(404, "Subscription not found");
+  }
+
+  return res.json(
+    new ApiResponse(
+      200,
+      { subscription },
+      "Subscription removed successfully",
+      USER_ACTIVITY_TYPES.UNSUBSCRIBE_FROM_NOTIFICATIONS
+    )
+  );
+});
+
+// Controller to send a push notification
+// It is called from the other controller
+// It does not have a route
 const sendPushNotification = async (recipientId, options) => {
-  console.log("Sending notification to:", recipientId);
+  if (!recipientId || !options) {
+    console.error("Recipient ID and options are required");
+    return;
+  }
+
   try {
     const subscriptions = await NotificationSubscription.find({
       user: recipientId,
       active: true,
     });
 
-    subscriptions.forEach((subscription) => {
-      webPush
-        .sendNotification(subscription, JSON.stringify(options))
-        .then(() => console.log("Notification sent"))
-        .catch((error) => console.error("Error sending notification:", error));
+    if (subscriptions.length === 0) {
+      console.error("No active subscriptions found");
+      return;
+    }
+
+    const notifications = subscriptions.map(async (subscription) => {
+      try {
+        await webPush.sendNotification(subscription, JSON.stringify(options));
+      } catch (error) {
+        console.error("Error sending notification:", error);
+      }
     });
 
-    return { message: "Notification sent successfully" };
+    await Promise.all(notifications);
   } catch (error) {
-    console.error("Error sending notification:", error);
-    throw new Error("An error occurred while sending the notification");
+    console.error("An error occurred while sending the notification:", error);
   }
 };
 
-const updatePushSubscriptionStatus = async (req, res) => {
+const updatePushSubscriptionStatus = asyncHandler(async (req, res) => {
   const { endpoint, keys } = req.body;
   const { status } = req.params; // "activate" or "deactivate"
 
   if (!endpoint || (status === "activate" && !keys)) {
-    return res
-      .status(400)
-      .json({ error: "Endpoint and keys are required for activation" });
+    throw new ApiError(400, "Endpoint and keys are required for activation");
   }
 
-  try {
-    let subscription;
+  let subscription;
 
-    switch (status) {
-      case "activate":
-        // Attempt to update an existing subscription or create a new one if it doesn't exist
-        subscription = await NotificationSubscription.findOneAndUpdate(
-          { user: req.user, endpoint },
-          { $set: { active: true, ...(keys && { keys }) } },
-          { new: true, upsert: true } // upsert option creates a new document if no document matches the query
-        );
-        break;
+  switch (status) {
+    case "activate":
+      // Attempt to update an existing subscription or create a new one if it doesn't exist
+      subscription = await NotificationSubscription.findOneAndUpdate(
+        { user: req.user, endpoint },
+        { $set: { active: true, ...(keys && { keys }) } },
+        { new: true, upsert: true } // upsert option creates a new document if no document matches the query
+      );
+      break;
 
-      case "deactivate":
-        // Attempt to deactivate an existing subscription
-        subscription = await NotificationSubscription.findOneAndUpdate(
-          { user: req.user, endpoint },
-          { $set: { active: false } },
-          { new: true }
-        );
+    case "deactivate":
+      // Attempt to deactivate an existing subscription
+      subscription = await NotificationSubscription.findOneAndUpdate(
+        { user: req.user, endpoint },
+        { $set: { active: false } },
+        { new: true }
+      );
 
-        if (!subscription) {
-          return res.status(404).json({ error: "Subscription not found" });
-        }
-        break;
+      if (!subscription) {
+        throw new ApiError(404, "Subscription not found");
+      }
+      break;
 
-      default:
-        return res.status(400).json({ error: "Invalid status" });
-    }
-
-    res.json({
-      message: `Subscription ${
-        status === "activate" ? "activated" : "deactivated"
-      } successfully`,
-      subscription,
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      error: `An error occurred while ${
-        status === "activate" ? "activating" : "deactivating"
-      } the subscription`,
-    });
+    default:
+      throw new ApiError(400, "Invalid status");
   }
-};
+
+  const resType =
+    status === "activate"
+      ? USER_ACTIVITY_TYPES.ACTIVATE_PUSH_SUBSCRIPTION
+      : status === "deactivate"
+      ? USER_ACTIVITY_TYPES.DEACTIVATE_PUSH_SUBSCRIPTION
+      : null;
+
+  return res.json(
+    new ApiResponse(
+      200,
+      { subscription },
+      `Subscription ${status}d successfully`,
+      resType
+    )
+  );
+});
 
 export {
   subscribeNotifications,

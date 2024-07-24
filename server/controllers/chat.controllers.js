@@ -4,7 +4,7 @@ import { User } from "../models/user.models.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { emitSocketEvent } from "../socket.js";
-import { ChatEventEnum } from "../constants.js";
+import { ChatEventEnum, USER_ACTIVITY_TYPES } from "../constants.js";
 import { ApiError } from "../utils/ApiError.js";
 
 /**
@@ -96,7 +96,14 @@ const searchAvailableUsers = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, users, "Users fetched successfully"));
+    .json(
+      new ApiResponse(
+        200,
+        users,
+        "Users fetched successfully",
+        USER_ACTIVITY_TYPES.RETRIEVE_DATA
+      )
+    );
 });
 
 const createOrGetAOneOnOneChat = asyncHandler(async (req, res) => {
@@ -138,7 +145,14 @@ const createOrGetAOneOnOneChat = asyncHandler(async (req, res) => {
     // if we find the chat that means user already has created a chat
     return res
       .status(200)
-      .json(new ApiResponse(200, chat[0], "Chat retrieved successfully"));
+      .json(
+        new ApiResponse(
+          200,
+          chat[0],
+          "Chat retrieved successfully",
+          USER_ACTIVITY_TYPES.RETRIEVE_DATA
+        )
+      );
   }
 
   // if not we need to create a new one on one chat
@@ -179,7 +193,14 @@ const createOrGetAOneOnOneChat = asyncHandler(async (req, res) => {
 
   return res
     .status(201)
-    .json(new ApiResponse(201, payload, "Chat retrieved successfully"));
+    .json(
+      new ApiResponse(
+        201,
+        payload,
+        "Chat retrieved successfully",
+        USER_ACTIVITY_TYPES.CREATE_CHAT
+      )
+    );
 });
 
 const deleteOneOnOneChat = asyncHandler(async (req, res) => {
@@ -222,7 +243,14 @@ const deleteOneOnOneChat = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, {}, "Chat deleted successfully"));
+    .json(
+      new ApiResponse(
+        200,
+        {},
+        "Chat deleted successfully",
+        USER_ACTIVITY_TYPES.DELETE_CHAT
+      )
+    );
 });
 
 const getAllChats = asyncHandler(async (req, res) => {
@@ -243,7 +271,12 @@ const getAllChats = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(
-      new ApiResponse(200, chats || [], "User chats fetched successfully!")
+      new ApiResponse(
+        200,
+        chats || [],
+        "User chats fetched successfully!",
+        USER_ACTIVITY_TYPES.RETRIEVE_DATA
+      )
     );
 });
 
@@ -267,10 +300,17 @@ const getChatById = asyncHandler(async (req, res) => {
   }
 
   // Return the found chat
-  return res.status(200).json(new ApiResponse(200, chat[0], "Chat fetched successfully"));
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        chat[0],
+        "Chat fetched successfully",
+        USER_ACTIVITY_TYPES.RETRIEVE_DATA
+      )
+    );
 });
-
-
 
 export {
   searchAvailableUsers,

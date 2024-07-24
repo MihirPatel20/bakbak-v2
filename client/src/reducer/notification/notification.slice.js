@@ -57,7 +57,7 @@ const notificationsSlice = createSlice({
         state.error = action.error.message;
       })
       .addCase(markAsRead.fulfilled, (state, action) => {
-        const id = action.payload.notification._id;
+        const id = action.payload._id;
         // Filter out the notification if its type is "message"
         state.notifications = state.notifications.filter((notification) => {
           return !(notification._id === id && notification.type === "message");

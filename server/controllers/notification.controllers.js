@@ -1,7 +1,9 @@
 import mongoose from "mongoose";
-import { ChatEventEnum } from "../constants.js";
+import { ChatEventEnum, USER_ACTIVITY_TYPES } from "../constants.js";
 import { Notification } from "../models/notification.model.js";
 import { emitNotification } from "../socket.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
 
 export const createNotification = async (
   req,
@@ -68,104 +70,117 @@ export const createNotification = async (
   }
 };
 
-export const getNotifications = async (req, res) => {
+const getNotifications = asyncHandler(async (req, res) => {
   const userId = req.user._id;
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
 
-  try {
-    // Query notifications for the user, sorted by createdAt desc
-    const notifications = await Notification.find({ user: userId })
-      .populate("sender", "username avatar")
-      .sort({ createdAt: -1 })
-      .skip((page - 1) * limit)
-      .limit(limit)
-      .lean() // Use lean() for better performance
-      .exec();
+  // Query notifications for the user, sorted by createdAt desc
+  const notifications = await Notification.find({ user: userId })
+    .populate("sender", "username avatar")
+    .sort({ createdAt: -1 })
+    .skip((page - 1) * limit)
+    .limit(limit)
+    .lean() // Use lean() for better performance
+    .exec();
 
-    // Populate the referenceId for each notification
-    const populatedNotifications = await Promise.all(
-      notifications.map(async (notification) => {
-        const populatedNotification = { ...notification };
-        if (notification.referenceId && notification.referenceModel) {
-          const RefModel = mongoose.model(notification.referenceModel);
-          populatedNotification.referenceId = await RefModel.findById(
-            notification.referenceId
-          ).lean();
-        }
-        return populatedNotification;
-      })
-    );
+  // Populate the referenceId for each notification
+  const populatedNotifications = await Promise.all(
+    notifications.map(async (notification) => {
+      const populatedNotification = { ...notification };
+      if (notification.referenceId && notification.referenceModel) {
+        const RefModel = mongoose.model(notification.referenceModel);
+        populatedNotification.referenceId = await RefModel.findById(
+          notification.referenceId
+        ).lean();
+      }
+      return populatedNotification;
+    })
+  );
 
-    const totalCount = await Notification.countDocuments({ user: userId });
-    res.status(200).json({
-      notifications: populatedNotifications,
-      totalCount,
-      currentPage: page,
-      totalPages: Math.ceil(totalCount / limit),
-    });
-  } catch (error) {
-    console.error("Error fetching notifications:", error);
-    res
-      .status(500)
-      .json({ error: "Server error while fetching notifications" });
-  }
-};
+  const totalCount = await Notification.countDocuments({ user: userId });
+  res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        notifications: populatedNotifications,
+        totalCount,
+        currentPage: page,
+        totalPages: Math.ceil(totalCount / limit),
+      },
+      "Notifications fetched successfully",
+      USER_ACTIVITY_TYPES.RETRIEVE_DATA
+    )
+  );
+});
 
-export const markNotificationAsRead = async (req, res) => {
+const markNotificationAsRead = asyncHandler(async (req, res) => {
   const { notificationId } = req.params;
-  try {
-    const notification = await Notification.findById(notificationId);
-    if (!notification) {
-      return res.status(404).json({ error: "Notification not found" });
-    }
 
-    if (notification.type === "message") {
-      // Delete the notification if it's a message type
-      await Notification.findByIdAndDelete(notificationId);
-      res
-        .status(200)
-        .json({ message: "Message notification deleted", notification });
-    } else {
-      // Mark other types of notifications as read
-      notification.isRead = true;
-      await notification.save();
-      res.status(200).json(notification);
-    }
-  } catch (error) {
-    console.error("Error updating notification:", error);
-    res.status(500).json({ error: "Server error while updating notification" });
+  const notification = await Notification.findById(notificationId);
+  if (!notification) {
+    throw new ApiError(404, "Notification not found");
   }
-};
 
-export const markAllNotificationsAsRead = async (req, res) => {
+  if (notification.type === "message") {
+    // Delete the notification if it's a message type
+    await Notification.findByIdAndDelete(notificationId);
+  } else {
+    // Mark other types of notifications as read
+    notification.isRead = true;
+    await notification.save();
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        notification,
+        "Notification marked as read",
+        USER_ACTIVITY_TYPES.READ_NOTIFICATION
+      )
+    );
+});
+
+const markAllNotificationsAsRead = asyncHandler(async (req, res) => {
   const userId = req.user._id;
 
-  try {
-    // Find all unread notifications for the user
-    const unreadNotifications = await Notification.find({
-      user: userId,
-      isRead: false,
-    });
+  // Find all unread notifications for the user
+  const unreadNotifications = await Notification.find({
+    user: userId,
+    isRead: false,
+  });
 
-    // Mark all notifications as read and delete message-type notifications
-    const markAsReadPromises = unreadNotifications.map(async (notification) => {
-      if (notification.type === "message") {
-        await Notification.findByIdAndDelete(notification._id);
-      } else {
-        notification.isRead = true;
-        await notification.save();
-      }
-    });
+  // Process each notification
+  const markAsReadPromises = unreadNotifications.map(async (notification) => {
+    if (notification.type === "message") {
+      // Delete message-type notifications
+      await Notification.findByIdAndDelete(notification._id);
+    } else {
+      // Mark other notifications as read
+      notification.isRead = true;
+      await notification.save();
+    }
+  });
 
-    // Wait for all notifications to be processed
-    await Promise.all(markAsReadPromises);
+  // Wait for all notifications to be processed
+  await Promise.all(markAsReadPromises);
 
-    res.status(200).json({ message: "All notifications marked as read" });
-  } catch (error) {
-    console.error("Error marking all notifications as read:", error);
-    res
-      .status(500)
-      .json({ error: "Server error while marking all notifications as read" });
-  }
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        null,
+        "All notifications marked as read",
+        USER_ACTIVITY_TYPES.READ_ALL_NOTIFICATIONS
+      )
+    );
+});
+
+export {
+  getNotifications,
+  markNotificationAsRead,
+  markAllNotificationsAsRead,
 };

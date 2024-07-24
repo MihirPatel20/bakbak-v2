@@ -13,6 +13,7 @@ import { postCommonAggregation } from "./post.controllers.js";
 import { subDays } from "date-fns";
 import { getInteractionStats } from "../utils/logAnalyzer.js";
 import { USER_ACTIVITY_TYPES } from "../constants.js";
+import { SocialProfile } from "../models/profile.models.js";
 
 export const testAdminApi = asyncHandler(async (req, res) => {
   // Set default dates
@@ -183,12 +184,20 @@ const getAllUserDetails = asyncHandler(async (req, res) => {
 
   const totalUsers = await User.countDocuments(query);
 
+  // Fetch profile data for each user
+  const usersWithProfiles = await Promise.all(
+    users.map(async (user) => {
+      const profile = await SocialProfile.findOne({ owner: user._id });
+      return { ...user._doc, profile };
+    })
+  );
+
   return res
     .status(200)
     .json(
       new ApiResponse(
         200,
-        { users, totalUsers },
+        { users: usersWithProfiles, totalUsers },
         "Users retrieved successfully"
       )
     );

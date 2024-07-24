@@ -16,8 +16,6 @@ import {
   updateSocialProfileValidator,
 } from "../validators/profile.validators.js";
 import { validate } from "../validators/validate.js";
-import { asyncHandler } from "../utils/asyncHandler.js";
-import { ApiResponse } from "../utils/ApiResponse.js";
 
 const router = Router();
 
@@ -37,16 +35,7 @@ router
   .patch(updateSocialProfileValidator(), validate, updateSocialProfile);
 
 // Protected routes - require authentication
-router.route("/all").get(
-  asyncHandler(async (req, res) => {
-    const profiles = await getAllUserProfiles(req);
-    return res
-      .status(200)
-      .json(
-        new ApiResponse(200, profiles, "All user profiles fetched successfully")
-      );
-  })
-);
+router.route("/all").get(getAllUserProfiles);
 
 router
   .route("/cover-image")

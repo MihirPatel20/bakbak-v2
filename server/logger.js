@@ -31,7 +31,7 @@ const createCustomLogger = (level, filename) => {
 };
 
 const logger = createCustomLogger("info", "app.log");
-const activityLogger = createCustomLogger("info", "api-interactions.log");
+const activityLogger = createCustomLogger("info", "user-activity.log");
 const errorLogger = createCustomLogger("error", "errors.log");
 
 export { logger, activityLogger, errorLogger };

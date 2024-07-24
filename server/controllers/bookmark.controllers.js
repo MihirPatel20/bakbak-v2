@@ -26,30 +26,32 @@ const bookmarkUnBookmarkPost = asyncHandler(async (req, res) => {
       postId,
       bookmarkedBy: req.user?._id,
     });
-    return res.status(200).json(
-      new ApiResponse(
-        200,
-        {
-          isBookmarked: false,
-        },
-        "Bookmark removed successfully"
-      )
-    );
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          { isBookmarked: false },
+          "Bookmark removed successfully",
+          USER_ACTIVITY_TYPES.UNBOOKMARK_POST
+        )
+      );
   } else {
     // if not bookmarked, like it by adding the record from the DB
     await SocialBookmark.create({
       postId,
       bookmarkedBy: req.user?._id,
     });
-    return res.status(200).json(
-      new ApiResponse(
-        200,
-        {
-          isBookmarked: true,
-        },
-        "Bookmarked successfully"
-      )
-    );
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          { isBookmarked: true },
+          "Bookmarked successfully",
+          USER_ACTIVITY_TYPES.BOOKMARK_POST
+        )
+      );
   }
 });
 

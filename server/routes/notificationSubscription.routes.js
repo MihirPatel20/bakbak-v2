@@ -15,7 +15,7 @@ router.route("/").get(getAllSubscriptions);
 router.route("/subscribe").post(verifyJWT, subscribeNotifications);
 router.route("/unsubscribe").post(verifyJWT, unsubscribeNotifications);
 
-router.route("/send-push/:recipientId").post(verifyJWT, sendPushNotification);
+// router.route("/send-push/:recipientId").post(verifyJWT, sendPushNotification);
 
 router.route("/:status").post(verifyJWT, updatePushSubscriptionStatus);
 

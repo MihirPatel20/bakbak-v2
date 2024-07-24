@@ -1,5 +1,8 @@
 import mongoose from "mongoose";
-import { MAXIMUM_SOCIAL_POST_IMAGE_COUNT } from "../constants.js";
+import {
+  MAXIMUM_SOCIAL_POST_IMAGE_COUNT,
+  USER_ACTIVITY_TYPES,
+} from "../constants.js";
 import { User } from "../models/user.models.js";
 import { SocialBookmark } from "../models/bookmark.models.js";
 import { SocialPost } from "../models/post.models.js";
@@ -175,7 +178,14 @@ const createPost = asyncHandler(async (req, res) => {
 
   return res
     .status(201)
-    .json(new ApiResponse(201, createdPost[0], "Post created successfully"));
+    .json(
+      new ApiResponse(
+        201,
+        createdPost[0],
+        "Post created successfully",
+        USER_ACTIVITY_TYPES.CREATE_POST
+      )
+    );
 });
 
 const updatePost = asyncHandler(async (req, res) => {
@@ -254,7 +264,14 @@ const updatePost = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, aggregatedPost[0], "Post updated successfully"));
+    .json(
+      new ApiResponse(
+        200,
+        aggregatedPost[0],
+        "Post updated successfully",
+        USER_ACTIVITY_TYPES.UPDATE_POST
+      )
+    );
 });
 
 const removePostImage = asyncHandler(async (req, res) => {
@@ -305,7 +322,12 @@ const removePostImage = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(
-      new ApiResponse(200, aggregatedPost[0], "Post image removed successfully")
+      new ApiResponse(
+        200,
+        aggregatedPost[0],
+        "Post image removed successfully",
+        USER_ACTIVITY_TYPES.UPDATE_POST
+      )
     );
 });
 
@@ -326,61 +348,68 @@ const getAllPosts = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, posts, "Posts fetched successfully"));
+    .json(
+      new ApiResponse(
+        200,
+        posts,
+        "Posts fetched successfully",
+        USER_ACTIVITY_TYPES.RETRIEVE_DATA
+      )
+    );
 });
 
 const getUserFeed = asyncHandler(async (req, res) => {
   const { page = 1, limit = 10 } = req.query;
 
-  try {
-    // Step 1: Get the IDs of users the current user follows
-    const followingList = await SocialFollow.aggregate([
-      {
-        $match: { followerId: new mongoose.Types.ObjectId(req.user._id) },
+  // Step 1: Get the IDs of users the current user follows
+  const followingList = await SocialFollow.aggregate([
+    {
+      $match: { followerId: new mongoose.Types.ObjectId(req.user._id) },
+    },
+    {
+      $project: {
+        _id: 0,
+        followeeId: 1,
       },
-      {
-        $project: {
-          _id: 0,
-          followeeId: 1,
-        },
+    },
+  ]);
+
+  const followingUserIds = followingList.map((follow) => follow.followeeId);
+
+  // Step 2: Set up the aggregation pipeline
+  const postAggregation = SocialPost.aggregate([
+    {
+      $match: {
+        author: { $in: followingUserIds }, // Match posts from followed users
       },
-    ]);
+    },
+    ...postCommonAggregation(req), // Reuse the common aggregation pipeline
+    { $sort: { createdAt: -1 } }, // Sort posts by creation date (newest first)
+  ]);
 
-    const followingUserIds = followingList.map((follow) => follow.followeeId);
+  // Step 3: Set up pagination options
+  const options = {
+    page: parseInt(page),
+    limit: parseInt(limit),
+    customLabels: {
+      totalDocs: "totalPosts",
+      docs: "posts",
+    },
+  };
 
-    // Step 2: Set up the aggregation pipeline
-    const postAggregation = SocialPost.aggregate([
-      {
-        $match: {
-          author: { $in: followingUserIds }, // Match posts from followed users
-        },
-      },
-      ...postCommonAggregation(req), // Reuse the common aggregation pipeline
-      { $sort: { createdAt: -1 } }, // Sort posts by creation date (newest first)
-    ]);
+  // Step 4: Fetch paginated posts
+  const posts = await SocialPost.aggregatePaginate(postAggregation, options);
 
-    // Step 3: Set up pagination options
-    const options = {
-      page: parseInt(page),
-      limit: parseInt(limit),
-      customLabels: {
-        totalDocs: "totalPosts",
-        docs: "posts",
-      },
-    };
-
-    // Step 4: Fetch paginated posts
-    const posts = await SocialPost.aggregatePaginate(postAggregation, options);
-
-    return res
-      .status(200)
-      .json(new ApiResponse(200, posts, "Posts fetched successfully"));
-  } catch (error) {
-    console.error("Error fetching user feed:", error);
-    return res
-      .status(500)
-      .json(new ApiResponse(500, null, "Failed to fetch feed"));
-  }
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        posts,
+        "Posts fetched successfully",
+        USER_ACTIVITY_TYPES.RETRIEVE_DATA
+      )
+    );
 });
 
 const getPostsByUsername = asyncHandler(async (req, res) => {
@@ -423,7 +452,14 @@ const getPostsByUsername = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, posts, "User's posts fetched successfully"));
+    .json(
+      new ApiResponse(
+        200,
+        posts,
+        "User's posts fetched successfully",
+        USER_ACTIVITY_TYPES.RETRIEVE_DATA
+      )
+    );
 });
 
 const getMyPosts = asyncHandler(async (req, res) => {
@@ -452,7 +488,14 @@ const getMyPosts = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, posts, "My posts fetched successfully"));
+    .json(
+      new ApiResponse(
+        200,
+        posts,
+        "My posts fetched successfully",
+        USER_ACTIVITY_TYPES.RETRIEVE_DATA
+      )
+    );
 });
 
 const getBookMarkedPosts = asyncHandler(async (req, res) => {
@@ -505,7 +548,14 @@ const getBookMarkedPosts = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, posts, "Bookmarked posts fetched successfully"));
+    .json(
+      new ApiResponse(
+        200,
+        posts,
+        "Bookmarked posts fetched successfully",
+        USER_ACTIVITY_TYPES.RETRIEVE_DATA
+      )
+    );
 });
 
 const getPostById = asyncHandler(async (req, res) => {
@@ -525,7 +575,14 @@ const getPostById = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, post[0], "Post fetched successfully"));
+    .json(
+      new ApiResponse(
+        200,
+        post[0],
+        "Post fetched successfully",
+        USER_ACTIVITY_TYPES.RETRIEVE_DATA
+      )
+    );
 });
 
 const deletePost = asyncHandler(async (req, res) => {
@@ -549,7 +606,14 @@ const deletePost = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, {}, "Post deleted successfully"));
+    .json(
+      new ApiResponse(
+        200,
+        {},
+        "Post deleted successfully",
+        USER_ACTIVITY_TYPES.DELETE_POST
+      )
+    );
 });
 
 const getPostsByTag = asyncHandler(async (req, res) => {
@@ -586,7 +650,12 @@ const getPostsByTag = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(
-      new ApiResponse(200, posts, `Posts with tag #${tag} fetched successfully`)
+      new ApiResponse(
+        200,
+        posts,
+        `Posts with tag #${tag} fetched successfully`,
+        USER_ACTIVITY_TYPES.RETRIEVE_DATA
+      )
     );
 });
 

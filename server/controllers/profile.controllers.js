@@ -10,6 +10,7 @@ import {
   getStaticFilePath,
   removeLocalFile,
 } from "../utils/helpers.js";
+import { USER_ACTIVITY_TYPES } from "../constants.js";
 
 /**
  *
@@ -103,10 +104,17 @@ const getMySocialProfile = asyncHandler(async (req, res) => {
   let profile = await getUserSocialProfile(req.user._id, req);
   return res
     .status(200)
-    .json(new ApiResponse(200, profile, "User profile fetched successfully"));
+    .json(
+      new ApiResponse(
+        200,
+        profile,
+        "User profile fetched successfully",
+        USER_ACTIVITY_TYPES.RETRIEVE_DATA
+      )
+    );
 });
 
-const getAllUserProfiles = async (req) => {
+const getAllUserProfiles = asyncHandler(async (req, res) => {
   const users = await User.find({});
 
   const profiles = await Promise.all(
@@ -116,8 +124,17 @@ const getAllUserProfiles = async (req) => {
     })
   );
 
-  return profiles;
-};
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        profiles,
+        "User profile fetched successfully",
+        USER_ACTIVITY_TYPES.RETRIEVE_DATA
+      )
+    );
+});
 
 // Public route
 const getProfileByUserName = asyncHandler(async (req, res) => {
@@ -134,7 +151,12 @@ const getProfileByUserName = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(
-      new ApiResponse(200, userProfile, "User profile fetched successfully")
+      new ApiResponse(
+        200,
+        userProfile,
+        "User profile fetched successfully",
+        USER_ACTIVITY_TYPES.RETRIEVE_DATA
+      )
     );
 });
 
@@ -164,7 +186,14 @@ const updateSocialProfile = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, profile, "User profile updated successfully"));
+    .json(
+      new ApiResponse(
+        200,
+        profile,
+        "User profile updated successfully",
+        USER_ACTIVITY_TYPES.EDIT_PROFILE
+      )
+    );
 });
 
 const updateCoverImage = asyncHandler(async (req, res) => {
@@ -204,7 +233,12 @@ const updateCoverImage = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(
-      new ApiResponse(200, updatedProfile, "Cover image updated successfully")
+      new ApiResponse(
+        200,
+        updatedProfile,
+        "Cover image updated successfully",
+        USER_ACTIVITY_TYPES.EDIT_PROFILE_COVER
+      )
     );
 });
 

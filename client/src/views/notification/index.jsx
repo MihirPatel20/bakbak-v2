@@ -10,8 +10,7 @@ const NotificationView = () => {
   const getAllSubscriptions = async () => {
     try {
       const response = await api.get("/notificationSubscription");
-      console.log("push subs: ", response.data);
-      setSubscriptions(response.data); // Add this line
+      setSubscriptions(response.data.data.subscriptions); // Add this line
     } catch (error) {
       console.error("Error getting subscriptions:", error);
     }
@@ -44,12 +43,13 @@ const NotificationView = () => {
       ttl: 10,
     };
 
+
     try {
       const response = await api.post(
         `${
           import.meta.env.VITE_SERVER_API_URI
         }/notificationSubscription/send-push/${recipientId}`,
-        options
+        { options }
       );
       const data = await response;
       console.log("Notification sent:", data);

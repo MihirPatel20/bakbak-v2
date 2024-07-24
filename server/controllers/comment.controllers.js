@@ -4,6 +4,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { getMongoosePaginationOptions } from "../utils/helpers.js";
 import { ApiError } from "../utils/ApiError.js";
+import { USER_ACTIVITY_TYPES } from "../constants.js";
 
 const addComment = asyncHandler(async (req, res) => {
   const { postId } = req.params;
@@ -17,7 +18,14 @@ const addComment = asyncHandler(async (req, res) => {
 
   return res
     .status(201)
-    .json(new ApiResponse(201, comment, "Comment added successfully"));
+    .json(
+      new ApiResponse(
+        201,
+        comment,
+        "Comment added successfully",
+        USER_ACTIVITY_TYPES.COMMENT_ON_POST
+      )
+    );
 });
 
 const getPostComments = asyncHandler(async (req, res) => {
@@ -127,7 +135,14 @@ const getPostComments = asyncHandler(async (req, res) => {
   );
   return res
     .status(200)
-    .json(new ApiResponse(200, comments, "Post comments fetched successfully"));
+    .json(
+      new ApiResponse(
+        200,
+        comments,
+        "Post comments fetched successfully",
+        USER_ACTIVITY_TYPES.RETRIEVE_DATA
+      )
+    );
 });
 
 const deleteComment = asyncHandler(async (req, res) => {
@@ -147,7 +162,12 @@ const deleteComment = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(
-      new ApiResponse(200, { deletedComment }, "Comment deleted successfully")
+      new ApiResponse(
+        200,
+        { deletedComment },
+        "Comment deleted successfully",
+        USER_ACTIVITY_TYPES.DELETE_COMMENT
+      )
     );
 });
 
@@ -175,7 +195,14 @@ const updateComment = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, updatedComment, "Comment updated successfully"));
+    .json(
+      new ApiResponse(
+        200,
+        updatedComment,
+        "Comment updated successfully",
+        USER_ACTIVITY_TYPES.UPDATE_COMMENT
+      )
+    );
 });
 
 export { addComment, getPostComments, deleteComment, updateComment };

@@ -62,7 +62,8 @@ const NotificationList = () => {
   }, [dispatch]);
 
   // Handle marking a notification as read
-  const handleMarkAsRead = async (notificationId) => {
+  const handleMarkAsRead = async (event, notificationId) => {
+    event.stopPropagation();
     try {
       await dispatch(markAsRead(notificationId)).unwrap();
     } catch (err) {
@@ -105,6 +106,7 @@ const NotificationList = () => {
   };
 
   const MessageNotification = ({ notification }) => {
+    console.log("notification", notification);
     const url = `messages/direct/u/${notification.referenceId.chat}`;
 
     const navigate = useNavigate();
@@ -166,7 +168,7 @@ const NotificationList = () => {
                     notification.isRead ? "mark as unread" : "mark as read"
                   }
                   sx={chipWarningSX}
-                  onClick={() => handleMarkAsRead(notification._id)}
+                  onClick={(event) => handleMarkAsRead(event, notification._id)}
                 />
               </Grid>
             </Grid>

@@ -1,3 +1,4 @@
+import { USER_ACTIVITY_TYPES } from "../constants.js";
 import { SocialComment } from "../models/comment.models.js";
 import { SocialLike } from "../models/like.models.js";
 import { SocialPost } from "../models/post.models.js";
@@ -27,30 +28,34 @@ const likeDislikePost = asyncHandler(async (req, res) => {
       postId,
       likedBy: req.user?._id,
     });
-    return res.status(200).json(
-      new ApiResponse(
-        200,
-        {
-          isLiked: false,
-        },
-        "Unliked successfully"
-      )
-    );
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          { postId, isLiked: false },
+          "Unliked successfully",
+          USER_ACTIVITY_TYPES.UNLIKE_POST
+        )
+      );
   } else {
     // if not liked, like it by adding the record from the DB
     await SocialLike.create({
       postId,
       likedBy: req.user?._id,
     });
-    return res.status(200).json(
-      new ApiResponse(
-        200,
-        {
-          isLiked: true,
-        },
-        "Liked successfully"
-      )
-    );
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          { postId, isLiked: true },
+          "Liked successfully",
+          USER_ACTIVITY_TYPES.LIKE_POST
+        )
+      );
   }
 });
 
@@ -76,30 +81,32 @@ const likeDislikeComment = asyncHandler(async (req, res) => {
       commentId,
       likedBy: req.user?._id,
     });
-    return res.status(200).json(
-      new ApiResponse(
-        200,
-        {
-          isLiked: false,
-        },
-        "Unliked successfully"
-      )
-    );
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          { commentId, isLiked: false },
+          "Unliked successfully",
+          USER_ACTIVITY_TYPES.UNLIKE_COMMENT
+        )
+      );
   } else {
     // if not liked, like it by adding the record from the DB
     await SocialLike.create({
       commentId,
       likedBy: req.user?._id,
     });
-    return res.status(200).json(
-      new ApiResponse(
-        200,
-        {
-          isLiked: true,
-        },
-        "Liked successfully"
-      )
-    );
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          { isLiked: true, commentId },
+          "Liked successfully",
+          USER_ACTIVITY_TYPES.LIKE_COMMENT
+        )
+      );
   }
 });
 

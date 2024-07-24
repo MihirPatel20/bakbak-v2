@@ -7,7 +7,7 @@ const fetchNotifications = createAsyncThunk(
   async () => {
     try {
       const response = await api.get("/notifications");
-      return response.data;
+      return response.data.data;
     } catch (error) {
       throw error;
     }
@@ -19,8 +19,10 @@ const markAsRead = createAsyncThunk(
   "notifications/markAsRead",
   async (notificationId) => {
     try {
-      const response = await api.patch(`/notifications/${notificationId}/mark-as-read`);
-      return response.data;
+      const response = await api.patch(
+        `/notifications/${notificationId}/mark-as-read`
+      );
+      return response.data.data;
     } catch (error) {
       throw error;
     }
@@ -32,7 +34,7 @@ const markAllAsRead = createAsyncThunk(
   async () => {
     try {
       const response = await api.patch("/notifications/mark-all-as-read");
-      return response.data;
+      return response.data.data;
     } catch (error) {
       throw error;
     }

@@ -3,11 +3,11 @@ import {
   ChatEventEnum,
   NotificationTypes,
   ReferenceModel,
+  USER_ACTIVITY_TYPES,
 } from "../constants.js";
 import { User } from "../models/user.models.js";
 import { Chat } from "../models/chat.models.js";
 import { ChatMessage } from "../models/message.models.js";
-import { NotificationSubscription } from "../models/notificationSubscription.models.js";
 import { emitSocketEvent, isUserInChatRoom } from "../socket.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -78,7 +78,12 @@ const getAllMessages = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(
-      new ApiResponse(200, messages || [], "Messages fetched successfully")
+      new ApiResponse(
+        200,
+        messages || [],
+        "Messages fetched successfully",
+        USER_ACTIVITY_TYPES.RETRIEVE_DATA
+      )
     );
 });
 
@@ -198,7 +203,14 @@ const sendMessage = asyncHandler(async (req, res) => {
 
   return res
     .status(201)
-    .json(new ApiResponse(201, receivedMessage, "Message saved successfully"));
+    .json(
+      new ApiResponse(
+        201,
+        receivedMessage,
+        "Message saved successfully",
+        USER_ACTIVITY_TYPES.SEND_MESSAGE
+      )
+    );
 });
 
 export { getAllMessages, sendMessage };

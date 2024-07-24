@@ -1,4 +1,3 @@
-// UserAccordion.js
 import React, { useState, useEffect } from "react";
 import {
   Accordion,
@@ -155,40 +154,51 @@ const UserAccordion = () => {
                   )}
                 </Grid>
               </AccordionSummary>
-              <AccordionDetails>
+              <AccordionDetails >
                 <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6}>
-                    <Typography variant="body2">
-                      <strong>First Name:</strong> {user.firstName}
-                    </Typography>
-                    <Typography variant="body2">
-                      <strong>Last Name:</strong> {user.lastName}
-                    </Typography>
-                    <Typography variant="body2">
-                      <strong>Login Type:</strong> {user.loginType}
-                    </Typography>
-                    <Typography variant="body2">
-                      <strong>Email Verified:</strong>{" "}
-                      {user.isEmailVerified ? "Yes" : "No"}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Typography variant="body2">
-                      <strong>Online:</strong> {user.online ? "Yes" : "No"}
-                    </Typography>
-                    <Typography variant="body2">
-                      <strong>Last Seen:</strong>{" "}
-                      {new Date(user.lastSeen).toLocaleString()}
-                    </Typography>
-                    <Typography variant="body2">
-                      <strong>Created At:</strong>{" "}
-                      {new Date(user.createdAt).toLocaleString()}
-                    </Typography>
-                    <Typography variant="body2">
-                      <strong>Updated At:</strong>{" "}
-                      {new Date(user.updatedAt).toLocaleString()}
-                    </Typography>
-                  </Grid>
+                  {[
+                    {
+                      key: "Name",
+                      value:
+                        user.profile.firstName + " " + user.profile.lastName,
+                    },
+                    { key: "Bio", value: user.profile.bio },
+                    {
+                      key: "DOB",
+                      value: new Date(user.profile.dob).toLocaleDateString(),
+                    },
+                    { key: "Location", value: user.profile.location },
+                    { key: "Phone Number", value: user.profile.phoneNumber },
+                    { key: "Online", value: user.online ? "Yes" : "No" },
+                    {
+                      key: "Last Seen",
+                      value: new Date(user.lastSeen).toLocaleString(),
+                    },
+                    {
+                      key: "isEmailVerified",
+                      value: user.isEmailVerified ? "Yes" : "No",
+                    },
+                    { key: "Country Code", value: user.profile.countryCode },
+                    {
+                      key: "isPrivate",
+                      value: user.profile.isPrivate ? "Yes" : "No",
+                    },
+                    { key: "Cover Image", value: user.profile.coverImage.url },
+                    {
+                      key: "Created At",
+                      value: new Date(user.createdAt).toLocaleString(),
+                    },
+                    {
+                      key: "Updated At",
+                      value: new Date(user.updatedAt).toLocaleString(),
+                    },
+                  ].map((detail, index) => (
+                    <Grid item xs={12} sm={6}  key={index} sx={{pt:1}}>
+                      <Typography variant="body2">
+                        <strong>{detail.key}:</strong> {detail.value}
+                      </Typography>
+                    </Grid>
+                  ))}
                 </Grid>
               </AccordionDetails>
             </Accordion>

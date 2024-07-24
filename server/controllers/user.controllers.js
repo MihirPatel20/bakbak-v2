@@ -1,6 +1,10 @@
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
-import { UserLoginType, UserRolesEnum } from "../constants.js";
+import {
+  USER_ACTIVITY_TYPES,
+  UserLoginType,
+  UserRolesEnum,
+} from "../constants.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -101,7 +105,8 @@ const registerUser = asyncHandler(async (req, res) => {
       new ApiResponse(
         200,
         { user: createdUser },
-        "Users registered successfully and verification email has been sent on your email."
+        "Users registered successfully and verification email has been sent on your email.",
+        USER_ACTIVITY_TYPES.USER_REGISTRATION
       )
     );
 });
@@ -163,7 +168,8 @@ const loginUser = asyncHandler(async (req, res) => {
       new ApiResponse(
         200,
         { user: loggedInUser, accessToken, refreshToken }, // send access and refresh token in response if client decides to save them by themselves
-        "User logged in successfully"
+        "User logged in successfully",
+        USER_ACTIVITY_TYPES.USER_LOGIN
       )
     );
 });
@@ -186,13 +192,27 @@ const logoutUser = asyncHandler(async (req, res) => {
     .status(200)
     .clearCookie("accessToken", cookieOptions)
     .clearCookie("refreshToken", cookieOptions)
-    .json(new ApiResponse(200, {}, "User logged out successfully"));
+    .json(
+      new ApiResponse(
+        200,
+        {},
+        "User logged out successfully",
+        USER_ACTIVITY_TYPES.USER_LOGOUT
+      )
+    );
 });
 
 const getCurrentUser = asyncHandler(async (req, res) => {
   return res
     .status(200)
-    .json(new ApiResponse(200, req.user, "Current user fetched successfully"));
+    .json(
+      new ApiResponse(
+        200,
+        req.user,
+        "Current user fetched successfully",
+        USER_ACTIVITY_TYPES.RETRIEVE_DATA
+      )
+    );
 });
 
 // Controller function to fetch all users with specific fields
@@ -205,7 +225,16 @@ const getAllUsers = asyncHandler(async (req, res) => {
     "avatar username email"
   );
 
-  res.status(200).json(new ApiResponse(200, users, "List of all users"));
+  res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        users,
+        "List of all users",
+        USER_ACTIVITY_TYPES.RETRIEVE_DATA
+      )
+    );
 });
 
 const refreshAccessToken = asyncHandler(async (req, res) => {
@@ -251,7 +280,8 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
         new ApiResponse(
           200,
           { accessToken, refreshToken: newRefreshToken },
-          "Access token refreshed"
+          "Access token refreshed",
+          USER_ACTIVITY_TYPES.USER_LOGIN
         )
       );
   } catch (error) {
@@ -295,7 +325,14 @@ const verifyEmail = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, { isEmailVerified: true }, "Email is verified"));
+    .json(
+      new ApiResponse(
+        200,
+        { isEmailVerified: true },
+        "Email is verified",
+        USER_ACTIVITY_TYPES.EMAIL_VERIFICATION
+      )
+    );
 });
 
 // This controller is called when user is logged in and he has snackbar that your email is not verified
@@ -337,7 +374,8 @@ const resendEmailVerification = asyncHandler(async (req, res) => {
       new ApiResponse(
         200,
         { token: unHashedToken },
-        "Mail has been sent to your mail ID"
+        "Mail has been sent to your mail ID",
+        USER_ACTIVITY_TYPES.EMAIL_VERIFICATION
       )
     );
 });
@@ -382,7 +420,8 @@ const forgotPasswordRequest = asyncHandler(async (req, res) => {
       new ApiResponse(
         200,
         { token: unHashedToken },
-        "Password reset mail has been sent on your mail id"
+        "Password reset mail has been sent on your mail id",
+        USER_ACTIVITY_TYPES.FORGOT_PASSWORD_REQUEST
       )
     );
 });
@@ -422,7 +461,12 @@ const resetForgottenPassword = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(
-      new ApiResponse(200, { pass: newPassword }, "Password reset successfully")
+      new ApiResponse(
+        200,
+        { pass: newPassword },
+        "Password reset successfully",
+        USER_ACTIVITY_TYPES.RESET_PASSWORD
+      )
     );
 });
 
@@ -445,7 +489,14 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, {}, "Password changed successfully"));
+    .json(
+      new ApiResponse(
+        200,
+        {},
+        "Password changed successfully",
+        USER_ACTIVITY_TYPES.CHANGE_PASSWORD
+      )
+    );
 });
 
 const assignRole = asyncHandler(async (req, res) => {
@@ -461,7 +512,14 @@ const assignRole = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, {}, "Role changed for the user"));
+    .json(
+      new ApiResponse(
+        200,
+        {},
+        "Role changed for the user",
+        USER_ACTIVITY_TYPES.EDIT_PROFILE
+      )
+    );
 });
 
 const updateUserAvatar = asyncHandler(async (req, res) => {
@@ -500,7 +558,14 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, updatedUser, "Avatar updated successfully"));
+    .json(
+      new ApiResponse(
+        200,
+        updatedUser,
+        "Avatar updated successfully",
+        USER_ACTIVITY_TYPES.EDIT_PROFILE_PICTURE
+      )
+    );
 });
 
 const getOnlineUsers = asyncHandler(async (req, res) => {
@@ -514,11 +579,12 @@ const getOnlineUsers = asyncHandler(async (req, res) => {
 
   res
     .status(200)
-    .json( 
+    .json(
       new ApiResponse(
         200,
         onlineUsers,
-        "List of online users excluding current user"
+        "List of online users excluding current user",
+        USER_ACTIVITY_TYPES.RETRIEVE_DATA
       )
     );
 });

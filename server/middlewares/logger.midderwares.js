@@ -1,5 +1,4 @@
 // middleware.js
-import { response } from "express";
 import { activityLogger, errorLogger } from "../logger.js";
 
 // Middleware for logging API calls
@@ -21,20 +20,25 @@ const activityLoggerMiddleware = (req, res, next) => {
     res.json(body);
 
     // Log after response is sent
-    const { user, method, originalUrl, body: requestBody } = req;
-    const { statusCode } = res;
+    const { method, originalUrl, body: requestBody } = req;
 
+    // Don't log response data for GET requests
+    // const responseData = method === "GET" ? null : responseBody.data;
     if (method === "GET") return;
+    const responseData = responseBody.data;
+
+    const user = req.user || responseData?.user;
 
     activityLogger.info(responseBody?.message || "", {
       timestamp: new Date().toISOString(),
-      userActivityType: responseBody.userActivityType,
+      userActivityType: responseBody.action,
       user: user ? user._id : "anonymous",
+      ipAddress: req.ip,
       endpoint: originalUrl,
       method: method,
-      // requestBody: requestBody,
-      // responseData: responseBody.data,
-      responseStatus: statusCode,
+      requestBody: requestBody,
+      responseData: responseData,
+      responseStatus: responseBody.statusCode,
       responseSuccess: responseBody.success,
       responseTime: `${Date.now() - startTime}ms`,
     });
