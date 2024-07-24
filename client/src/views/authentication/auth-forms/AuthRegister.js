@@ -40,7 +40,7 @@ import { showSnackbar } from "reducer/snackbar/snackbar.slice";
 
 // ===========================|| FIREBASE - REGISTER ||=========================== //
 
-const FirebaseRegister = ({ ...others }) => {
+const AuthRegister = ({ ...others }) => {
   const theme = useTheme();
   const { register } = useAuth();
   const dispatch = useDispatch();
@@ -73,9 +73,17 @@ const FirebaseRegister = ({ ...others }) => {
     setLevel(strengthColor(temp));
   };
 
-  useEffect(() => {
-    // changePassword('123456');
-  }, []);
+  const isDevelopment = import.meta.env.MODE === "development";
+  const initialValues = isDevelopment
+    ? {
+        firstName: "first",
+        lastName: "last",
+        username: "demo.user",
+        email: "demo@gmail.com",
+        password: "1234",
+        submit: null,
+      }
+    : {};
 
   return (
     <>
@@ -145,14 +153,7 @@ const FirebaseRegister = ({ ...others }) => {
       </Grid>
 
       <Formik
-        initialValues={{
-          firstName: "first",
-          lastName: "last",
-          username: "demo.user",
-          email: "demo@gmail.com",
-          password: "1234",
-          submit: null,
-        }}
+        initialValues={initialValues}
         validationSchema={Yup.object().shape({
           firstName: Yup.string().max(255).required("First Name is required"),
           lastName: Yup.string().max(255).required("Last Name is required"),
@@ -402,4 +403,4 @@ const FirebaseRegister = ({ ...others }) => {
   );
 };
 
-export default FirebaseRegister;
+export default AuthRegister;

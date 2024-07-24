@@ -39,7 +39,7 @@ import { useNavigate } from "react-router-dom";
 
 // ============================|| FIREBASE - LOGIN ||============================ //
 
-const FirebaseLogin = ({ ...others }) => {
+const AuthLogin = ({ ...others }) => {
   const { login } = useAuth();
   const theme = useTheme();
   const scriptedRef = useScriptRef();
@@ -61,6 +61,15 @@ const FirebaseLogin = ({ ...others }) => {
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
+
+  const isDevelopment = import.meta.env.MODE === "development";
+  const initialValues = isDevelopment
+    ? {
+        email: "mihir@gmail.com",
+        password: "1234",
+        submit: null,
+      }
+    : {};
 
   return (
     <>
@@ -140,11 +149,7 @@ const FirebaseLogin = ({ ...others }) => {
       </Grid>
 
       <Formik
-        initialValues={{
-          email: "mihir@gmail.com",
-          password: "1234",
-          submit: null,
-        }}
+        initialValues={initialValues}
         validationSchema={Yup.object().shape({
           email: Yup.string()
             .email("Must be a valid email")
@@ -302,4 +307,4 @@ const FirebaseLogin = ({ ...others }) => {
   );
 };
 
-export default FirebaseLogin;
+export default AuthLogin;
