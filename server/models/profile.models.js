@@ -1,5 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 import { User } from "./user.models.js";
+import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 const profileSchema = new Schema(
   {
@@ -50,5 +51,7 @@ const profileSchema = new Schema(
   },
   { timestamps: true }
 );
+
+profileSchema.plugin(mongooseAggregatePaginate);
 
 export const SocialProfile = mongoose.model("SocialProfile", profileSchema);

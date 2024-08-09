@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Box, Typography, Avatar, Divider, Grid, Button } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Avatar,
+  Divider,
+  Grid,
+  Button,
+  Container,
+} from "@mui/material";
 import { LocationOn, Email, Phone } from "@mui/icons-material";
 import api from "api";
 import { getUserAvatarUrl } from "utils/getImageUrl";
@@ -52,7 +60,7 @@ const ProfilePage = () => {
   const fullName = `${profile.firstName} ${profile.lastName}`;
 
   return (
-    <Box>
+    <Container sx={{ px: 2 }}>
       <Box
         sx={{
           position: "relative",
@@ -76,8 +84,8 @@ const ProfilePage = () => {
               flexDirection: "column",
               justifyContent: "center",
               alignItems: "center",
-              mt: -9 ,
-              ml:3
+              mt: -9,
+              ml: 3,
             }}
           >
             <Avatar
@@ -188,7 +196,7 @@ const ProfilePage = () => {
           </Box>
         </Grid>
       </Grid>
-    </Box>
+    </Container>
   );
 };
 

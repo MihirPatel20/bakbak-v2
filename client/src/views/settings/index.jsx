@@ -13,6 +13,7 @@ import {
   MenuItem,
   InputLabel,
   FormControl,
+  Container,
 } from "@mui/material";
 
 import * as serviceWorkerRegistration from "@/serviceWorkerRegistration";
@@ -124,314 +125,326 @@ const SettingsView = () => {
   };
 
   return (
-    <Paper elevation={3} sx={{ p: 3, maxWidth: 800, mx: "auto", mt: 4 }}>
-      <Typography variant="h4" gutterBottom>
-        Settings
-      </Typography>
-
-      <Divider sx={{ my: 3 }} />
-
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" gutterBottom>
-          Notification Settings
+    <Container sx={{ px: 2, mt: { sm: 0, md: 3 } }}>
+      <Paper elevation={3} sx={{ p: 3 }}>
+        <Typography variant="h4" gutterBottom>
+          Settings
         </Typography>
-        <FormControlLabel
-          control={
-            <Switch
-              checked={settings.notifications.enabled}
-              onChange={(e) =>
-                handleSettingChange(
-                  "notifications",
-                  "enabled",
-                  e.target.checked
-                )
-              }
-            />
-          }
-          label="Enable Notifications"
-        />
-        <Box sx={{ ml: 3, mt: 2 }}>
-          <Typography variant="subtitle1" gutterBottom>
-            Notification Types
+
+        <Divider sx={{ my: 3 }} />
+
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h5" gutterBottom>
+            Notification Settings
           </Typography>
-          {Object.entries(settings.notifications.types).map(([key, value]) => (
-            <FormControlLabel
-              key={key}
-              control={
-                <Checkbox
-                  checked={value}
-                  onChange={(e) =>
-                    handleNestedSettingChange(
-                      "notifications",
-                      "types",
-                      key,
-                      e.target.checked
-                    )
+          <FormControlLabel
+            control={
+              <Switch
+                checked={settings.notifications.enabled}
+                onChange={(e) =>
+                  handleSettingChange(
+                    "notifications",
+                    "enabled",
+                    e.target.checked
+                  )
+                }
+              />
+            }
+            label="Enable Notifications"
+          />
+          <Box sx={{ ml: 3, mt: 2 }}>
+            <Typography variant="subtitle1" gutterBottom>
+              Notification Types
+            </Typography>
+            {Object.entries(settings.notifications.types).map(
+              ([key, value]) => (
+                <FormControlLabel
+                  key={key}
+                  control={
+                    <Checkbox
+                      checked={value}
+                      onChange={(e) =>
+                        handleNestedSettingChange(
+                          "notifications",
+                          "types",
+                          key,
+                          e.target.checked
+                        )
+                      }
+                      disabled={!settings.notifications.enabled}
+                    />
                   }
-                  disabled={!settings.notifications.enabled}
+                  label={key.charAt(0).toUpperCase() + key.slice(1)}
                 />
+              )
+            )}
+          </Box>
+
+          <Box sx={{ ml: 3, mt: 2 }}>
+            <Typography variant="subtitle1" gutterBottom mb={2}>
+              Quiet Hours
+            </Typography>
+            <TextField
+              label="Start"
+              type="time"
+              size="small"
+              value={settings.notifications.quietHours.start}
+              onChange={(e) =>
+                handleNestedSettingChange(
+                  "notifications",
+                  "quietHours",
+                  "start",
+                  e.target.value
+                )
               }
-              label={key.charAt(0).toUpperCase() + key.slice(1)}
+              InputLabelProps={{ shrink: true }}
             />
-          ))}
+            <TextField
+              label="End"
+              type="time"
+              size="small"
+              value={settings.notifications.quietHours.end}
+              onChange={(e) =>
+                handleNestedSettingChange(
+                  "notifications",
+                  "quietHours",
+                  "end",
+                  e.target.value
+                )
+              }
+              InputLabelProps={{ shrink: true }}
+            />
+          </Box>
         </Box>
 
-        <Box sx={{ ml: 3, mt: 2 }}>
-          <Typography variant="subtitle1" gutterBottom mb={2}>
-            Quiet Hours
+        <Divider sx={{ my: 3 }} />
+
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h5" gutterBottom>
+            Account Settings
           </Typography>
           <TextField
-            label="Start"
-            type="time"
-            size="small"
-            value={settings.notifications.quietHours.start}
+            fullWidth
+            label="Email"
+            value={settings.account.email}
             onChange={(e) =>
-              handleNestedSettingChange(
-                "notifications",
-                "quietHours",
-                "start",
-                e.target.value
-              )
+              handleSettingChange("account", "email", e.target.value)
             }
-            InputLabelProps={{ shrink: true }}
+            margin="normal"
           />
           <TextField
-            label="End"
-            type="time"
-            size="small"
-            value={settings.notifications.quietHours.end}
+            fullWidth
+            label="New Password"
+            type="password"
             onChange={(e) =>
-              handleNestedSettingChange(
-                "notifications",
-                "quietHours",
-                "end",
-                e.target.value
-              )
+              handleSettingChange("account", "password", e.target.value)
             }
-            InputLabelProps={{ shrink: true }}
+            margin="normal"
           />
         </Box>
-      </Box>
 
-      <Divider sx={{ my: 3 }} />
+        <Divider sx={{ my: 3 }} />
 
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" gutterBottom>
-          Account Settings
-        </Typography>
-        <TextField
-          fullWidth
-          label="Email"
-          value={settings.account.email}
-          onChange={(e) =>
-            handleSettingChange("account", "email", e.target.value)
-          }
-          margin="normal"
-        />
-        <TextField
-          fullWidth
-          label="New Password"
-          type="password"
-          onChange={(e) =>
-            handleSettingChange("account", "password", e.target.value)
-          }
-          margin="normal"
-        />
-      </Box>
-
-      <Divider sx={{ my: 3 }} />
-
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" gutterBottom>
-          Privacy and Data
-        </Typography>
-        <FormControlLabel
-          control={
-            <Switch
-              checked={settings.privacy.dataSharing}
-              onChange={(e) =>
-                handleSettingChange("privacy", "dataSharing", e.target.checked)
-              }
-            />
-          }
-          label="Allow Data Sharing"
-        />
-        <FormControlLabel
-          control={
-            <Switch
-              checked={settings.privacy.cookiesEnabled}
-              onChange={(e) =>
-                handleSettingChange(
-                  "privacy",
-                  "cookiesEnabled",
-                  e.target.checked
-                )
-              }
-            />
-          }
-          label="Enable Cookies"
-        />
-      </Box>
-
-      <Divider sx={{ my: 3 }} />
-
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" gutterBottom>
-          Appearance
-        </Typography>
-        <FormControlLabel
-          control={
-            <Switch
-              checked={settings.appearance.darkMode}
-              onChange={(e) =>
-                handleSettingChange("appearance", "darkMode", e.target.checked)
-              }
-            />
-          }
-          label="Dark Mode"
-        />
-        <FormControl fullWidth margin="normal">
-          <InputLabel>Font Size</InputLabel>
-          <Select
-            label="Font Size"
-            value={settings.appearance.fontSize}
-            onChange={(e) =>
-              handleSettingChange("appearance", "fontSize", e.target.value)
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h5" gutterBottom>
+            Privacy and Data
+          </Typography>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={settings.privacy.dataSharing}
+                onChange={(e) =>
+                  handleSettingChange(
+                    "privacy",
+                    "dataSharing",
+                    e.target.checked
+                  )
+                }
+              />
             }
-          >
-            <MenuItem value="small">Small</MenuItem>
-            <MenuItem value="medium">Medium</MenuItem>
-            <MenuItem value="large">Large</MenuItem>
-          </Select>
-        </FormControl>
-      </Box>
+            label="Allow Data Sharing"
+          />
+          <FormControlLabel
+            control={
+              <Switch
+                checked={settings.privacy.cookiesEnabled}
+                onChange={(e) =>
+                  handleSettingChange(
+                    "privacy",
+                    "cookiesEnabled",
+                    e.target.checked
+                  )
+                }
+              />
+            }
+            label="Enable Cookies"
+          />
+        </Box>
 
-      <Divider sx={{ my: 3 }} />
+        <Divider sx={{ my: 3 }} />
 
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" gutterBottom>
-          Language and Region
-        </Typography>
-        <FormControl fullWidth>
-          <InputLabel>Language</InputLabel>
-          <Select
-            value={settings.language}
-            onChange={(e) => handleSettingChange("language", e.target.value)}
-          >
-            <MenuItem value="en">English</MenuItem>
-            <MenuItem value="es">Spanish</MenuItem>
-            <MenuItem value="fr">French</MenuItem>
-          </Select>
-        </FormControl>
-      </Box>
-
-      <Divider sx={{ my: 3 }} />
-
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" gutterBottom>
-          Accessibility
-        </Typography>
-        <FormControlLabel
-          control={
-            <Switch
-              checked={settings.accessibility.highContrast}
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h5" gutterBottom>
+            Appearance
+          </Typography>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={settings.appearance.darkMode}
+                onChange={(e) =>
+                  handleSettingChange(
+                    "appearance",
+                    "darkMode",
+                    e.target.checked
+                  )
+                }
+              />
+            }
+            label="Dark Mode"
+          />
+          <FormControl fullWidth margin="normal">
+            <InputLabel>Font Size</InputLabel>
+            <Select
+              label="Font Size"
+              value={settings.appearance.fontSize}
               onChange={(e) =>
-                handleSettingChange(
-                  "accessibility",
-                  "highContrast",
-                  e.target.checked
-                )
+                handleSettingChange("appearance", "fontSize", e.target.value)
               }
-            />
-          }
-          label="High Contrast Mode"
-        />
-        <FormControlLabel
-          control={
-            <Switch
-              checked={settings.accessibility.screenReader}
-              onChange={(e) =>
-                handleSettingChange(
-                  "accessibility",
-                  "screenReader",
-                  e.target.checked
-                )
-              }
-            />
-          }
-          label="Screen Reader Support"
-        />
-      </Box>
+            >
+              <MenuItem value="small">Small</MenuItem>
+              <MenuItem value="medium">Medium</MenuItem>
+              <MenuItem value="large">Large</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
 
-      <Divider sx={{ my: 3 }} />
+        <Divider sx={{ my: 3 }} />
 
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" gutterBottom>
-          Security
-        </Typography>
-        <FormControlLabel
-          control={
-            <Switch
-              checked={settings.security.twoFactor}
-              onChange={(e) =>
-                handleSettingChange("security", "twoFactor", e.target.checked)
-              }
-            />
-          }
-          label="Two-Factor Authentication"
-        />
-      </Box>
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h5" gutterBottom>
+            Language and Region
+          </Typography>
+          <FormControl fullWidth>
+            <InputLabel>Language</InputLabel>
+            <Select
+              value={settings.language}
+              onChange={(e) => handleSettingChange("language", e.target.value)}
+            >
+              <MenuItem value="en">English</MenuItem>
+              <MenuItem value="es">Spanish</MenuItem>
+              <MenuItem value="fr">French</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
 
-      <Divider sx={{ my: 3 }} />
+        <Divider sx={{ my: 3 }} />
 
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" gutterBottom>
-          Communication Preferences
-        </Typography>
-        <FormControlLabel
-          control={
-            <Switch
-              checked={settings.communication.marketingEmails}
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h5" gutterBottom>
+            Accessibility
+          </Typography>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={settings.accessibility.highContrast}
+                onChange={(e) =>
+                  handleSettingChange(
+                    "accessibility",
+                    "highContrast",
+                    e.target.checked
+                  )
+                }
+              />
+            }
+            label="High Contrast Mode"
+          />
+          <FormControlLabel
+            control={
+              <Switch
+                checked={settings.accessibility.screenReader}
+                onChange={(e) =>
+                  handleSettingChange(
+                    "accessibility",
+                    "screenReader",
+                    e.target.checked
+                  )
+                }
+              />
+            }
+            label="Screen Reader Support"
+          />
+        </Box>
+
+        <Divider sx={{ my: 3 }} />
+
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h5" gutterBottom>
+            Security
+          </Typography>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={settings.security.twoFactor}
+                onChange={(e) =>
+                  handleSettingChange("security", "twoFactor", e.target.checked)
+                }
+              />
+            }
+            label="Two-Factor Authentication"
+          />
+        </Box>
+
+        <Divider sx={{ my: 3 }} />
+
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h5" gutterBottom>
+            Communication Preferences
+          </Typography>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={settings.communication.marketingEmails}
+                onChange={(e) =>
+                  handleSettingChange(
+                    "communication",
+                    "marketingEmails",
+                    e.target.checked
+                  )
+                }
+              />
+            }
+            label="Receive Marketing Emails"
+          />
+          <FormControl fullWidth margin="normal">
+            <InputLabel>Update Frequency</InputLabel>
+            <Select
+              value={settings.communication.updateFrequency}
               onChange={(e) =>
                 handleSettingChange(
                   "communication",
-                  "marketingEmails",
-                  e.target.checked
+                  "updateFrequency",
+                  e.target.value
                 )
               }
-            />
-          }
-          label="Receive Marketing Emails"
-        />
-        <FormControl fullWidth margin="normal">
-          <InputLabel>Update Frequency</InputLabel>
-          <Select
-            value={settings.communication.updateFrequency}
-            onChange={(e) =>
-              handleSettingChange(
-                "communication",
-                "updateFrequency",
-                e.target.value
-              )
-            }
-          >
-            <MenuItem value="daily">Daily</MenuItem>
-            <MenuItem value="weekly">Weekly</MenuItem>
-            <MenuItem value="monthly">Monthly</MenuItem>
-          </Select>
-        </FormControl>
-      </Box>
+            >
+              <MenuItem value="daily">Daily</MenuItem>
+              <MenuItem value="weekly">Weekly</MenuItem>
+              <MenuItem value="monthly">Monthly</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
 
-      <Box sx={{ mt: 3 }}>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleSaveSettings}
-        >
-          Save All Settings
-        </Button>
-      </Box>
-    </Paper>
+        <Box sx={{ mt: 3 }}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleSaveSettings}
+          >
+            Save All Settings
+          </Button>
+        </Box>
+      </Paper>
+    </Container>
   );
 };
 

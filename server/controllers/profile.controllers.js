@@ -114,14 +114,88 @@ const getMySocialProfile = asyncHandler(async (req, res) => {
     );
 });
 
-const getAllUserProfiles = asyncHandler(async (req, res) => {
-  const users = await User.find({});
+/**
+ * @param {import("express").Request} req
+ * @description Utility function which returns the pipeline stages to structure the social profile schema with
+ * @returns {mongoose.PipelineStage[]}
+ */
+export const profileCommonAggregation = (req) => {
+  const matchStage = req
+    ? { owner: new mongoose.Types.ObjectId(req.user?._id) }
+    : {};
 
-  const profiles = await Promise.all(
-    users.map(async (user) => {
-      const userProfile = await getUserSocialProfile(user._id, req);
-      return userProfile;
-    })
+  return [
+    {
+      $match: matchStage,
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "owner",
+        foreignField: "_id",
+        as: "account",
+        pipeline: [
+          {
+            $project: {
+              avatar: 1,
+              username: 1,
+              email: 1,
+              isEmailVerified: 1,
+            },
+          },
+        ],
+      },
+    },
+    {
+      $lookup: {
+        from: "socialfollows",
+        localField: "owner",
+        foreignField: "followerId",
+        as: "following", // users that are followed by current user
+      },
+    },
+    {
+      $lookup: {
+        from: "socialfollows",
+        localField: "owner",
+        foreignField: "followeeId",
+        as: "followedBy", // users that are following the current user
+      },
+    },
+    {
+      $addFields: {
+        account: { $first: "$account" },
+        followersCount: { $size: "$followedBy" },
+        followingCount: { $size: "$following" },
+      },
+    },
+    {
+      $project: {
+        followedBy: 0,
+        following: 0,
+      },
+    },
+  ];
+};
+
+const getAllUserProfiles = asyncHandler(async (req, res) => {
+  const { page = 1, limit = 10 } = req.query;
+
+  const profileAggregation = SocialProfile.aggregate([
+    ...profileCommonAggregation(),
+  ]);
+
+  const options = {
+    page: parseInt(page),
+    limit: parseInt(limit),
+    customLabels: {
+      totalDocs: "totalProfiles",
+      docs: "profiles",
+    },
+  };
+  const profiles = await SocialProfile.aggregatePaginate(
+    profileAggregation,
+    options
   );
 
   return res

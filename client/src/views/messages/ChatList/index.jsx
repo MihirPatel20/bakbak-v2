@@ -81,7 +81,15 @@ const ChatList = ({ setActiveChat }) => {
   };
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        gap: 1,
+        pr: "12px",
+        pl: "6px",
+      }}
+    >
       <Box
         sx={{
           position: "sticky",

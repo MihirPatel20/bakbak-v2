@@ -33,6 +33,7 @@ const PostFeed = () => {
     setIsFetching(true);
     try {
       const response = await api.get(`post/feed?page=${pageNumber}&limit=3`);
+      console.log("response: ", response)
       const fetchedPosts = response.data.data.posts;
       setPosts((prevPosts) => [...prevPosts, ...fetchedPosts]);
       setHasMore(response.data.data.hasNextPage);
