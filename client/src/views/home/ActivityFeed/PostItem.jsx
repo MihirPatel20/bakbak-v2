@@ -1,4 +1,4 @@
-import React, { forwardRef } from "react";
+import React, { forwardRef, useState } from "react";
 import {
   Box,
   Typography,
@@ -7,6 +7,7 @@ import {
   Card,
   CardContent,
   useTheme,
+  Button,
 } from "@mui/material";
 import ImageCarousel from "./ImageCarousel";
 import PostIcons from "assets/tabler-icons/post-icons";
@@ -14,6 +15,16 @@ import { getUserAvatarUrl } from "utils/getImageUrl";
 
 const PostItem = forwardRef(({ post }, ref) => {
   const theme = useTheme();
+
+  const [isReadMore, setIsReadMore] = useState(true);
+  const toggleReadMore = () => setIsReadMore(!isReadMore);
+
+  const truncateContent = (content, limit) => {
+    if (content.length <= limit) return content;
+    return content.substring(0, limit) + "...";
+  };
+
+  const contentLimit = 120; // Set the character limit for truncation
 
   const handleLikeClick = () => {
     // Handle like click action
@@ -82,7 +93,18 @@ const PostItem = forwardRef(({ post }, ref) => {
             <Typography component="span" mr={1} fontWeight={600}>
               {post.author.account.username}
             </Typography>
-            {post.content}
+            {isReadMore
+              ? truncateContent(post.content, contentLimit)
+              : post.content}
+            {post.content.length > contentLimit && (
+              <Typography
+              component="span"
+              onClick={toggleReadMore}
+              style={{ color: 'gray', cursor: 'pointer', marginLeft: '5px' }}
+            >
+              {isReadMore ? 'Read More' : 'Read Less'}
+            </Typography>
+            )}
           </Typography>
 
           <Typography variant="body2" color={"#7f8489"}>

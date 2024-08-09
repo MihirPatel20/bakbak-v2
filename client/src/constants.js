@@ -37,3 +37,61 @@ export const ChatEventEnum = Object.freeze({
   // ? when the notification is updated
   NOTIFICATION_UPDATE_EVENT: "notificationUpdate",
 });
+
+export const USER_ACTIVITY_TYPES = Object.freeze({
+  USER_REGISTRATION: "user_registration",
+  USER_LOGIN: "user_login",
+  USER_LOGOUT: "user_logout",
+  EMAIL_VERIFICATION: "email_verification",
+
+  RETRIEVE_DATA: "retrieve_data",
+
+  CREATE_POST: "create_post",
+  DELETE_POST: "delete_post",
+  UPDATE_POST: "update_post",
+  LIKE_POST: "like_post",
+  UNLIKE_POST: "unlike_post",
+  COMMENT_ON_POST: "comment_on_post",
+  LIKE_COMMENT: "like_comment",
+  UNLIKE_COMMENT: "unlike_comment",
+  DELETE_COMMENT: "delete_comment",
+  UPDATE_COMMENT: "update_comment",
+
+  CREATE_CHAT: "create_chat",
+  DELETE_CHAT: "delete_chat",
+  SEND_MESSAGE: "send_message",
+
+  EDIT_PROFILE: "edit_profile",
+  EDIT_PROFILE_PICTURE: "edit_profile_picture",
+  EDIT_PROFILE_COVER: "edit_profile_cover",
+
+  FORGOT_PASSWORD_REQUEST: "forgot_password_request",
+  FORGOT_PASSWORD_EMAIL_SENT: "forgot_password_email_sent",
+  RESET_PASSWORD: "reset_password",
+  CHANGE_PASSWORD: "change_password",
+
+  ACTIVATE_PUSH_SUBSCRIPTION: "activate_push_subscription",
+  DEACTIVATE_PUSH_SUBSCRIPTION: "deactivate_push_subscription",
+
+  FOLLOW_USER: "follow_user",
+  UNFOLLOW_USER: "unfollow_user",
+
+  SYSTEM_CRASH: "system_crash",
+  API_FAILURE: "api_failure",
+  CLIENT_ERROR: "client_error",
+  SYSTEM_ERROR: "system_error",
+  START_SESSION: "start_session",
+  SESSION_END: "session_end",
+
+  SEND_NOTIFICATION: "send_notification",
+  RETRIEVE_NOTIFICATIONS: "retrieve_notifications",
+  READ_NOTIFICATION: "read_notification",
+  CLICK_NOTIFICATION: "click_notification",
+  NOTIFICATION_IGNORED: "notification_ignored",
+
+  SUBSCRIBE_TO_NOTIFICATIONS: "subscribe_to_notifications",
+  UNSUBSCRIBE_FROM_NOTIFICATIONS: "unsubscribe_from_notifications",
+  SEND_PUSH_NOTIFICATION: "send_push_notification",
+
+  TESTING_API: "testing_api",
+});

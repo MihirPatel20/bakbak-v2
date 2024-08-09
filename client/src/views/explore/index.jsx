@@ -52,7 +52,6 @@ const ExplorePage = () => {
       const response = await api.get(
         `/profile/all?page=${pageNumber}&${limit}`
       );
-      console.log("response: ", response);
       const fetchedUsers = response.data.data.profiles;
       setUsers((prevUsers) => [...prevUsers, ...fetchedUsers]);
       setHasMore(response.data.data.hasNextPage);
@@ -65,14 +64,13 @@ const ExplorePage = () => {
   }, []);
 
   useEffect(() => {
-    console.log("page: ", page);
     fetchUsers(page);
   }, [fetchUsers, page]);
 
   return (
-    <Container sx={{ px: 2 }}>
+    <Container sx={{ mb: matchDownSM ? 2 : 4 }}>
       <h1>Explore Page</h1>
-      
+
       <Grid container spacing={3}>
         {users.length > 0 ? (
           users.map((user, index) => {

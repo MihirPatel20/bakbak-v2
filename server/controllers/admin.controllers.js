@@ -1,3 +1,6 @@
+import path from "path";
+import fs from "fs/promises";
+import { createReadStream } from "fs";
 import { Chat } from "../models/chat.models.js";
 import { ChatMessage } from "../models/message.models.js";
 import { User } from "../models/user.models.js";
@@ -47,6 +50,32 @@ export const testAdminApi = asyncHandler(async (req, res) => {
         USER_ACTIVITY_TYPES.TESTING_API
       )
     );
+});
+
+const downloadLogFile = asyncHandler(async (req, res) => {
+  const filePath = path.resolve("logs/user-activity.log");
+
+  await fs.access(filePath);
+
+  // Set headers for file download
+  res.setHeader(
+    "Content-Disposition",
+    `attachment; filename="user-activity.log"`
+  );
+  res.setHeader("Content-Type", "application/octet-stream");
+
+  // Create a read stream and pipe it to the response
+  const readStream = createReadStream(filePath);
+  readStream.pipe(res);
+
+  readStream.on("end", () => {
+    console.log("File sent successfully.");
+  });
+
+  readStream.on("error", (err) => {
+    console.error("Error reading the file:", err);
+    res.status(500).json({ message: "Failed to download the log file." });
+  });
 });
 
 const getEnhancedStatistics = asyncHandler(async (req, res) => {
@@ -157,7 +186,7 @@ const getTopPosts = asyncHandler(async (req, res) => {
   const topPosts = await SocialPost.aggregate([
     ...postCommonAggregation(req),
     { $sort: { likes: -1 } }, // Sort by the number of likes in descending order
-    { $limit: 10 }, // Limit the results to the top 10 posts
+    { $limit: 9 }, // Limit the results to the top 10 posts
   ]);
 
   return res
@@ -269,4 +298,5 @@ export {
   getTopPosts,
   changeUserRole,
   getEnhancedStatistics,
+  downloadLogFile,
 };
