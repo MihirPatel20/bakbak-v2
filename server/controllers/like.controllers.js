@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { USER_ACTIVITY_TYPES } from "../constants.js";
 import { SocialComment } from "../models/comment.models.js";
 import { SocialLike } from "../models/like.models.js";
@@ -5,14 +6,22 @@ import { SocialPost } from "../models/post.models.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { postCommonAggregation } from "./post.controllers.js";
 
 const likeDislikePost = asyncHandler(async (req, res) => {
   const { postId } = req.params;
 
-  const post = await SocialPost.findById(postId);
+  const post = await SocialPost.aggregate([
+    {
+      $match: {
+        _id: new mongoose.Types.ObjectId(postId),
+      },
+    },
+    ...postCommonAggregation(req),
+  ]);
 
   // Check for post existence
-  if (!post) {
+  if (!post[0]) {
     throw new ApiError(404, "Post does not exist");
   }
 
@@ -29,12 +38,15 @@ const likeDislikePost = asyncHandler(async (req, res) => {
       likedBy: req.user?._id,
     });
 
+    post[0].isLiked = false;
+    post[0].likes = (post[0].likes || 0) - 1;
+
     return res
       .status(200)
       .json(
         new ApiResponse(
           200,
-          { postId, isLiked: false },
+          post[0],
           "Unliked successfully",
           USER_ACTIVITY_TYPES.UNLIKE_POST
         )
@@ -46,12 +58,15 @@ const likeDislikePost = asyncHandler(async (req, res) => {
       likedBy: req.user?._id,
     });
 
+    post[0].isLiked = true;
+    post[0].likes = (post[0].likes || 0) + 1;
+
     return res
       .status(200)
       .json(
         new ApiResponse(
           200,
-          { postId, isLiked: true },
+          post[0],
           "Liked successfully",
           USER_ACTIVITY_TYPES.LIKE_POST
         )

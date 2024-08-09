@@ -1,54 +1,40 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { Box, CircularProgress, Grid, useMediaQuery } from "@mui/material";
-import api from "api";
 import PostItem from "./PostItem";
 import { useTheme } from "@emotion/react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchUserFeed } from "reducer/userFeed/userFeed.thunk";
 
 const PostFeed = () => {
   const theme = useTheme();
   const matchDownSM = useMediaQuery(theme.breakpoints.down("sm"));
+  const dispatch = useDispatch();
 
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
+  const { posts, page, isLoading, hasNextPage } = useSelector(
+    (state) => state.userFeed
+  );
+
   const [isFetching, setIsFetching] = useState(false);
 
   const observer = useRef();
   const lastPostElementRef = useCallback(
     (node) => {
-      if (loading) return;
+      if (isLoading || !hasNextPage) return;
       if (observer.current) observer.current.disconnect();
       observer.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && hasMore && !isFetching) {
-          setPage((prevPage) => prevPage + 1);
+        if (entries[0].isIntersecting && hasNextPage && !isFetching) {
+          dispatch(fetchUserFeed({ page: page + 1, limit: 3 }));
         }
       });
       if (node) observer.current.observe(node);
     },
-    [loading, hasMore, isFetching]
+    [isLoading, hasNextPage, isFetching, dispatch, page]
   );
 
-  const fetchPosts = useCallback(async (pageNumber) => {
-    setIsFetching(true);
-    try {
-      const response = await api.get(`post/feed?page=${pageNumber}&limit=3`);
-      // console.log("response: ", response)
-      const fetchedPosts = response.data.data.posts;
-      setPosts((prevPosts) => [...prevPosts, ...fetchedPosts]);
-      setHasMore(response.data.data.hasNextPage);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching posts:", error);
-    } finally {
-      setIsFetching(false);
-    }
-  }, []);
-
   useEffect(() => {
-    fetchPosts(page);
-  }, [fetchPosts, page]);
-  
+    dispatch(fetchUserFeed({ page: 1, limit: 3 }));
+  }, [dispatch]);
+
   return (
     <Box
       sx={{
@@ -56,7 +42,7 @@ const PostFeed = () => {
         px: matchDownSM ? 2 : 1,
       }}
     >
-      {loading && page === 1 ? (
+      {isLoading && page === 1 ? (
         <Box
           display="flex"
           justifyContent="center"

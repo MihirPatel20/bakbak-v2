@@ -1,17 +1,26 @@
+import mongoose from "mongoose";
 import { USER_ACTIVITY_TYPES } from "../constants.js";
 import { SocialBookmark } from "../models/bookmark.models.js";
 import { SocialPost } from "../models/post.models.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { postCommonAggregation } from "./post.controllers.js";
 
 const bookmarkUnBookmarkPost = asyncHandler(async (req, res) => {
   const { postId } = req.params;
 
-  const post = await SocialPost.findById(postId);
+  const post = await SocialPost.aggregate([
+    {
+      $match: {
+        _id: new mongoose.Types.ObjectId(postId),
+      },
+    },
+    ...postCommonAggregation(req),
+  ]);
 
   // Check for post existence
-  if (!post) {
+  if (!post[0]) {
     throw new ApiError(404, "Post does not exist");
   }
 
@@ -27,12 +36,15 @@ const bookmarkUnBookmarkPost = asyncHandler(async (req, res) => {
       postId,
       bookmarkedBy: req.user?._id,
     });
+
+    post[0].isBookmarked = false;
+
     return res
       .status(200)
       .json(
         new ApiResponse(
           200,
-          { isBookmarked: false },
+          post[0],
           "Bookmark removed successfully",
           USER_ACTIVITY_TYPES.UNBOOKMARK_POST
         )
@@ -43,12 +55,15 @@ const bookmarkUnBookmarkPost = asyncHandler(async (req, res) => {
       postId,
       bookmarkedBy: req.user?._id,
     });
+
+    post[0].isBookmarked = true;
+
     return res
       .status(200)
       .json(
         new ApiResponse(
           200,
-          { isBookmarked: true },
+          post[0],
           "Bookmarked successfully",
           USER_ACTIVITY_TYPES.BOOKMARK_POST
         )

@@ -11,10 +11,12 @@ import {
 import ImageCarousel from "./ImageCarousel";
 import PostIcons from "assets/tabler-icons/post-icons";
 import { getUserAvatarUrl } from "utils/getImageUrl";
-import api from "api";
+import { useDispatch } from "react-redux";
+import { likePost, bookmarkPost } from "reducer/userFeed/userFeed.thunk";
 
 const PostItem = forwardRef(({ post }, ref) => {
   const theme = useTheme();
+  const dispatch = useDispatch();
 
   const [isReadMore, setIsReadMore] = useState(true);
   const toggleReadMore = () => setIsReadMore(!isReadMore);
@@ -28,9 +30,8 @@ const PostItem = forwardRef(({ post }, ref) => {
 
   const handleLikeClick = async () => {
     try {
-      // Send a POST request to like or unlike the post
-      const response = await api.post(`like/post/${post._id}`);
-      console.log(response.data.message);
+      // Dispatch likePost thunk
+      await dispatch(likePost(post._id));
     } catch (error) {
       console.error("Error liking post:", error);
     }
@@ -46,9 +47,8 @@ const PostItem = forwardRef(({ post }, ref) => {
 
   const handleBookmarkClick = async () => {
     try {
-      // Send a POST request to bookmark or unbookmark the post
-      const response = await api.post(`bookmark/post/${post._id}`);
-      console.log(response.data.message);
+      // Dispatch bookmarkPost thunk
+      await dispatch(bookmarkPost(post._id));
     } catch (error) {
       console.error("Error bookmarking post:", error);
     }
