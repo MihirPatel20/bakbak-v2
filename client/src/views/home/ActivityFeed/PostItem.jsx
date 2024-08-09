@@ -7,11 +7,11 @@ import {
   Card,
   CardContent,
   useTheme,
-  Button,
 } from "@mui/material";
 import ImageCarousel from "./ImageCarousel";
 import PostIcons from "assets/tabler-icons/post-icons";
 import { getUserAvatarUrl } from "utils/getImageUrl";
+import api from "api";
 
 const PostItem = forwardRef(({ post }, ref) => {
   const theme = useTheme();
@@ -26,8 +26,14 @@ const PostItem = forwardRef(({ post }, ref) => {
 
   const contentLimit = 120; // Set the character limit for truncation
 
-  const handleLikeClick = () => {
-    // Handle like click action
+  const handleLikeClick = async () => {
+    try {
+      // Send a POST request to like or unlike the post
+      const response = await api.post(`like/post/${post._id}`);
+      console.log(response.data.message);
+    } catch (error) {
+      console.error("Error liking post:", error);
+    }
   };
 
   const handleCommentClick = () => {
@@ -38,8 +44,14 @@ const PostItem = forwardRef(({ post }, ref) => {
     // Handle share click action
   };
 
-  const handleBookmarkClick = () => {
-    // Handle bookmark click action
+  const handleBookmarkClick = async () => {
+    try {
+      // Send a POST request to bookmark or unbookmark the post
+      const response = await api.post(`bookmark/post/${post._id}`);
+      console.log(response.data.message);
+    } catch (error) {
+      console.error("Error bookmarking post:", error);
+    }
   };
 
   return (
@@ -62,26 +74,39 @@ const PostItem = forwardRef(({ post }, ref) => {
             {/* Like icon */}
             <PostIcons.Heart
               onClick={handleLikeClick}
-              style={{ cursor: "pointer", strokeWidth: 1.5 }}
+              size={28}
+              style={{
+                cursor: "pointer",
+                strokeWidth: 1.5,
+                fill: post.isLiked ? "red" : "none",
+                color: post.isLiked ? "red" : "black",
+              }}
             />
-            {/* <Typography variant="body2">{post.likes}</Typography> */}
 
             {/* Comment icon */}
             <PostIcons.MessageCircle
               onClick={handleCommentClick}
+              size={28}
               style={{ cursor: "pointer", strokeWidth: 1.5 }}
             />
 
             {/* Share icon */}
             <PostIcons.Send
               onClick={handleShareClick}
+              size={28}
               style={{ cursor: "pointer", strokeWidth: 1.5 }}
             />
 
             {/* Bookmark icon */}
             <PostIcons.Bookmark
               onClick={handleBookmarkClick}
-              style={{ cursor: "pointer", strokeWidth: 1.5 }}
+              size={28}
+              style={{
+                cursor: "pointer",
+                strokeWidth: 1.5,
+                fill: post.isBookmarked ? "gray" : "none",
+                color: post.isBookmarked ? "gray" : "black",
+              }}
             />
           </Box>
 
@@ -98,12 +123,12 @@ const PostItem = forwardRef(({ post }, ref) => {
               : post.content}
             {post.content.length > contentLimit && (
               <Typography
-              component="span"
-              onClick={toggleReadMore}
-              style={{ color: 'gray', cursor: 'pointer', marginLeft: '5px' }}
-            >
-              {isReadMore ? 'Read More' : 'Read Less'}
-            </Typography>
+                component="span"
+                onClick={toggleReadMore}
+                style={{ color: "gray", cursor: "pointer", marginLeft: "5px" }}
+              >
+                {isReadMore ? "Read More" : "Read Less"}
+              </Typography>
             )}
           </Typography>
 

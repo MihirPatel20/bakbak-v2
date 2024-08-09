@@ -9,10 +9,10 @@ const router = Router();
 
 router.use(verifyJWT);
 
-router.route("/").get(getBookMarkedPosts); // getBookMarkedPosts controller is present in posts controller due to utility function dependency
+router.route("/posts").get(getBookMarkedPosts); // getBookMarkedPosts controller is present in posts controller due to utility function dependency
 
 router
-  .route("/:postId")
+  .route("/post/:postId")
   .post(mongoIdPathVariableValidator("postId"), validate, bookmarkUnBookmarkPost);
 
 export default router;

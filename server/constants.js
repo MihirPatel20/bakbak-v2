@@ -148,6 +148,8 @@ export const USER_ACTIVITY_TYPES = Object.freeze({
   UNLIKE_COMMENT: "unlike_comment",
   DELETE_COMMENT: "delete_comment",
   UPDATE_COMMENT: "update_comment",
+  BOOKMARK_POST: "bookmark_post",
+  UNBOOKMARK_POST: "unbookmark_post",
   
   CREATE_CHAT: "create_chat",
   DELETE_CHAT: "delete_chat",

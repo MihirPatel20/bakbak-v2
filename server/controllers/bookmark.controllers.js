@@ -1,3 +1,4 @@
+import { USER_ACTIVITY_TYPES } from "../constants.js";
 import { SocialBookmark } from "../models/bookmark.models.js";
 import { SocialPost } from "../models/post.models.js";
 import { ApiError } from "../utils/ApiError.js";

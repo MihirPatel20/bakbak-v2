@@ -106,7 +106,6 @@ const NotificationList = () => {
   };
 
   const MessageNotification = ({ notification }) => {
-    console.log("notification", notification);
     const url = `messages/direct/u/${notification.referenceId.chat}`;
 
     const navigate = useNavigate();
