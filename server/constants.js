@@ -112,9 +112,8 @@ export const ChatEventEnum = Object.freeze({
 
 export const NotificationTypes = Object.freeze({
   MESSAGE: "message",
-  MESSAGE_LIKE: "message_like",
-  POST_LIKE: "post_like",
-  POST_COMMENT: "post_comment",
+  LIKE: "like",
+  COMMENT: "comment",
   COMMENT_LIKE: "comment_like",
   PING: "ping",
   FOLLOW_REQUEST: "follow_request",
@@ -122,12 +121,12 @@ export const NotificationTypes = Object.freeze({
 
 export const ReferenceModel = Object.freeze({
   MESSAGE: "ChatMessage",
-  message_like: "ChatMessage",
-  post_like: "SocialLike",
-  post_comment: "SocialComment",
-  comment_like: "SocialLike",
-  ping: "ChatMessage",
-  follow_request: "SocialFollow",
+  LIKE: "SocialLike",
+  POST: "SocialPost",
+  COMMENT: "SocialComment",
+  COMMENT_LIKE: "SocialLike",
+  PING: "ChatMessage",
+  FOLLOW_REQUEST: "SocialFollow",
 });
 
 export const USER_ACTIVITY_TYPES = Object.freeze({
@@ -150,11 +149,11 @@ export const USER_ACTIVITY_TYPES = Object.freeze({
   UPDATE_COMMENT: "update_comment",
   BOOKMARK_POST: "bookmark_post",
   UNBOOKMARK_POST: "unbookmark_post",
-  
+
   CREATE_CHAT: "create_chat",
   DELETE_CHAT: "delete_chat",
   SEND_MESSAGE: "send_message",
-  
+
   EDIT_PROFILE: "edit_profile",
   EDIT_PROFILE_PICTURE: "edit_profile_picture",
   EDIT_PROFILE_COVER: "edit_profile_cover",

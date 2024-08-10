@@ -5,6 +5,7 @@ import { useTheme, styled } from "@mui/material/styles";
 import { blue, orange, yellow } from "@mui/material/colors";
 import {
   Avatar,
+  Box,
   Button,
   Card,
   CardContent,
@@ -177,57 +178,55 @@ const NotificationList = () => {
     );
   };
 
-  const PostNotification = ({ notification }) => {
+  const LikeNotification = ({ notification }) => {
+    const senderUsername = notification.sender.username;
+    console.log("notification: ", notification);
+
     return (
       <ListItemWrapper>
         <ListItem alignItems="center">
           <ListItemAvatar>
-            <Avatar alt="John Doe" src={User1} />
+            <Avatar
+              alt={senderUsername}
+              src={getUserAvatarUrl(notification.sender.avatar)}
+            />
           </ListItemAvatar>
           <ListItemText
-            primary={<Typography variant="subtitle1">John Doe</Typography>}
+            primary={notification.sender.username}
+            secondary={
+              <Typography variant="caption" display="block">
+                liked your post
+              </Typography>
+            }
           />
+
           <ListItemSecondaryAction>
             <Grid container justifyContent="flex-end">
               <Grid item xs={12}>
                 <Typography variant="caption" display="block" gutterBottom>
-                  2 min ago
+                  {getRelativeTime(notification.createdAt)}
                 </Typography>
               </Grid>
             </Grid>
           </ListItemSecondaryAction>
         </ListItem>
+
         <Grid container direction="column" className="list-container">
-          <Grid item xs={12} sx={{ pb: 2 }}>
-            <Typography component="span" variant="subtitle2">
-              Uploaded two file on &nbsp;
-              <Typography component="span" variant="h6">
-                21 Jan 2020
-              </Typography>
-            </Typography>
-          </Grid>
-          <Grid item xs={12}>
-            <Grid container>
-              <Grid item xs={12}>
-                <Card
-                  sx={{
-                    backgroundColor: theme.palette.primary.light,
-                  }}
-                >
-                  <CardContent>
-                    <Grid container direction="column">
-                      <Grid item xs={12}>
-                        <Stack direction="row" spacing={2}>
-                          <IconPhoto stroke={1.5} size="1.3rem" />
-                          <Typography variant="subtitle1">demo.jpg</Typography>
-                        </Stack>
-                      </Grid>
-                    </Grid>
-                  </CardContent>
-                </Card>
-              </Grid>
-            </Grid>
-          </Grid>
+          <Card
+            sx={{
+              backgroundColor: theme.palette.primary.light,
+            }}
+          >
+            <Box p={1}>
+              <Stack direction="row">
+                <img
+                  src={getUserAvatarUrl(notification.referenceId.images[0])}
+                  alt={`notification-img`}
+                  style={{ width: "100%", height: "100px", borderRadius: 8 }}
+                />
+              </Stack>
+            </Box>
+          </Card>
         </Grid>
       </ListItemWrapper>
     );
@@ -256,8 +255,8 @@ const NotificationList = () => {
             {notification.type === "message" && (
               <MessageNotification notification={notification} />
             )}
-            {notification.type === "post" && (
-              <PostNotification notification={notification} />
+            {notification.type === "like" && (
+              <LikeNotification notification={notification} />
             )}
             {/* Render Divider for all but the last notification */}
             {index < notifications.length - 1 && <Divider />}

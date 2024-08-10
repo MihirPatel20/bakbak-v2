@@ -1,5 +1,9 @@
 import mongoose from "mongoose";
-import { USER_ACTIVITY_TYPES } from "../constants.js";
+import {
+  NotificationTypes,
+  ReferenceModel,
+  USER_ACTIVITY_TYPES,
+} from "../constants.js";
 import { SocialComment } from "../models/comment.models.js";
 import { SocialLike } from "../models/like.models.js";
 import { SocialPost } from "../models/post.models.js";
@@ -7,6 +11,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { postCommonAggregation } from "./post.controllers.js";
+import { createNotification } from "./notification.controllers.js";
 
 const likeDislikePost = asyncHandler(async (req, res) => {
   const { postId } = req.params;
@@ -53,13 +58,26 @@ const likeDislikePost = asyncHandler(async (req, res) => {
       );
   } else {
     // if not liked, like it by adding the record from the DB
-    await SocialLike.create({
+    const like = await SocialLike.create({
       postId,
       likedBy: req.user?._id,
     });
 
     post[0].isLiked = true;
     post[0].likes = (post[0].likes || 0) + 1;
+
+    console.log("post[0].author._id.toString()", post[0]._id.toString());
+
+    // Create notification in database and send to the recipient
+    await createNotification(
+      req,
+      post[0].author.owner.toString(), //receiver id
+      req.user, // sender
+      "liked your post", //preview
+      NotificationTypes.LIKE, //type
+      post[0]._id.toString(), //referenceId
+      ReferenceModel.POST // referenceModel
+    );
 
     return res
       .status(200)
