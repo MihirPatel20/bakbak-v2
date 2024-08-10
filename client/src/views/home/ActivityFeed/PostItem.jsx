@@ -13,6 +13,7 @@ import PostIcons from "assets/tabler-icons/post-icons";
 import { getUserAvatarUrl } from "utils/getImageUrl";
 import { useDispatch } from "react-redux";
 import { likePost, bookmarkPost } from "reducer/userFeed/userFeed.thunk";
+import { formatRelativeTime } from "utils/getRelativeTime";
 
 const PostItem = forwardRef(({ post }, ref) => {
   const theme = useTheme();
@@ -63,14 +64,20 @@ const PostItem = forwardRef(({ post }, ref) => {
               src={getUserAvatarUrl(post.author.account.avatar)}
               alt="author avatar"
             />
-            <Typography variant="body2">
-              Posted by {post.author.firstName} {post.author.lastName}
+            <Typography component="div" variant="body2" display="flex" alignItems="center">
+              {post.author.firstName} {post.author.lastName}
+              <Typography style={{ margin: "0 8px 0 6px", color: "#7f8489" }}>
+                •
+              </Typography>
+              <Typography variant="body2" color={"#7f8489"}>
+                {formatRelativeTime(post.updatedAt)}
+              </Typography>
             </Typography>
           </Box>
 
           <ImageCarousel items={post.images} />
 
-          <Box display="flex" alignItems="center" mb={1} gap={1}>
+          <Box display="flex" alignItems="center" mt={0.8} mb={1} gap={1.1}>
             {/* Like icon */}
             <PostIcons.Heart
               onClick={handleLikeClick}

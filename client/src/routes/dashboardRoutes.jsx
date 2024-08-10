@@ -6,6 +6,7 @@ import ExplorePage from "views/explore";
 import AdminPanel from "views/admin";
 import NotificationView from "views/notification";
 import SettingsView from "views/settings";
+import CreatePage from "views/create";
 
 const dashboardRoutes = [
   {
@@ -41,7 +42,7 @@ const dashboardRoutes = [
     id: "create",
     url: "/create",
     icon: icons.IconSquareRoundedPlus,
-    element: <div>Welcome to Create</div>,
+    element: <CreatePage />,
   },
   {
     title: "Profile",
