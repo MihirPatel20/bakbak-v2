@@ -44,10 +44,10 @@ const updateSocialProfileValidator = () => {
   ];
 };
 
-const getProfileByUserNameValidator = () => {
+const getProfileByUsernameValidator = () => {
   return [
     param("username").trim().notEmpty().withMessage("Username is required"),
   ];
 };
 
-export { updateSocialProfileValidator, getProfileByUserNameValidator };
+export { updateSocialProfileValidator, getProfileByUsernameValidator };

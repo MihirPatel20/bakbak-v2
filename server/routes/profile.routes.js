@@ -2,7 +2,7 @@ import { Router } from "express";
 import {
   getAllUserProfiles,
   getMySocialProfile,
-  getProfileByUserName,
+  getProfileByUsername,
   updateCoverImage,
   updateSocialProfile,
 } from "../controllers/profile.controllers.js";
@@ -12,7 +12,7 @@ import {
 } from "../middlewares/auth.middlewares.js";
 import { upload } from "../middlewares/multer.middlewares.js";
 import {
-  getProfileByUserNameValidator,
+  getProfileByUsernameValidator,
   updateSocialProfileValidator,
 } from "../validators/profile.validators.js";
 import { validate } from "../validators/validate.js";
@@ -22,9 +22,9 @@ const router = Router();
 // public route
 router.route("/u/:username").get(
   getLoggedInUserOrIgnore, // hover over the middleware to know more
-  getProfileByUserNameValidator(),
+  getProfileByUsernameValidator(),
   validate,
-  getProfileByUserName
+  getProfileByUsername
 );
 
 router.use(verifyJWT);
