@@ -21,6 +21,7 @@ import useSocketDispatch from "hooks/useSocketDispatch";
 import { fetchNotifications } from "reducer/notification/notification.thunk";
 import PerfectScrollbar from "react-perfect-scrollbar";
 import { AppBarHeight } from "constants";
+import PostDialog from "views/post/PostDialog";
 
 // assets
 
@@ -122,6 +123,8 @@ const MainLayout = () => {
           <Outlet />
         </PerfectScrollbar>
       </Main>
+
+      <PostDialog />
     </Box>
   );
 };

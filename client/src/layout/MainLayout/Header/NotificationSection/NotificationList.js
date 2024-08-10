@@ -220,7 +220,7 @@ const NotificationList = () => {
             <Box p={1}>
               <Stack direction="row">
                 <img
-                  src={getUserAvatarUrl(notification.referenceId.images[0])}
+                  src={notification.referenceId.images[0].url}
                   alt={`notification-img`}
                   style={{ width: "100%", height: "100px", borderRadius: 8 }}
                 />

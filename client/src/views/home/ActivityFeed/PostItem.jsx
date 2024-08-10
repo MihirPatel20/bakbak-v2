@@ -14,10 +14,13 @@ import { getUserAvatarUrl } from "utils/getImageUrl";
 import { useDispatch } from "react-redux";
 import { likePost, bookmarkPost } from "reducer/userFeed/userFeed.thunk";
 import { formatRelativeTime } from "utils/getRelativeTime";
+import { useLocation, useNavigate } from "react-router-dom";
+import { usePostDialog } from "context/PostDialogContext";
 
 const PostItem = forwardRef(({ post }, ref) => {
   const theme = useTheme();
   const dispatch = useDispatch();
+  const { openDialog } = usePostDialog();
 
   const [isReadMore, setIsReadMore] = useState(true);
   const toggleReadMore = () => setIsReadMore(!isReadMore);
@@ -38,8 +41,15 @@ const PostItem = forwardRef(({ post }, ref) => {
     }
   };
 
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const handleCommentClick = () => {
-    // Handle comment click action
+    // navigate(`/p/${post._id}`, {
+    //   state: { background: location },
+    // });
+
+    openDialog(post._id); 
   };
 
   const handleShareClick = () => {
@@ -64,7 +74,12 @@ const PostItem = forwardRef(({ post }, ref) => {
               src={getUserAvatarUrl(post.author.account.avatar)}
               alt="author avatar"
             />
-            <Typography component="div" variant="body2" display="flex" alignItems="center">
+            <Typography
+              component="div"
+              variant="body2"
+              display="flex"
+              alignItems="center"
+            >
               {post.author.firstName} {post.author.lastName}
               <Typography style={{ margin: "0 8px 0 6px", color: "#7f8489" }}>
                 •

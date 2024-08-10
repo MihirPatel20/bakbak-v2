@@ -7,6 +7,7 @@ import MainLayout from "@/layout/MainLayout";
 import appRoutes from "./appRoutes";
 import RoleProtectedRoute from "utils/RoleProtectedRoutes";
 import NotFound from "components/NotFound";
+import PostView from "views/post";
 
 // ==============================|| ROUTING RENDER ||============================== //
 
@@ -23,14 +24,20 @@ export default function Routes() {
         {
           path: "",
           element: <MainLayout />,
-          children: dashboardRoutes.map((route) => ({
-            path: route.url,
-            element: (
-              <RoleProtectedRoute allowedRole={route.role}>
-                {route.element}
-              </RoleProtectedRoute>
-            ),
-          })),
+          children: [
+            ...dashboardRoutes.map((route) => ({
+              path: route.url,
+              element: (
+                <RoleProtectedRoute allowedRole={route.role}>
+                  {route.element}
+                </RoleProtectedRoute>
+              ),
+            })),
+            {
+              path: "/p/:postId",
+              element: <PostView />,
+            },
+          ],
         },
       ],
     },
@@ -57,7 +64,7 @@ export default function Routes() {
     },
     {
       path: "*",
-      element: <NotFound/>,
+      element: <NotFound />,
     },
   ]);
 }

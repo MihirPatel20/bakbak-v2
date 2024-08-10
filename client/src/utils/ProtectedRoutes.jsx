@@ -10,6 +10,7 @@ import { SocketProvider } from "context/SocketContext";
 // Component imports
 import PageLoading from "components/global/PageLoading";
 import { loadingTimer } from "constants";
+import { PostDialogProvider } from "context/PostDialogContext";
 
 const ProtectedRoutes = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -36,7 +37,9 @@ const ProtectedRoutes = () => {
 
   return (
     <SocketProvider>
-      <Outlet />
+      <PostDialogProvider>
+        <Outlet />
+      </PostDialogProvider>
     </SocketProvider>
   );
 };
