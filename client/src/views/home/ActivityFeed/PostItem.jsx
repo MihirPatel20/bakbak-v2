@@ -49,7 +49,7 @@ const PostItem = forwardRef(({ post }, ref) => {
     //   state: { background: location },
     // });
 
-    openDialog(post._id); 
+    openDialog(post._id);
   };
 
   const handleShareClick = () => {
@@ -90,7 +90,22 @@ const PostItem = forwardRef(({ post }, ref) => {
             </Typography>
           </Box>
 
-          <ImageCarousel items={post.images} />
+          {post.images && post.images.length > 0 ? (
+            <ImageCarousel items={post.images} />
+          ) : (
+            <Box
+              sx={{
+                width: '100%',
+                height: '200px',
+                backgroundColor: '#e0e0e0',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <Typography variant="body1">Image not available</Typography>
+            </Box>
+          )}
 
           <Box display="flex" alignItems="center" mt={0.8} mb={1} gap={1.1}>
             {/* Like icon */}
