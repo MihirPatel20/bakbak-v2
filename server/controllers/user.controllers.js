@@ -21,6 +21,13 @@ import {
   sendEmail,
 } from "../utils/mail.js";
 
+// TODO: Add more options to make cookie more secure and reliable
+const cookieOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production" ? true : false,
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+};
+
 const generateAccessAndRefreshTokens = async (userId) => {
   try {
     const user = await User.findById(userId);
@@ -153,13 +160,6 @@ const loginUser = asyncHandler(async (req, res) => {
     "-password -refreshToken -emailVerificationToken -emailVerificationExpiry"
   );
 
-  // TODO: Add more options to make cookie more secure and reliable
-  const cookieOptions = {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production" ? true : false,
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
-  };
-
   res
     .status(200)
     .cookie("accessToken", accessToken, cookieOptions)
@@ -182,11 +182,6 @@ const logoutUser = asyncHandler(async (req, res) => {
     },
     { new: true }
   );
-
-  const cookieOptions = {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-  };
 
   res
     .status(200)
