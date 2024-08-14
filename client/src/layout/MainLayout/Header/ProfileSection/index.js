@@ -228,7 +228,8 @@ const ProfileSection = () => {
                       </Stack>
                       <Typography variant="subtitle2">Project Admin</Typography>
                     </Stack>
-                    <OutlinedInput
+
+                    {/* <OutlinedInput
                       sx={{ width: "100%", pr: 1, pl: 2, my: 2 }}
                       id="input-search-profile"
                       value={value}
@@ -247,9 +248,11 @@ const ProfileSection = () => {
                       inputProps={{
                         "aria-label": "weight",
                       }}
-                    />
-                    <Divider />
+                    /> 
+                    <Divider /> 
+                    */}
                   </Box>
+
                   <PerfectScrollbar
                     style={{
                       height: "100%",
@@ -269,6 +272,7 @@ const ProfileSection = () => {
                           [theme.breakpoints.down("md")]: {
                             minWidth: "100%",
                           },
+                          mt: 1,
                           // "& .MuiListItemButton-root": {
                           //   mt: 0.5,
                           // },

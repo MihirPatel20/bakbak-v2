@@ -50,6 +50,7 @@ const Login = () => {
                       />
                     </Link>
                   </Grid>
+
                   <Grid item xs={12}>
                     <Grid
                       container
@@ -81,6 +82,7 @@ const Login = () => {
                       </Grid>
                     </Grid>
                   </Grid>
+
                   <Grid item xs={12}>
                     <AuthLogin />
                   </Grid>

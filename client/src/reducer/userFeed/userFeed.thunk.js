@@ -12,7 +12,6 @@ export const fetchUserFeed = createAsyncThunk(
   async (params, { rejectWithValue }) => {
     try {
       const response = await api.get("/post/feed", { params });
-      console.log("response: ", response);
       return response.data.data;
     } catch (error) {
       return rejectWithValue(error.response.data);

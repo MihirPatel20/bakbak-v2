@@ -115,7 +115,10 @@ const getUserProfile = createAsyncThunk(
       return response.data;
     } catch (error) {
       console.error("error: ", error.response.data);
-      return rejectWithValue(error.response.data);
+      return rejectWithValue({
+        ...error.response.data,
+        message: "Please log in again.",
+      });
     }
   }
 );
