@@ -3,15 +3,17 @@ import {
   Box,
   Card,
   CardMedia,
-  Grid,
   CircularProgress,
   useMediaQuery,
+  ImageList,
+  ImageListItem,
 } from "@mui/material";
 import { useTheme } from "@mui/system";
 import api from "api";
 import { getUserAvatarUrl } from "utils/getImageUrl";
 import ImagePlaceholder from "ui-component/cards/Skeleton/ImagePlaceholder";
 import { usePostDialog } from "context/PostDialogContext";
+import generateExploreGrid from "utils/helpers/generateExploreGrid";
 
 const ExplorePosts = () => {
   const { openDialog } = usePostDialog();
@@ -23,6 +25,7 @@ const ExplorePosts = () => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [isFetching, setIsFetching] = useState(false);
+  const [gridConfig, setGridConfig] = useState([]);
 
   const observer = useRef();
   const lastPostElementRef = useCallback(
@@ -55,10 +58,9 @@ const ExplorePosts = () => {
         const fetchedPosts = response.data.data.posts.filter(
           (post) => post.images && post.images.length > 0
         );
-        const { totalPages } = response.data.data;
 
         setPosts((prevPosts) => [...prevPosts, ...fetchedPosts]);
-        setHasMore(pageNumber < totalPages); // Ensure hasMore is set correctly
+        setHasMore(response.data.data.hasNextPage);
         setLoading(false);
       } catch (error) {
         console.error("Failed to fetch posts:", error);
@@ -69,30 +71,43 @@ const ExplorePosts = () => {
     [limit]
   );
 
+  // Adjusting cols based on screen size
+  const cols = matchDownSM ? 3 : 6;
+
   useEffect(() => {
     fetchPosts(page);
   }, [fetchPosts, page]);
 
+  useEffect(() => {
+    if (posts.length > 0) {
+      const { items } = generateExploreGrid(posts.length, cols);
+      setGridConfig(items);
+    }
+  }, [posts, matchDownSM]);
+
   if (posts.length === 0) {
     return (
-      <Grid container spacing={2}>
+      <ImageList cols={cols} gap={8}>
         <ImagePlaceholder height={200} />
-      </Grid>
+      </ImageList>
     );
   }
 
   return (
-    <Grid container spacing={2}>
-      {posts.map((post, index) => (
-        <ImageCard
-          key={post._id}
-          post={post}
-          totalPosts={posts.length}
-          index={index}
-          lastPostElementRef={lastPostElementRef}
-          openDialog={openDialog}
-        />
-      ))}
+    <Box>
+      <ImageList variant="" cols={cols} gap={4} rowHeight={matchDownSM ? 100 :200}>
+        {posts.map((post, index) => (
+          <ImageCard
+            key={post._id}
+            post={post}
+            index={index}
+            totalPosts={posts.length}
+            lastPostElementRef={lastPostElementRef}
+            openDialog={openDialog}
+            gridConfig={gridConfig}
+          />
+        ))}
+      </ImageList>
       {isFetching && (
         <Box
           display="flex"
@@ -104,7 +119,7 @@ const ExplorePosts = () => {
           <CircularProgress />
         </Box>
       )}
-    </Grid>
+    </Box>
   );
 };
 
@@ -116,6 +131,7 @@ const ImageCard = ({
   lastPostElementRef,
   openDialog,
   totalPosts,
+  gridConfig,
 }) => {
   const [imageUrl, setImageUrl] = useState("");
   const [loading, setLoading] = useState(true);
@@ -127,13 +143,13 @@ const ImageCard = ({
     try {
       const response = await fetch(url, { method: "HEAD" });
       if (response.ok) {
-        return url; // Image URL is valid
+        return url;
       } else {
-        return defaultImage; // Return default image if URL is not valid
+        return defaultImage;
       }
     } catch (error) {
       console.error("Image fetch error:", error);
-      return defaultImage; // Return default image in case of an error
+      return defaultImage;
     }
   };
 
@@ -150,26 +166,26 @@ const ImageCard = ({
   }, [post.images, post._id]);
 
   return (
-    <Grid
-      item
-      xs={12}
-      sm={6}
-      md={4}
+    <ImageListItem
       ref={index === totalPosts - 1 ? lastPostElementRef : null}
+      cols={gridConfig[index]?.colSpan || 1}
+      rows={gridConfig[index]?.rowSpan || 1}
+      sx={{ borderRadius: "3px", overflow: "hidden" }}
     >
-      <Card sx={{ borderRadius: 2 }}>
-        {loading || !post?.images[0] ? (
-          <ImagePlaceholder height={200} />
-        ) : (
-          <CardMedia
-            component="img"
-            image={imageUrl}
-            alt={`Image for post ${post._id}`}
-            onClick={() => openDialog(post._id)}
-            style={{ height: "200px", objectFit: "cover" }}
-          />
-        )}
-      </Card>
-    </Grid>
+      {loading || !post?.images[0] ? (
+        <ImagePlaceholder height={200} />
+      ) : (
+        <CardMedia
+          component="img"
+          image={imageUrl}
+          alt={`Image for post ${post._id}`}
+          onClick={() => openDialog(post._id)}
+          style={{ height: "100%", width: "100%", objectFit: "cover" }}
+          loading="lazy"
+        />
+      )}
+
+      {/* <ImageListItemBar title={index} /> */}
+    </ImageListItem>
   );
 };
