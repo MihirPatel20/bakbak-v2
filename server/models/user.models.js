@@ -162,4 +162,12 @@ userSchema.methods.generateTemporaryToken = function () {
   return { unHashedToken, hashedToken, tokenExpiry };
 };
 
+// Indexes to improve query performance
+userSchema.index({
+  username: "text",
+  email: "text",
+  firstName: "text",
+  lastName: "text",
+});
+
 export const User = mongoose.model("User", userSchema);

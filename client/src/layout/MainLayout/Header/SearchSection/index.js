@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 // material-ui
 import { useTheme, styled } from "@mui/material/styles";
@@ -27,6 +27,8 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import { shouldForwardProp } from "@mui/system";
+import useDebounce from "hooks/useDebounce";
+import api from "api";
 
 // styles
 const PopperStyle = styled(Popper, { shouldForwardProp })(({ theme }) => ({
@@ -140,6 +142,24 @@ const SearchSection = () => {
   const theme = useTheme();
   const [value, setValue] = useState("");
 
+  // Use the debounce hook
+  const debouncedSearch = useDebounce(value, 500); // Adjust delay as needed
+
+  const fetchSearchResults = async () => {
+    try {
+      const response = await api.get(`/search?query=${debouncedSearch}`);
+      console.log("response", response);
+    } catch (error) {
+      console.error("Search error:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (debouncedSearch) {
+      fetchSearchResults();
+    }
+  }, [debouncedSearch]);
+
   return (
     <>
       <Box sx={{ display: { xs: "block", md: "none" } }}>
@@ -158,39 +178,37 @@ const SearchSection = () => {
               </Box>
               <PopperStyle {...bindPopper(popupState)} transition>
                 {({ TransitionProps }) => (
-                  <>
-                    <Transitions
-                      type="zoom"
-                      {...TransitionProps}
-                      sx={{ transformOrigin: "center left" }}
+                  <Transitions
+                    type="zoom"
+                    {...TransitionProps}
+                    sx={{ transformOrigin: "center left" }}
+                  >
+                    <Card
+                      sx={{
+                        background: "#fff",
+                        [theme.breakpoints.down("sm")]: {
+                          border: 0,
+                          boxShadow: "none",
+                        },
+                      }}
                     >
-                      <Card
-                        sx={{
-                          background: "#fff",
-                          [theme.breakpoints.down("sm")]: {
-                            border: 0,
-                            boxShadow: "none",
-                          },
-                        }}
-                      >
-                        <Box sx={{ p: 2 }}>
-                          <Grid
-                            container
-                            alignItems="center"
-                            justifyContent="space-between"
-                          >
-                            <Grid item xs>
-                              <MobileSearch
-                                value={value}
-                                setValue={setValue}
-                                popupState={popupState}
-                              />
-                            </Grid>
+                      <Box sx={{ p: 2 }}>
+                        <Grid
+                          container
+                          alignItems="center"
+                          justifyContent="space-between"
+                        >
+                          <Grid item xs>
+                            <MobileSearch
+                              value={value}
+                              setValue={setValue}
+                              popupState={popupState}
+                            />
                           </Grid>
-                        </Box>
-                      </Card>
-                    </Transitions>
-                  </>
+                        </Grid>
+                      </Box>
+                    </Card>
+                  </Transitions>
                 )}
               </PopperStyle>
             </>

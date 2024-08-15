@@ -30,6 +30,9 @@ const postSchema = new Schema(
   { timestamps: true }
 );
 
+// Adding text index for content to support search functionality
+postSchema.index({ content: "text" });
+
 postSchema.plugin(mongooseAggregatePaginate);
 
 export const SocialPost = mongoose.model("SocialPost", postSchema);
