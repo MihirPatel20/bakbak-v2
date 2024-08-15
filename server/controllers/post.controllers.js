@@ -435,7 +435,14 @@ const getPostsByUsername = asyncHandler(async (req, res) => {
         author: new mongoose.Types.ObjectId(userId),
       },
     },
-    ...postCommonAggregation(req),
+
+    /**
+     * This function is currently designed to display images on the profile page.
+     * To display additional details such as likes, comments, whether the post is liked or bookmarked,
+     * Uncomment the line below.
+     */
+
+    // ...postCommonAggregation(req),
   ]);
 
   const posts = await SocialPost.aggregatePaginate(

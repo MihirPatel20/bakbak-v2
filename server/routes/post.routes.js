@@ -41,11 +41,11 @@ router
     createPost
   );
 
-router.route("/get/my").get(verifyJWT, getMyPosts);
+router.route("/my").get(verifyJWT, getMyPosts);
 router.route("/feed").get(verifyJWT, getUserFeed);
 
 router
-  .route("/get/u/:username")
+  .route("/u/:username")
   .get(
     getLoggedInUserOrIgnore,
     usernamePathVariableValidator(),

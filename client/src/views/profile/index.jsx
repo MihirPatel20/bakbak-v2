@@ -18,17 +18,18 @@ import {
   VisitorComponent,
 } from "utils/AuthorizationComponents";
 import FolllowButton from "components/shared/FolllowButton";
+import PostGrid from "./PostGrid";
 
 const ProfilePage = () => {
   const [profile, setProfile] = useState(null);
+
   const auth = useSelector((state) => state.auth);
+
   const navigate = useNavigate();
   const { username } = useParams();
-
   const currentProfileUsername = username || auth.user.username;
 
   useEffect(() => {
-    console.log("currentProfileUsername: ", currentProfileUsername);
     const fetchProfile = async () => {
       try {
         const response = await api.get(`profile/u/${currentProfileUsername}`);
@@ -162,21 +163,28 @@ const ProfilePage = () => {
       <Divider sx={{ my: 2 }} />
 
       <Box
+        mb={4}
         sx={{
           display: "flex",
+          flexDirection: "column",
           justifyContent: "center",
-          mt: 2,
-          height: "200px",
         }}
       >
-        <Typography variant="h1" sx={{ mt: 2 }}>
-          Posts
-        </Typography>
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          sx={{ m: 2 }}
+        >
+          <Typography variant="h1">Posts</Typography>
+        </Box>
+
+        <PostGrid currentProfileUsername={currentProfileUsername} />
       </Box>
 
       <Divider sx={{ my: 2 }} />
 
-      <Grid container spacing={2}>
+      <Grid container spacing={2} mb={4}>
         <Grid item xs={12} sm={4}>
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <LocationOn sx={{ mr: 1 }} />

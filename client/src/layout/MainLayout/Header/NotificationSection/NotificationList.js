@@ -180,7 +180,7 @@ const NotificationList = () => {
 
   const LikeNotification = ({ notification }) => {
     const senderUsername = notification.sender.username;
-    console.log("notification: ", notification);
+    // console.log("notification: ", notification);
 
     return (
       <ListItemWrapper>
