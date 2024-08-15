@@ -9,6 +9,7 @@ import RoleProtectedRoute from "utils/RoleProtectedRoutes";
 import NotFound from "components/NotFound";
 import PostView from "views/post";
 import Test from "views/test";
+import SearchView from "views/search";
 
 // ==============================|| ROUTING RENDER ||============================== //
 
@@ -42,6 +43,10 @@ export default function Routes() {
               path: "/p/:postId",
               element: <PostView />,
             },
+            {
+              path: "/search",
+              element: <SearchView />,
+            }
           ],
         },
       ],

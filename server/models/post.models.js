@@ -31,7 +31,7 @@ const postSchema = new Schema(
 );
 
 // Adding text index for content to support search functionality
-postSchema.index({ content: "text" });
+postSchema.index({ tags: "text", content: "text" });
 
 postSchema.plugin(mongooseAggregatePaginate);
 

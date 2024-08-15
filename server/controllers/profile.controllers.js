@@ -11,7 +11,7 @@ import {
 } from "../utils/helpers.js";
 import { USER_ACTIVITY_TYPES } from "../constants.js";
 
-const profileCommonAggregation = (req, userId) => {
+export const profileCommonAggregation = (req, userId) => {
   const matchStage = userId
     ? { owner: new mongoose.Types.ObjectId(userId) }
     : {};

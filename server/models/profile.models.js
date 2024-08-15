@@ -36,7 +36,7 @@ const profileSchema = new Schema(
       type: String,
       default: "",
     },
-    isPrivate: { type: Boolean, default: false }, 
+    isPrivate: { type: Boolean, default: false },
 
     coverImage: {
       type: {
@@ -51,6 +51,14 @@ const profileSchema = new Schema(
   },
   { timestamps: true }
 );
+
+profileSchema.index({
+  firstName: "text",
+  lastName: "text",
+  bio: "text",
+  location: "text",
+  "account.username": "text",
+});
 
 profileSchema.plugin(mongooseAggregatePaginate);
 
