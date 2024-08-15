@@ -57,7 +57,7 @@ const PostFeed = () => {
           {posts.length > 0 ? (
             posts.map((post, index) => (
               <PostItem
-                key={post._id}
+                key={post._id + index}
                 post={post}
                 ref={index === posts.length - 1 ? lastPostElementRef : null}
               />

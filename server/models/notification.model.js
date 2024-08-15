@@ -1,4 +1,5 @@
 import mongoose, { Schema } from "mongoose";
+import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 // Define the Notification schema
 const notificationSchema = new Schema(
@@ -51,6 +52,9 @@ const notificationSchema = new Schema(
 
 // Indexes to improve query performance
 notificationSchema.index({ user: 1, isRead: 1 });
+
+// Add pagination plugin to the Notification schema
+notificationSchema.plugin(mongooseAggregatePaginate);
 
 // Export the Notification model
 export const Notification = mongoose.model("Notification", notificationSchema);

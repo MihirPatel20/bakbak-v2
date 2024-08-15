@@ -74,15 +74,21 @@ const getNotifications = asyncHandler(async (req, res) => {
   const userId = req.user._id;
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
+  const isRead = req.query.isRead;
 
-  // Query notifications for the user, sorted by createdAt desc
-  const notifications = await Notification.find({ user: userId })
+  // Build the query based on the isRead parameter
+  const query = { user: userId };
+  if (isRead === "false") {
+    query.isRead = false;
+  }
+
+  // Query notifications for the user
+  const notifications = await Notification.find(query)
     .populate("sender", "username avatar")
     .sort({ createdAt: -1 })
     .skip((page - 1) * limit)
     .limit(limit)
-    .lean() // Use lean() for better performance
-    .exec();
+    .lean();
 
   // Populate the referenceId for each notification
   const populatedNotifications = await Promise.all(
@@ -98,7 +104,7 @@ const getNotifications = asyncHandler(async (req, res) => {
     })
   );
 
-  const totalCount = await Notification.countDocuments({ user: userId });
+  const totalCount = await Notification.countDocuments(query);
   res.status(200).json(
     new ApiResponse(
       200,
@@ -179,8 +185,4 @@ const markAllNotificationsAsRead = asyncHandler(async (req, res) => {
     );
 });
 
-export {
-  getNotifications,
-  markNotificationAsRead,
-  markAllNotificationsAsRead,
-};
+export { getNotifications, markNotificationAsRead, markAllNotificationsAsRead };
