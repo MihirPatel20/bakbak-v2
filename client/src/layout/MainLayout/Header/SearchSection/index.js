@@ -297,9 +297,10 @@ const SearchSection = () => {
                                 <ListItem key={index} disablePadding>
                                   <ListItemButton
                                     sx={{ borderRadius: 2 }}
-                                    onClick={() =>
-                                      fetchSearchResults(suggestion)
-                                    }
+                                    onClick={(event) => {
+                                      event.stopPropagation();
+                                      fetchSearchResults(suggestion);
+                                    }}
                                   >
                                     <ListItemText primary={suggestion} />
                                   </ListItemButton>
