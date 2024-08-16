@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 // material-ui
 import { useTheme, styled } from "@mui/material/styles";
@@ -196,8 +196,8 @@ const SearchSection = () => {
     if (query) {
       setShouldFetchSuggestions(false); // Disable suggestions API call
       setValue(query);
-      setSuggestions([]);
       navigate(`/search?q=${query}`);
+      setSuggestions([]);
     }
   };
 
@@ -210,7 +210,7 @@ const SearchSection = () => {
   return (
     <>
       <Box sx={{ display: { xs: "block", md: "none" } }}>
-        <PopupState variant="popper" popupId="demo-popup-popper">
+        <PopupState variant="popper" popupId="mobile-search-popper">
           {(popupState) => (
             <>
               <Box sx={{ ml: 2 }}>
@@ -226,92 +226,48 @@ const SearchSection = () => {
 
               <PopperStyle {...bindPopper(popupState)} transition>
                 {({ TransitionProps }) => (
-                  <ClickAwayListener
-                    onClickAway={() => {
-                      setSuggestions([]);
-                      popupState.close(); // Close the popover
-                    }}
+                  <Transitions
+                    type="zoom"
+                    {...TransitionProps}
+                    sx={{ transformOrigin: "center top" }}
                   >
-                    <Transitions
-                      type="zoom"
-                      {...TransitionProps}
-                      sx={{ transformOrigin: "center left" }}
+                    <Card
+                      sx={{
+                        background: "#fff",
+                        [theme.breakpoints.down("sm")]: {
+                          border: 0,
+                          boxShadow: "none",
+                        },
+                      }}
                     >
-                      <Card
-                        sx={{
-                          background: "#fff",
-                          [theme.breakpoints.down("sm")]: {
-                            border: 0,
-                            boxShadow: "none",
-                          },
-                        }}
-                      >
-                        <Box sx={{ p: 1 }}>
-                          <Grid
-                            container
-                            alignItems="center"
-                            justifyContent="space-between"
-                          >
-                            <Grid item xs>
-                              <MobileSearch
-                                value={value}
-                                onChange={(e) => handleInputChange(e)}
-                                popupState={popupState}
-                                onKeyDown={(e) => {
-                                  if (e.key === "Enter") {
-                                    fetchSearchResults(value);
-                                    // popupState.close(); // Close the popover
-                                  }
-                                }}
-                              />
-                            </Grid>
+                      <Box sx={{ p: 1 }}>
+                        <Grid
+                          container
+                          alignItems="center"
+                          justifyContent="space-between"
+                        >
+                          <Grid item xs>
+                            <MobileSearch
+                              value={value}
+                              onChange={(e) => handleInputChange(e)}
+                              popupState={popupState}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  fetchSearchResults(value);
+                                  // popupState.close(); // Close the popover
+                                }
+                              }}
+                            />
                           </Grid>
-                        </Box>
-                      </Card>
+                        </Grid>
+                      </Box>
+                    </Card>
 
-                      {suggestions?.length > 0 && (
-                        <Box sx={{ position: "relative" }}>
-                          <Box
-                            sx={{
-                              mt: 1,
-                              position: "absolute",
-                              top: "100%",
-                              width: "100%",
-                              bgcolor: "background.paper",
-                              borderRadius: 4,
-                              border: "1px solid",
-                              borderColor: "primary.light",
-                            }}
-                          >
-                            <List
-                              subheader={
-                                <ListSubheader
-                                  component="div"
-                                  id="nested-list-subheader"
-                                >
-                                  Search Suggestions
-                                </ListSubheader>
-                              }
-                            >
-                              {suggestions?.map((suggestion, index) => (
-                                <ListItem key={index} disablePadding>
-                                  <ListItemButton
-                                    sx={{ borderRadius: 2 }}
-                                    onClick={(event) => {
-                                      event.stopPropagation();
-                                      fetchSearchResults(suggestion);
-                                    }}
-                                  >
-                                    <ListItemText primary={suggestion} />
-                                  </ListItemButton>
-                                </ListItem>
-                              ))}
-                            </List>
-                          </Box>
-                        </Box>
-                      )}
-                    </Transitions>
-                  </ClickAwayListener>
+                    <SuggestionsList
+                      suggestions={suggestions}
+                      handleSuggestionClick={fetchSearchResults}
+                    />
+                  </Transitions>
                 )}
               </PopperStyle>
             </>
@@ -319,83 +275,99 @@ const SearchSection = () => {
         </PopupState>
       </Box>
 
-      <ClickAwayListener onClickAway={() => setSuggestions([])}>
-        <Box sx={{ display: { xs: "none", md: "block" } }}>
-          <OutlineInputStyle
-            id="input-search-header"
-            value={value}
-            onChange={(e) => handleInputChange(e)}
-            onClick={(e) => handleInputChange(e)}
-            placeholder="Search"
-            size="small"
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                fetchSearchResults(value);
+      <Box sx={{ display: { xs: "none", md: "block" } }}>
+        <ClickAwayListener onClickAway={() => setSuggestions([])}>
+          <>
+            <OutlineInputStyle
+              id="input-search-header"
+              value={value}
+              onChange={(e) => handleInputChange(e)}
+              onClick={(e) => handleInputChange(e)}
+              placeholder="Search"
+              size="small"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  fetchSearchResults(value);
+                }
+              }}
+              startAdornment={
+                <InputAdornment position="start">
+                  <IconSearch
+                    stroke={1.5}
+                    size="1rem"
+                    color={theme.palette.grey[500]}
+                  />
+                </InputAdornment>
               }
-            }}
-            startAdornment={
-              <InputAdornment position="start">
-                <IconSearch
-                  stroke={1.5}
-                  size="1rem"
-                  color={theme.palette.grey[500]}
-                />
-              </InputAdornment>
-            }
-            endAdornment={
-              <InputAdornment position="end">
-                <ButtonBase sx={{ borderRadius: "4px" }}>
-                  <HeaderAvatarStyle
-                    variant="rounded"
-                    sx={{ height: 26, width: 26 }}
-                  >
-                    <IconAdjustmentsHorizontal stroke={1.5} size="1.1rem" />
-                  </HeaderAvatarStyle>
-                </ButtonBase>
-              </InputAdornment>
-            }
-            aria-describedby="search-helper-text"
-            inputProps={{ "aria-label": "weight" }}
-          />
+              endAdornment={
+                <InputAdornment position="end">
+                  <ButtonBase sx={{ borderRadius: "4px" }}>
+                    <HeaderAvatarStyle
+                      variant="rounded"
+                      sx={{ height: 26, width: 26 }}
+                    >
+                      <IconAdjustmentsHorizontal stroke={1.5} size="1.1rem" />
+                    </HeaderAvatarStyle>
+                  </ButtonBase>
+                </InputAdornment>
+              }
+              aria-describedby="search-helper-text"
+              inputProps={{ "aria-label": "weight" }}
+            />
 
-          {suggestions?.length > 0 && (
-            <Box sx={{ position: "relative", ml: 2 }}>
-              <Box
-                sx={{
-                  mt: 2,
-                  position: "absolute",
-                  top: "100%",
-                  width: "100%",
-                  bgcolor: "background.paper",
-                  borderRadius: 4,
-                  border: "1px solid",
-                  borderColor: "primary.light",
-                }}
-              >
-                <List
-                  subheader={
-                    <ListSubheader component="div" id="nested-list-subheader">
-                      Search Suggestions
-                    </ListSubheader>
-                  }
-                >
-                  {suggestions?.map((suggestion, index) => (
-                    <ListItem key={index} disablePadding>
-                      <ListItemButton
-                        sx={{ borderRadius: 2 }}
-                        onClick={() => fetchSearchResults(suggestion)}
-                      >
-                        <ListItemText primary={suggestion} />
-                      </ListItemButton>
-                    </ListItem>
-                  ))}
-                </List>
-              </Box>
+            <Box sx={{ position: "relative", ml: 0 }}>
+              <SuggestionsList
+                suggestions={suggestions}
+                handleSuggestionClick={fetchSearchResults}
+              />
             </Box>
-          )}
-        </Box>
-      </ClickAwayListener>
+          </>
+        </ClickAwayListener>
+      </Box>
     </>
+  );
+};
+
+const SuggestionsList = ({ suggestions, handleSuggestionClick }) => {
+  if (!suggestions || suggestions.length === 0) {
+    return null;
+  }
+
+  return (
+    <Box
+      sx={{
+        mt: 2,
+        position: "absolute",
+        top: "100%",
+        width: "100%",
+        bgcolor: "background.paper",
+        borderRadius: 4,
+        border: "1px solid",
+        borderColor: "primary.light",
+      }}
+    >
+      <List
+        subheader={
+          <ListSubheader component="div" id="nested-list-subheader">
+            Search Suggestions
+          </ListSubheader>
+        }
+      >
+        {suggestions?.map((suggestion, index) => (
+          <ListItem key={index} disablePadding>
+            <ListItemButton
+              sx={{ borderRadius: 2 }}
+              onClick={(event) => {
+                event.stopPropagation(); // Prevent ClickAwayListener from triggering
+                handleSuggestionClick(suggestion);
+              }}
+            >
+              <ListItemText primary={suggestion} />
+            </ListItemButton>
+          </ListItem>
+        ))}
+      </List>
+    </Box>
   );
 };
 

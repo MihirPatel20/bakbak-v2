@@ -21,6 +21,7 @@ export default defineConfig({
     react(),
   ],
   server: {
+    host: true, // allows external devices to access the server
     port: 3000,
   },
   resolve: {

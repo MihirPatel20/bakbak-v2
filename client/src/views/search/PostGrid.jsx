@@ -89,7 +89,7 @@ const ImageCard = ({
         return defaultImage;
       }
     } catch (error) {
-      console.error("Image fetch error:", error);
+      // console.error("Image fetch error:", error);
       return defaultImage;
     }
   };
