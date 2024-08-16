@@ -17,6 +17,7 @@ import {
   ListItemText,
   ListItemButton,
   ListSubheader,
+  ClickAwayListener,
 } from "@mui/material";
 
 // third-party
@@ -34,7 +35,7 @@ import {
 import { shouldForwardProp } from "@mui/system";
 import useDebounce from "hooks/useDebounce";
 import api from "api";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 // styles
 const PopperStyle = styled(Popper, { shouldForwardProp })(({ theme }) => ({
@@ -83,15 +84,14 @@ const HeaderAvatarStyle = styled(Avatar, { shouldForwardProp })(
 
 // ==============================|| SEARCH INPUT - MOBILE||============================== //
 
-const MobileSearch = ({ value, setValue, popupState, ...otherProps }) => {
+const MobileSearch = ({ popupState, ...otherProps }) => {
   const theme = useTheme();
 
   return (
     <OutlineInputStyle
       id="input-search-header"
-      value={value}
-      onChange={(e) => setValue(e.target.value)}
       placeholder="Search"
+      size="small"
       startAdornment={
         <InputAdornment position="start">
           <IconSearch
@@ -104,8 +104,8 @@ const MobileSearch = ({ value, setValue, popupState, ...otherProps }) => {
       endAdornment={
         <InputAdornment position="end">
           <ButtonBase sx={{ borderRadius: "4px" }}>
-            <HeaderAvatarStyle variant="rounded">
-              <IconAdjustmentsHorizontal stroke={1.5} size="1.3rem" />
+            <HeaderAvatarStyle variant="rounded" sx={{ height: 26, width: 26 }}>
+              <IconAdjustmentsHorizontal stroke={1.5} size="1.1rem" />
             </HeaderAvatarStyle>
           </ButtonBase>
           <Box sx={{ ml: 1 }}>
@@ -121,10 +121,12 @@ const MobileSearch = ({ value, setValue, popupState, ...otherProps }) => {
                     background: theme.palette.orange.dark,
                     color: theme.palette.orange.light,
                   },
+                  height: 26,
+                  width: 26,
                 }}
                 {...bindToggle(popupState)}
               >
-                <IconX stroke={1.5} size="1.3rem" />
+                <IconX stroke={1.5} size="1.1rem" />
               </Avatar>
             </ButtonBase>
           </Box>
@@ -149,12 +151,23 @@ const SearchSection = () => {
   const theme = useTheme();
   const [value, setValue] = useState("");
   const [suggestions, setSuggestions] = useState([]);
+  const [shouldFetchSuggestions, setShouldFetchSuggestions] = useState(true);
+
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const query = searchParams.get("q");
+  useEffect(() => {
+    if (query) {
+      setValue(query);
+      setShouldFetchSuggestions(false);
+    }
+  }, [query]);
 
   // Use the debounce hook
   const debouncedSearch = useDebounce(value, 500); // Adjust delay as needed
 
   const fetchSearchSuggestions = async () => {
-    if (debouncedSearch.length < 3) {
+    if (debouncedSearch.length < 0) {
       setSuggestions([]);
       return; // Don't make API call if search query is too short
     }
@@ -170,21 +183,28 @@ const SearchSection = () => {
   };
 
   useEffect(() => {
-    if (debouncedSearch) {
+    if (debouncedSearch && shouldFetchSuggestions) {
       fetchSearchSuggestions();
     } else {
       setSuggestions([]);
     }
-  }, [debouncedSearch]);
+  }, [debouncedSearch, shouldFetchSuggestions]);
 
   const navigate = useNavigate();
 
   const fetchSearchResults = async (query) => {
     if (query) {
-      setSuggestions([]);
+      setShouldFetchSuggestions(false); // Disable suggestions API call
       setValue(query);
+      setSuggestions([]);
       navigate(`/search?q=${query}`);
     }
+  };
+
+  // Handler for user input
+  const handleInputChange = (e) => {
+    setShouldFetchSuggestions(true); // Re-enable suggestions API call
+    setValue(e.target.value);
   };
 
   return (
@@ -203,83 +223,94 @@ const SearchSection = () => {
                   </HeaderAvatarStyle>
                 </ButtonBase>
               </Box>
+
               <PopperStyle {...bindPopper(popupState)} transition>
                 {({ TransitionProps }) => (
-                  <Transitions
-                    type="zoom"
-                    {...TransitionProps}
-                    sx={{ transformOrigin: "center left" }}
+                  <ClickAwayListener
+                    onClickAway={() => {
+                      setSuggestions([]);
+                      popupState.close(); // Close the popover
+                    }}
                   >
-                    <Card
-                      sx={{
-                        background: "#fff",
-                        [theme.breakpoints.down("sm")]: {
-                          border: 0,
-                          boxShadow: "none",
-                        },
-                      }}
+                    <Transitions
+                      type="zoom"
+                      {...TransitionProps}
+                      sx={{ transformOrigin: "center left" }}
                     >
-                      <Box sx={{ p: 1 }}>
-                        <Grid
-                          container
-                          alignItems="center"
-                          justifyContent="space-between"
-                        >
-                          <Grid item xs>
-                            <MobileSearch
-                              value={value}
-                              setValue={setValue}
-                              popupState={popupState}
-                              onKeyDown={(e) => {
-                                if (e.key === "Enter") {
-                                  fetchSearchResults(value);
-                                }
-                              }}
-                            />
-                          </Grid>
-                        </Grid>
-                      </Box>
-                    </Card>
-
-                    {suggestions?.length > 0 && (
-                      <Box sx={{ position: "relative" }}>
-                        <Box
-                          sx={{
-                            mt: 1,
-                            position: "absolute",
-                            top: "100%",
-                            width: "100%",
-                            bgcolor: "background.paper",
-                            borderRadius: 4,
-                            border: "1px solid",
-                            borderColor: "primary.light",
-                          }}
-                        >
-                          <List
-                            subheader={
-                              <ListSubheader
-                                component="div"
-                                id="nested-list-subheader"
-                              >
-                                Search Suggestions
-                              </ListSubheader>
-                            }
+                      <Card
+                        sx={{
+                          background: "#fff",
+                          [theme.breakpoints.down("sm")]: {
+                            border: 0,
+                            boxShadow: "none",
+                          },
+                        }}
+                      >
+                        <Box sx={{ p: 1 }}>
+                          <Grid
+                            container
+                            alignItems="center"
+                            justifyContent="space-between"
                           >
-                            {suggestions?.map((suggestion, index) => (
-                              <ListItem key={index} disablePadding>
-                                <ListItemButton
-                                  sx={{ borderRadius: 2 }}
-                                  onClick={() => fetchSearchResults(suggestion)}
-                                >
-                                  <ListItemText primary={suggestion} />
-                                </ListItemButton>
-                              </ListItem>
-                            ))}
-                          </List>
+                            <Grid item xs>
+                              <MobileSearch
+                                value={value}
+                                onChange={(e) => handleInputChange(e)}
+                                popupState={popupState}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") {
+                                    fetchSearchResults(value);
+                                    // popupState.close(); // Close the popover
+                                  }
+                                }}
+                              />
+                            </Grid>
+                          </Grid>
                         </Box>
-                      </Box>
-                    )}
-                  </Transitions>
+                      </Card>
+
+                      {suggestions?.length > 0 && (
+                        <Box sx={{ position: "relative" }}>
+                          <Box
+                            sx={{
+                              mt: 1,
+                              position: "absolute",
+                              top: "100%",
+                              width: "100%",
+                              bgcolor: "background.paper",
+                              borderRadius: 4,
+                              border: "1px solid",
+                              borderColor: "primary.light",
+                            }}
+                          >
+                            <List
+                              subheader={
+                                <ListSubheader
+                                  component="div"
+                                  id="nested-list-subheader"
+                                >
+                                  Search Suggestions
+                                </ListSubheader>
+                              }
+                            >
+                              {suggestions?.map((suggestion, index) => (
+                                <ListItem key={index} disablePadding>
+                                  <ListItemButton
+                                    sx={{ borderRadius: 2 }}
+                                    onClick={() =>
+                                      fetchSearchResults(suggestion)
+                                    }
+                                  >
+                                    <ListItemText primary={suggestion} />
+                                  </ListItemButton>
+                                </ListItem>
+                              ))}
+                            </List>
+                          </Box>
+                        </Box>
+                      )}
+                    </Transitions>
+                  </ClickAwayListener>
                 )}
               </PopperStyle>
             </>
@@ -287,79 +318,82 @@ const SearchSection = () => {
         </PopupState>
       </Box>
 
-      <Box sx={{ display: { xs: "none", md: "block" } }}>
-        <OutlineInputStyle
-          id="input-search-header"
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          placeholder="Search"
-          size="small"
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              fetchSearchResults(value);
+      <ClickAwayListener onClickAway={() => setSuggestions([])}>
+        <Box sx={{ display: { xs: "none", md: "block" } }}>
+          <OutlineInputStyle
+            id="input-search-header"
+            value={value}
+            onChange={(e) => handleInputChange(e)}
+            onClick={(e) => handleInputChange(e)}
+            placeholder="Search"
+            size="small"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                fetchSearchResults(value);
+              }
+            }}
+            startAdornment={
+              <InputAdornment position="start">
+                <IconSearch
+                  stroke={1.5}
+                  size="1rem"
+                  color={theme.palette.grey[500]}
+                />
+              </InputAdornment>
             }
-          }}
-          startAdornment={
-            <InputAdornment position="start">
-              <IconSearch
-                stroke={1.5}
-                size="1rem"
-                color={theme.palette.grey[500]}
-              />
-            </InputAdornment>
-          }
-          endAdornment={
-            <InputAdornment position="end">
-              <ButtonBase sx={{ borderRadius: "12px" }}>
-                <HeaderAvatarStyle
-                  variant="rounded"
-                  sx={{ height: 26, width: 26 }}
-                >
-                  <IconAdjustmentsHorizontal stroke={1.5} size="1.1rem" />
-                </HeaderAvatarStyle>
-              </ButtonBase>
-            </InputAdornment>
-          }
-          aria-describedby="search-helper-text"
-          inputProps={{ "aria-label": "weight" }}
-        />
+            endAdornment={
+              <InputAdornment position="end">
+                <ButtonBase sx={{ borderRadius: "4px" }}>
+                  <HeaderAvatarStyle
+                    variant="rounded"
+                    sx={{ height: 26, width: 26 }}
+                  >
+                    <IconAdjustmentsHorizontal stroke={1.5} size="1.1rem" />
+                  </HeaderAvatarStyle>
+                </ButtonBase>
+              </InputAdornment>
+            }
+            aria-describedby="search-helper-text"
+            inputProps={{ "aria-label": "weight" }}
+          />
 
-        {suggestions?.length > 0 && (
-          <Box sx={{ position: "relative", ml: 2 }}>
-            <Box
-              sx={{
-                mt: 2,
-                position: "absolute",
-                top: "100%",
-                width: "100%",
-                bgcolor: "background.paper",
-                borderRadius: 4,
-                border: "1px solid",
-                borderColor: "primary.light",
-              }}
-            >
-              <List
-                subheader={
-                  <ListSubheader component="div" id="nested-list-subheader">
-                    Search Suggestions
-                  </ListSubheader>
-                }
+          {suggestions?.length > 0 && (
+            <Box sx={{ position: "relative", ml: 2 }}>
+              <Box
+                sx={{
+                  mt: 2,
+                  position: "absolute",
+                  top: "100%",
+                  width: "100%",
+                  bgcolor: "background.paper",
+                  borderRadius: 4,
+                  border: "1px solid",
+                  borderColor: "primary.light",
+                }}
               >
-                {suggestions?.map((suggestion, index) => (
-                  <ListItem key={index} disablePadding>
-                    <ListItemButton
-                      sx={{ borderRadius: 2 }}
-                      onClick={() => fetchSearchResults(suggestion)}
-                    >
-                      <ListItemText primary={suggestion} />
-                    </ListItemButton>
-                  </ListItem>
-                ))}
-              </List>
+                <List
+                  subheader={
+                    <ListSubheader component="div" id="nested-list-subheader">
+                      Search Suggestions
+                    </ListSubheader>
+                  }
+                >
+                  {suggestions?.map((suggestion, index) => (
+                    <ListItem key={index} disablePadding>
+                      <ListItemButton
+                        sx={{ borderRadius: 2 }}
+                        onClick={() => fetchSearchResults(suggestion)}
+                      >
+                        <ListItemText primary={suggestion} />
+                      </ListItemButton>
+                    </ListItem>
+                  ))}
+                </List>
+              </Box>
             </Box>
-          </Box>
-        )}
-      </Box>
+          )}
+        </Box>
+      </ClickAwayListener>
     </>
   );
 };

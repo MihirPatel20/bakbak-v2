@@ -63,7 +63,7 @@ const generateExploreGrid = (numberOfElements, cols) => {
     attempts++;
   }
 
-  console.log("Grid:", grid);
+  // console.log("Grid:", grid);
   return { items, rows, cols };
 };
 

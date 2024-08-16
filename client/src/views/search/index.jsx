@@ -27,8 +27,8 @@ const SearchView = () => {
       const response = await api.get(`/search?query=${query}`);
 
       const { socialProfiles, posts } = response.data.data;
-      console.log("socialProfiles:", socialProfiles);
-      console.log("posts:", posts);
+      // console.log("socialProfiles:", socialProfiles);
+      // console.log("posts:", posts);
       setProfiles(socialProfiles);
       setPosts(posts);
     } catch (error) {

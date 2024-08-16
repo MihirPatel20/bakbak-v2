@@ -79,12 +79,21 @@ const ExplorePosts = () => {
   }, [fetchPosts, page]);
 
   useEffect(() => {
-    if (posts.length > 0) {
-      const { items } = generateExploreGrid(posts.length, cols);
+    // Initial grid configuration when the component mounts
+    if (gridConfig.length < 1) {
+      const { items } = generateExploreGrid(200, cols);
       setGridConfig(items);
     }
-  }, [posts, matchDownSM]);
 
+    // Update grid configuration incrementally by 200
+    const thresholds = [200, 400, 600, 800, 1000]; // Add more thresholds as needed
+    for (let threshold of thresholds) {
+      if (posts.length > threshold && gridConfig.length < threshold) {
+        const { items } = generateExploreGrid(threshold, cols);
+        setGridConfig(items);
+      }
+    }
+  }, [posts, matchDownSM]);
   if (posts.length === 0) {
     return (
       <ImageList cols={cols} gap={8}>
@@ -95,7 +104,12 @@ const ExplorePosts = () => {
 
   return (
     <Box>
-      <ImageList variant="" cols={cols} gap={4} rowHeight={matchDownSM ? 100 :200}>
+      <ImageList
+        variant=""
+        cols={cols}
+        gap={4}
+        rowHeight={matchDownSM ? 100 : 200}
+      >
         {posts.map((post, index) => (
           <ImageCard
             key={post._id}

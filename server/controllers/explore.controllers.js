@@ -7,17 +7,12 @@ import { USER_ACTIVITY_TYPES } from "../constants.js";
 /**
  * Fetches and returns posts for the explore page, prioritizing both activity and recency.
  *
- * @param {Object} req - The request object.
- * @param {Object} res - The response object.
- * @returns {Promise<void>} - Returns a JSON response with the posts.
- *
- * @throws {Error} - Throws an error if aggregation or pagination fails.
  */
 const exploreGrid = asyncHandler(async (req, res) => {
   const { page = 1, limit = 10 } = req.query;
 
   const postAggregation = SocialPost.aggregate([
-    ...postCommonAggregation(req), 
+    ...postCommonAggregation(req),
 
     {
       $addFields: {

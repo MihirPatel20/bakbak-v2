@@ -79,7 +79,7 @@ const ImageCard = ({
 
   const fetchImageUrl = async (url) => {
     const defaultImage =
-      "http://localhost:8080/images/image172327007458649446.jpg"; // replace with your default image URL
+      "http://localhost:8080/images/default/placeholder-image.jpg"; // replace with your default image URL
 
     try {
       const response = await fetch(url, { method: "HEAD" });
@@ -113,7 +113,7 @@ const ImageCard = ({
       rows={gridConfig[index]?.rowSpan || 1}
       sx={{ borderRadius: "3px", overflow: "hidden" }}
     >
-      {loading || !post?.images[0] ? (
+      {loading  ? (
         <ImagePlaceholder height={200} />
       ) : (
         <CardMedia
