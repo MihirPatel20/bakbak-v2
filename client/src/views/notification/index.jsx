@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 // material-ui
@@ -26,15 +26,29 @@ import fetchNotifications, {
   markAsRead,
 } from "reducer/notification/notification.thunk";
 import { useNavigate } from "react-router-dom";
+import api from "api";
 
 const Notifications = () => {
+  const [notifications, setNotifications] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
-  const { notifications, isLoading } = useSelector(
-    (state) => state.notifications
-  );
 
   useEffect(() => {
-    dispatch(fetchNotifications({ isRead: "true", page: 1, limit: 10 }));
+    const fetchNotificationsData = async () => {
+      setIsLoading(true);
+      const query = `?isRead="true"&page=${1}&limit=${10}`;
+      try {
+        const response = await api.get(`/notifications${query}`);
+        console.log("response", response.data.data.notifications);
+        setNotifications(response.data.data.notifications);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchNotificationsData();
   }, [dispatch]);
 
   const handleMarkAsRead = (notificationId) => {

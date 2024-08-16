@@ -6,7 +6,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import SendIcon from "@mui/icons-material/Send";
 import { useParams } from "react-router-dom";
 import { AppBarHeight } from "constants";
@@ -26,6 +26,22 @@ const ChatInterface = () => {
     handleOnMessageChange,
     sendMessage,
   } = useChatSocket(chatId);
+
+  const boxRef = useRef(null);
+  const [chatBoxDimensions, setChatBoxDimensions] = useState({
+    left: 0,
+    width: 0,
+  });
+
+  useEffect(() => {
+    if (boxRef.current) {
+      const rect = boxRef.current.getBoundingClientRect();
+      setChatBoxDimensions({
+        left: rect.left,
+        width: rect.width,
+      });
+    }
+  }, [boxRef.current]);
 
   if (!activeChat) {
     return (
@@ -57,6 +73,7 @@ const ChatInterface = () => {
 
   return (
     <Box
+      ref={boxRef}
       sx={{
         bgcolor: "primary.light",
         borderRadius: 3,
@@ -107,6 +124,7 @@ const ChatInterface = () => {
           chat={activeChat}
           messages={messages}
           isTyping={isTyping}
+          chatBoxDimensions={chatBoxDimensions}
         />
 
         <Box
@@ -119,6 +137,12 @@ const ChatInterface = () => {
           p={2}
           borderTop={1}
           borderTopColor="grey.400"
+          position={"fixed"}
+          width={chatBoxDimensions.width || "100%"}
+          bottom={0}
+          sx={{
+            bgcolor: "primary.light",
+          }}
         >
           <TextField
             name="message"

@@ -6,7 +6,7 @@ import PerfectScrollbar from "react-perfect-scrollbar";
 import { getUserAvatarUrl } from "utils/getImageUrl";
 import TypingBubble from "./TypingBubble";
 
-const ChatMessageLayout = ({ chat, messages, isTyping }) => {
+const ChatMessageLayout = ({ chat, messages, isTyping, chatBoxDimensions }) => {
   const { user } = useAuth();
   const chatContainerRef = useRef(null);
   const [showScrollToBottom, setShowScrollToBottom] = useState(false);
@@ -54,21 +54,26 @@ const ChatMessageLayout = ({ chat, messages, isTyping }) => {
     <PerfectScrollbar
       ref={chatContainerRef}
       component="div"
-      style={{ padding: "16px" }}
+      style={{
+        padding: "16px",
+        height: "100%",
+        overflowY: "auto",
+        marginBottom: "70px",
+      }}
     >
+      {/* Your chat messages go here */}
       {showScrollToBottom && (
         <Box
           onClick={scrollToBottom}
           sx={{
             position: "fixed",
-            bottom: "100px",
-            right: "50%",
-            transform: "translateX(50%)",
+            bottom: "100px", // Adjust as needed
+            left: chatBoxDimensions.left + chatBoxDimensions.width / 2,
+            transform: "translateX(-50%)",
             backgroundColor: "primary.main",
             color: "white",
             borderRadius: "50%",
             width: "40px",
-            // width: "100%",
             height: "40px",
             display: "flex",
             alignItems: "center",
