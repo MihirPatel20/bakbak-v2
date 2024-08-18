@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Box, Typography, Avatar } from "@mui/material";
-import { formatDistanceToNow } from "date-fns";
+import { Box, Typography, Avatar, Collapse } from "@mui/material";
+import { format, formatDistanceToNow } from "date-fns";
 import useAuth from "hooks/useAuth";
 import PerfectScrollbar from "react-perfect-scrollbar";
 import { getUserAvatarUrl } from "utils/getImageUrl";
@@ -10,9 +10,12 @@ const ChatMessageLayout = ({ chat, messages, isTyping, chatBoxDimensions }) => {
   const { user } = useAuth();
   const chatContainerRef = useRef(null);
   const [showScrollToBottom, setShowScrollToBottom] = useState(false);
+  const [shownTimeMessageId, setShownTimeMessageId] = useState(null);
 
-  const getMessageTime = (createdAt) => {
-    return formatDistanceToNow(new Date(createdAt), { addSuffix: true });
+  const handleToggleTime = (messageId) => {
+    setShownTimeMessageId((prevId) =>
+      prevId === messageId ? null : messageId
+    );
   };
 
   const handleScroll = () => {
@@ -27,11 +30,6 @@ const ChatMessageLayout = ({ chat, messages, isTyping, chatBoxDimensions }) => {
     setShowScrollToBottom(shouldShow);
   };
 
-  const scrollToBottom = () => {
-    const chatContainer = chatContainerRef.current._container;
-    if (chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
-  };
-
   useEffect(() => {
     const chatContainer = chatContainerRef.current._container;
     if (chatContainer) {
@@ -43,6 +41,11 @@ const ChatMessageLayout = ({ chat, messages, isTyping, chatBoxDimensions }) => {
       }
     };
   }, []);
+
+  const scrollToBottom = () => {
+    const chatContainer = chatContainerRef.current._container;
+    if (chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
+  };
 
   useEffect(() => {
     if (!showScrollToBottom) {
@@ -102,6 +105,7 @@ const ChatMessageLayout = ({ chat, messages, isTyping, chatBoxDimensions }) => {
               mb: isLastMessage ? "8px" : "4px",
               flexDirection: isSender ? "row-reverse" : "row",
             }}
+            onClick={() => handleToggleTime(message._id)}
           >
             {!isSender && (
               <Avatar
@@ -140,14 +144,24 @@ const ChatMessageLayout = ({ chat, messages, isTyping, chatBoxDimensions }) => {
                 minWidth: "40px",
               }}
             >
-              <Typography variant="body1">{message.content}</Typography>
-              <Typography
-                variant="caption"
-                color={isSender ? "grey.200" : "grey.600"}
-                fontSize={10}
-              >
-                {getMessageTime(message.createdAt)}
+              <Typography variant="body1" sx={{ cursor: "default" }}>
+                {message.content}
               </Typography>
+              <Box
+                display="flex"
+                justifyContent={isSender ? "flex-end" : "flex-start"}
+              >
+                <Collapse in={shownTimeMessageId === message._id}>
+                  <Typography
+                    variant="caption"
+                    color={isSender ? "grey.200" : "grey.600"}
+                    fontSize={10}
+                    sx={{ textAlign: "right" }}
+                  >
+                    {format(new Date(message.createdAt), "PPpp")}
+                  </Typography>
+                </Collapse>
+              </Box>
             </Box>
           </Box>
         );

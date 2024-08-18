@@ -111,22 +111,14 @@ initializeSocketIO(io);
 
 // * Seeding handlers
 import { avoidInProduction } from "./middlewares/auth.middlewares.js";
-import { getGeneratedCredentials, seedUsers } from "./seeds/user.seeds.js";
-import { seedSocialMedia } from "./seeds/social-media.seeds.js";
+import seedRouter from "./routes/seed.routes.js";
 import { dbInstance } from "./db/index.js";
 import { DB_NAME } from "./constants.js";
 import { ApiError } from "./utils/ApiError.js";
 import { ApiResponse } from "./utils/ApiResponse.js";
 import path from "path";
-import { seedChatApp } from "./seeds/chat-app.seeds.js";
 
-app.post(
-  "/api/v1/seed/social-media",
-  avoidInProduction,
-  seedUsers,
-  seedSocialMedia
-);
-app.post("/api/v1/seed/chat-app", avoidInProduction, seedUsers, seedChatApp);
+app.use("/api/v1/seed", seedRouter);
 
 // ! 🚫 Danger Zone
 app.delete("/api/v1/reset-db", avoidInProduction, async (req, res) => {

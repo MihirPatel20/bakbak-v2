@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { ChatMessage } from "../models/message.models.js";
 import { Chat } from "../models/chat.models.js";
 import { User } from "../models/user.models.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -222,10 +223,15 @@ const deleteOneOnOneChat = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Chat does not exist");
   }
 
-  await Chat.findByIdAndDelete(chatId); // delete the chat even if user is not admin because it's a personal chat
+  // Delete the chat
+  await Chat.findByIdAndDelete(chatId); // delete the chat even if the user is not admin because it's a personal chat
 
-  //   await deleteCascadeChatMessages(chatId); // delete all the messages and attachments associated with the chat
+  // Delete all messages associated with this chat
+  await ChatMessage.deleteMany({ chat: chatId });
+  // delete all the messages and attachments associated with the chat
+  // await deleteCascadeChatMessages(chatId);
 
+  // Notify participants
   payload?.participants?.forEach((participant) => {
     // The below commented code is intended to prevent emitting an event to the user who is deleting the chat.
     // Currently, it's not required because we want to update the chat list of the user who is deleting the chat as well from the server.

@@ -1,4 +1,4 @@
-import { formatDistanceToNow } from "date-fns";
+import { format, formatDistanceToNow, startOfDay } from "date-fns";
 
 export const getRelativeTime = (createdAt) => {
   return formatDistanceToNow(new Date(createdAt), { addSuffix: true });
@@ -19,4 +19,18 @@ export const formatRelativeTime = (date) => {
 
   const weeks = Math.floor(days / 7);
   return `${weeks}w`;
+};
+
+export const renderDateLabel = (dateString) => {
+  const today = format(startOfDay(new Date()), "yyyy-MM-dd");
+  const yesterday = format(
+    startOfDay(new Date(new Date().setDate(new Date().getDate() - 1))),
+    "yyyy-MM-dd"
+  );
+
+  const messageDate = format(startOfDay(new Date(dateString)), "yyyy-MM-dd");
+
+  if (messageDate === today) return "Today";
+  if (messageDate === yesterday) return "Yesterday";
+  return format(new Date(dateString), "MMMM dd, yyyy");
 };

@@ -47,8 +47,12 @@ const chatMessageCommonAggregation = () => {
   ];
 };
 
+// needs improvement with infinite scroll
+// currently fetching all messages at once
+// which is not a good practice
 const getAllMessages = asyncHandler(async (req, res) => {
   const { chatId } = req.params;
+  const { page = 1, limit = 1000 } = req.query; // Get page and limit from query parameters, with defaults
 
   const selectedChat = await Chat.findById(chatId);
 
@@ -61,7 +65,7 @@ const getAllMessages = asyncHandler(async (req, res) => {
     throw new ApiError(400, "User is not a part of this chat");
   }
 
-  const messages = await ChatMessage.aggregate([
+  const messageAggregation = ChatMessage.aggregate([
     {
       $match: {
         chat: new mongoose.Types.ObjectId(chatId),
@@ -74,6 +78,20 @@ const getAllMessages = asyncHandler(async (req, res) => {
     //   },
     // },
   ]);
+
+  const options = {
+    page: parseInt(page),
+    limit: parseInt(limit),
+    customLabels: {
+      totalDocs: "totalMessages",
+      docs: "messages",
+    },
+  };
+
+  const messages = await ChatMessage.aggregatePaginate(
+    messageAggregation,
+    options
+  );
 
   return res
     .status(200)

@@ -139,6 +139,7 @@ const ChatInterface = () => {
           borderTopColor="grey.400"
           position={"fixed"}
           width={chatBoxDimensions.width || "100%"}
+          maxWidth={600}
           bottom={0}
           sx={{
             bgcolor: "primary.light",

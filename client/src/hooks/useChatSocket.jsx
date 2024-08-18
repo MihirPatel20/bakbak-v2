@@ -34,7 +34,7 @@ const useChatSocket = (chatId) => {
     const getMessages = async () => {
       try {
         const response = await api.get(`/messages/${chatId}`);
-        setMessages(response.data.data);
+        setMessages(response.data.data.messages);
       } catch (error) {
         console.error("Error fetching messages:", error);
       }
