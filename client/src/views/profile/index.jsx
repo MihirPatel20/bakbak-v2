@@ -18,7 +18,7 @@ import {
   VisitorComponent,
 } from "utils/AuthorizationComponents";
 import FolllowButton from "components/shared/FolllowButton";
-import PostGrid from "./PostGrid";
+import PostGrid from "../post/PostGrid";
 
 const ProfilePage = () => {
   const [profile, setProfile] = useState(null);

@@ -20,10 +20,6 @@ export default function Routes() {
       element: <Navigate to="/home" replace />,
     },
     {
-      path: "/test",
-      element: <Test />,
-    },
-    {
       path: "",
       element: <ProtectedRoutes />,
       children: [
@@ -46,7 +42,11 @@ export default function Routes() {
             {
               path: "/search",
               element: <SearchView />,
-            }
+            },
+            {
+              path: "/test",
+              element: <Test />,
+            },
           ],
         },
       ],

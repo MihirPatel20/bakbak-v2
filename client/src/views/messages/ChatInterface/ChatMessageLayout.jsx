@@ -5,6 +5,7 @@ import useAuth from "hooks/useAuth";
 import PerfectScrollbar from "react-perfect-scrollbar";
 import { getUserAvatarUrl } from "utils/getImageUrl";
 import TypingBubble from "./TypingBubble";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 
 const ChatMessageLayout = ({ chat, messages, isTyping, chatBoxDimensions }) => {
   const { user } = useAuth();
@@ -12,38 +13,29 @@ const ChatMessageLayout = ({ chat, messages, isTyping, chatBoxDimensions }) => {
   const [showScrollToBottom, setShowScrollToBottom] = useState(false);
   const [shownTimeMessageId, setShownTimeMessageId] = useState(null);
 
+  const sender = chat.participants.find(
+    (participant) => participant._id !== user._id
+  );
+
   const handleToggleTime = (messageId) => {
     setShownTimeMessageId((prevId) =>
       prevId === messageId ? null : messageId
     );
   };
 
-  const handleScroll = () => {
-    const chatContainer = chatContainerRef.current._container;
-    if (!chatContainer) return;
-
+  const handleScroll = (psContainer) => {
     const shouldShow =
-      chatContainer.scrollHeight -
-        chatContainer.scrollTop -
-        chatContainer.clientHeight >
+      psContainer.scrollHeight -
+        psContainer.scrollTop -
+        psContainer.clientHeight >
       350;
     setShowScrollToBottom(shouldShow);
   };
 
-  useEffect(() => {
-    const chatContainer = chatContainerRef.current._container;
-    if (chatContainer) {
-      chatContainer.addEventListener("scroll", handleScroll);
-    }
-    return () => {
-      if (chatContainer) {
-        chatContainer.removeEventListener("scroll", handleScroll);
-      }
-    };
-  }, []);
-
   const scrollToBottom = () => {
     const chatContainer = chatContainerRef.current._container;
+    console.log("PerfectScrollbar", chatContainerRef.current);
+
     if (chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
   };
 
@@ -51,17 +43,21 @@ const ChatMessageLayout = ({ chat, messages, isTyping, chatBoxDimensions }) => {
     if (!showScrollToBottom) {
       scrollToBottom();
     }
-  }, [messages]);
+  }, [messages, isTyping]);
 
   return (
     <PerfectScrollbar
       ref={chatContainerRef}
+      onScrollY={handleScroll}
+      onYReachStart={() => {
+        console.log("reached start");
+      }}
       component="div"
       style={{
         padding: "16px",
         height: "100%",
-        overflowY: "auto",
-        marginBottom: "70px",
+        // overflowY: "auto",
+        marginBottom: chatBoxDimensions.width < 500 ? "50px" : "70px",
       }}
     >
       {/* Your chat messages go here */}
@@ -84,7 +80,7 @@ const ChatMessageLayout = ({ chat, messages, isTyping, chatBoxDimensions }) => {
             cursor: "pointer",
           }}
         >
-          ↓
+          <ArrowDownwardIcon />
         </Box>
       )}
 
@@ -97,77 +93,91 @@ const ChatMessageLayout = ({ chat, messages, isTyping, chatBoxDimensions }) => {
           messages[index + 1].sender._id !== message.sender._id;
 
         return (
-          <Box
-            key={message._id}
-            sx={{
-              display: "flex",
-              alignItems: "flex-end",
-              mb: isLastMessage ? "8px" : "4px",
-              flexDirection: isSender ? "row-reverse" : "row",
-            }}
-            onClick={() => handleToggleTime(message._id)}
-          >
-            {!isSender && (
-              <Avatar
-                src={getUserAvatarUrl(message.sender.avatar)}
-                alt={message.sender.username}
-                sx={{
-                  width: 32,
-                  height: 32,
-                  mr: 1,
-                  visibility: isLastMessage ? "visible" : "hidden",
-                }}
-              />
-            )}
+          <>
             <Box
+              key={message._id}
               sx={{
-                bgcolor: isSender ? "primary.main" : "background.paper",
-                color: isSender ? "common.white" : "text.primary",
-                borderRadius: isFirstMessage
-                  ? isSender
-                    ? "14px 14px 4px 14px"
-                    : "14px 14px 14px 4px"
-                  : isLastMessage
-                  ? isSender
-                    ? "14px 4px 14px 14px"
-                    : "4px 14px 14px 14px"
-                  : isSender
-                  ? "14px 4px 4px 14px"
-                  : "4px 14px 14px 4px",
-
                 display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                p: "8px 14px",
-                maxWidth: "70%",
-                wordWrap: "break-word",
-                minWidth: "40px",
+                // alignItems: "flex-end",
+                mt: isFirstMessage ? "8px" : "4px",
+                flexDirection: isSender ? "row-reverse" : "row",
               }}
+              onClick={() => handleToggleTime(message._id)}
             >
-              <Typography variant="body1" sx={{ cursor: "default" }}>
-                {message.content}
-              </Typography>
+              {!isSender && (
+                <Avatar
+                  src={getUserAvatarUrl(message.sender.avatar)}
+                  alt={message.sender.username}
+                  sx={{
+                    width: 32,
+                    height: 32,
+                    mr: 1,
+                    visibility: isFirstMessage ? "visible" : "hidden",
+                  }}
+                />
+              )}
               <Box
-                display="flex"
-                justifyContent={isSender ? "flex-end" : "flex-start"}
+                sx={{
+                  bgcolor: isSender ? "primary.main" : "background.paper",
+                  color: isSender ? "common.white" : "text.primary",
+                  borderRadius: isFirstMessage
+                    ? isSender
+                      ? "14px 14px 4px 14px"
+                      : "14px 14px 14px 4px"
+                    : isLastMessage
+                    ? isSender
+                      ? "14px 4px 14px 14px"
+                      : "4px 14px 14px 14px"
+                    : isSender
+                    ? "14px 4px 4px 14px"
+                    : "4px 14px 14px 4px",
+
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  p: "8px 14px",
+                  maxWidth: "70%",
+                  wordWrap: "break-word",
+                  // minWidth: "40px",
+                }}
               >
-                <Collapse in={shownTimeMessageId === message._id}>
-                  <Typography
-                    variant="caption"
-                    color={isSender ? "grey.200" : "grey.600"}
-                    fontSize={10}
-                    sx={{ textAlign: "right" }}
-                  >
-                    {format(new Date(message.createdAt), "PPpp")}
-                  </Typography>
-                </Collapse>
+                <Typography variant="body1" sx={{ cursor: "default" }}>
+                  {message.content}
+                </Typography>
               </Box>
             </Box>
-          </Box>
+
+            <Box
+              display="flex"
+              justifyContent={isSender ? "flex-end" : "flex-start"}
+              paddingLeft={isSender ? 0 : 6}
+              paddingRight={isSender ? 1 : 0}
+            >
+              <Collapse in={shownTimeMessageId === message._id}>
+                <Typography
+                  variant="caption"
+                  // color={isSender ? "grey.200" : "grey.600"}
+                  color={"black"}
+                  fontSize={10}
+                  sx={{ textAlign: "right" }}
+                >
+                  {format(new Date(message.createdAt), "PPpp")}
+                </Typography>
+              </Collapse>
+            </Box>
+          </>
         );
       })}
 
-      {isTyping && <TypingBubble />}
+      {isTyping && (
+        <TypingBubble
+          avatar={sender.avatar}
+          showAvatar={
+            messages.length === 0 ||
+            messages[messages.length - 1].sender._id === user._id
+          }
+        />
+      )}
     </PerfectScrollbar>
   );
 };

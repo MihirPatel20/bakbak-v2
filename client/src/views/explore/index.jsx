@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useTheme } from "@emotion/react";
 import { Container, Typography, useMediaQuery } from "@mui/material";
 import ExplorePosts from "./ExplorePosts";
+import ExploreProfiles from "./ExploreProfiles";
 
 const ExplorePage = () => {
   const theme = useTheme();
@@ -13,7 +14,8 @@ const ExplorePage = () => {
         Explore
       </Typography>
 
-      <ExplorePosts />
+      {/* <ExplorePosts /> */}
+      <ExploreProfiles />
     </Container>
   );
 };

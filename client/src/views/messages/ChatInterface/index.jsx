@@ -134,16 +134,14 @@ const ChatInterface = () => {
           display="flex"
           alignItems="center"
           onSubmit={sendMessage}
-          p={2}
+          p="12px 6px 12px 12px"
           borderTop={1}
           borderTopColor="grey.400"
           position={"fixed"}
           width={chatBoxDimensions.width || "100%"}
           maxWidth={600}
           bottom={0}
-          sx={{
-            bgcolor: "primary.light",
-          }}
+          bgcolor="primary.light"
         >
           <TextField
             name="message"

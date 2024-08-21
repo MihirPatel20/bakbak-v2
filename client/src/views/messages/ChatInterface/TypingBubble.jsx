@@ -15,7 +15,7 @@ const typingBubble = keyframes`
   }
 `;
 
-const TypingBubble = () => {
+const TypingBubble = ({ avatar, showAvatar }) => {
   return (
     <Box
       sx={{
@@ -25,19 +25,20 @@ const TypingBubble = () => {
       }}
     >
       <Avatar
-        src={getUserAvatarUrl("default-avatar-url")} // Replace with a real URL if needed
+        src={getUserAvatarUrl(avatar)} // Replace with a real URL if needed
         alt="Typing"
         sx={{
           width: 32,
           height: 32,
           mr: 1,
+          visibility: showAvatar ? "visible" : "hidden",
         }}
       />
       <Box
         sx={{
           display: "flex",
           alignItems: "center",
-          p: "8px 14px",
+          p: "14px 20px 12px",
           maxWidth: "70%",
           wordWrap: "break-word",
           minWidth: "40px",

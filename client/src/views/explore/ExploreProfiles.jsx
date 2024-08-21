@@ -1,16 +1,11 @@
-import React, { useEffect, useState, useCallback, useRef } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import api from "api";
-import {
-  Box,
-  Container,
-  Grid,
-  CircularProgress,
-  useMediaQuery,
-} from "@mui/material";
+import { Box, Grid, CircularProgress, useMediaQuery } from "@mui/material";
 import ProfileCard from "components/shared/ProfileCard";
 import useAuth from "hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "@emotion/react";
+import useLastElementObserver from "hooks/useLastElementObserver";
 
 const ExploreProfiles = () => {
   const auth = useAuth();
@@ -20,52 +15,43 @@ const ExploreProfiles = () => {
   const matchDownSM = useMediaQuery(theme.breakpoints.down("sm"));
 
   const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const [isFetching, setIsFetching] = useState(false);
 
-  const observer = useRef();
-  const lastUserElementRef = useCallback(
-    (node) => {
-      if (loading) return;
-      if (observer.current) observer.current.disconnect();
-      observer.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && hasMore && !isFetching) {
-          setPage((prevPage) => prevPage + 1);
-        }
-      });
-      if (node) observer.current.observe(node);
-    },
-    [loading, hasMore, isFetching]
-  );
+  const limit = matchDownSM ? 5 : 10;
 
-  const getLimit = useCallback(() => {
-    return matchDownSM ? 5 : 10;
-  }, [matchDownSM]);
-
-  const limit = getLimit();
-
-  const fetchUsers = useCallback(async (pageNumber) => {
-    setIsFetching(true);
+  const fetchUsers = useCallback(async () => {
+    setIsLoading(true);
     try {
       const response = await api.get(
-        `/profile/all?page=${pageNumber}&${limit}`
+        `/profile/all?page=${page}&limit=${limit}`
       );
       const fetchedUsers = response.data.data.profiles;
       setUsers((prevUsers) => [...prevUsers, ...fetchedUsers]);
       setHasMore(response.data.data.hasNextPage);
-      setLoading(false);
     } catch (error) {
       console.error("Failed to fetch users:", error);
     } finally {
-      setIsFetching(false);
+      setIsLoading(false);
     }
-  }, []);
+  }, [page, limit]);
 
   useEffect(() => {
-    fetchUsers(page);
-  }, [fetchUsers, page]);
+    fetchUsers();
+  }, [fetchUsers]);
+
+  const loadMore = useCallback(() => {
+    if (!isLoading && hasMore) {
+      setPage((prevPage) => prevPage + 1);
+    }
+  }, [isLoading, hasMore]);
+
+  const lastUserElementRef = useLastElementObserver(
+    isLoading,
+    hasMore,
+    loadMore
+  );
 
   return (
     <Grid container spacing={3}>
@@ -102,7 +88,7 @@ const ExploreProfiles = () => {
         </Box>
       )}
 
-      {isFetching && (
+      {isLoading && (
         <Box
           display="flex"
           justifyContent="center"

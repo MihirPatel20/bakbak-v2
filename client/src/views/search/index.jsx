@@ -49,7 +49,7 @@ const SearchView = () => {
           <Typography variant="h5" mt={4} mb={2}>
             Profiles
           </Typography>
-          <Grid container spacing={{ xs: 1, sm: 3 }}>
+          <Grid container spacing={{ xs: 1, sm: 1, md: 3 }}>
             {profiles?.map((profile) => (
               <Grid item xs={12} sm={6} lg={4} key={profile._id}>
                 <ProfileCard
