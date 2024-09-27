@@ -19,6 +19,7 @@ import {
 } from "utils/AuthorizationComponents";
 import FolllowButton from "components/shared/FolllowButton";
 import PostGrid from "../post/PostGrid";
+import CoverImage from "./CoverImage";
 
 const ProfilePage = () => {
   const [profile, setProfile] = useState(null);
@@ -62,16 +63,8 @@ const ProfilePage = () => {
 
   return (
     <Container sx={{ px: 2 }}>
-      <Box
-        sx={{
-          position: "relative",
-          // height:  "250px" ,
-          height: { xs: "150px", sm: "250px" },
-          backgroundImage: `url(${getUserAvatarUrl(profile?.coverImage)})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      />
+      <CoverImage profile={profile} />
+
 
       <Grid container spacing={2}>
         <Grid
@@ -94,7 +87,12 @@ const ProfilePage = () => {
               sx={{ width: 150, height: 150, border: "5px solid white" }}
             />
             <OwnerComponent id={profile.account._id}>
-              <Button variant="contained">Edit Profile</Button>
+              <Button
+                variant="contained"
+                onClick={() => navigate(`/profile/edit/${profile.account._id}`)}
+              >
+                Edit Profile
+              </Button>
             </OwnerComponent>
           </Box>
         </Grid>

@@ -32,7 +32,7 @@ router.use(verifyJWT);
 router
   .route("/")
   .get(getMySocialProfile)
-  .patch(updateSocialProfileValidator(), validate, updateSocialProfile);
+  .patch(updateSocialProfileValidator(), updateSocialProfile);
 
 // Protected routes - require authentication
 router.route("/all").get(getAllUserProfiles);
