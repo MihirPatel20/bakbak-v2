@@ -78,8 +78,8 @@ const ChatInterface = () => {
         bgcolor: "primary.light",
         borderRadius: 3,
         height: {
-          xs: `calc(100vh - ${AppBarHeight + MobileHeightBuffer}px)`,
-          sm: `calc(100vh - ${AppBarHeight}px)`,
+          xs: `calc(100vh - ${AppBarHeight + MobileHeightBuffer - 12}px)`,
+          // sm: `calc(100vh - ${AppBarHeight + MobileHeightBuffer - 12}px)`,
         },
         width: "100%",
         maxWidth: "600px",

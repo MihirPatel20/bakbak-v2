@@ -57,7 +57,7 @@ const ChatMessageLayout = ({ chat, messages, isTyping, chatBoxDimensions }) => {
         padding: "16px",
         height: "100%",
         // overflowY: "auto",
-        marginBottom: chatBoxDimensions.width < 500 ? "50px" : "70px",
+        // marginBottom: chatBoxDimensions.width < 300 ? "50px" : "70px",
       }}
     >
       {/* Your chat messages go here */}

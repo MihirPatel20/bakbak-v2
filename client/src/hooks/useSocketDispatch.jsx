@@ -17,7 +17,7 @@ const useSocketDispatch = () => {
 
     // Handle incoming notifications
     socket.on(ChatEventEnum.NOTIFICATION_EVENT, (notification) => {
-      console.log("notification socket response: ", notification);
+      // console.log("notification add socket response: ", notification);
       if (notification.type === "message") {
         dispatch(
           showSnackbar(
@@ -33,7 +33,7 @@ const useSocketDispatch = () => {
     socket.on(
       ChatEventEnum.NOTIFICATION_UPDATE_EVENT,
       (updatedNotification) => {
-        console.log("notification socket response: ", updatedNotification);
+        // console.log("notification update socket response: ", updatedNotification);
         if (updatedNotification.type === "message") {
           dispatch(
             showSnackbar(
