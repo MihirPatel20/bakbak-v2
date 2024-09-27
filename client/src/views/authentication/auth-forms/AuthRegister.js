@@ -76,14 +76,17 @@ const AuthRegister = ({ ...others }) => {
   const isDevelopment = import.meta.env.MODE === "development";
   const initialValues = isDevelopment
     ? {
-        firstName: "first",
-        lastName: "last",
         username: "demo.user",
         email: "demo@gmail.com",
         password: "1234",
         submit: null,
       }
-    : {};
+    : {
+        username: "",
+        email: "",
+        password: "",
+        submit: null,
+      };
 
   return (
     <>
@@ -155,8 +158,7 @@ const AuthRegister = ({ ...others }) => {
       <Formik
         initialValues={initialValues}
         validationSchema={Yup.object().shape({
-          firstName: Yup.string().max(255).required("First Name is required"),
-          lastName: Yup.string().max(255).required("Last Name is required"),
+          username: Yup.string().max(255).required("Username is required"),
           email: Yup.string()
             .email("Must be a valid email")
             .max(255)
@@ -226,41 +228,6 @@ const AuthRegister = ({ ...others }) => {
                 </FormHelperText>
               )}
             </FormControl>
-
-            <Grid container spacing={matchDownSM ? 0 : 2}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="First Name"
-                  margin="normal"
-                  name="firstName"
-                  type="text"
-                  value={values.firstName}
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  sx={{ ...theme.typography.customInput }}
-                />
-                {touched.firstName && errors.firstName && (
-                  <FormHelperText error>{errors.firstName}</FormHelperText>
-                )}
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Last Name"
-                  margin="normal"
-                  name="lastName"
-                  type="text"
-                  value={values.lastName}
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  sx={{ ...theme.typography.customInput }}
-                />
-                {touched.lastName && errors.lastName && (
-                  <FormHelperText error>{errors.lastName}</FormHelperText>
-                )}
-              </Grid>
-            </Grid>
 
             <FormControl
               fullWidth
@@ -333,7 +300,7 @@ const AuthRegister = ({ ...others }) => {
               )}
             </FormControl>
 
-            {strength >= 0 && (
+            {strength >= 0 && !errors?.password && (
               <FormControl fullWidth>
                 <Box sx={{ mb: 2 }}>
                   <Grid container spacing={2} alignItems="center">
