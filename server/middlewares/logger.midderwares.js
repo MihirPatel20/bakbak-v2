@@ -33,6 +33,7 @@ const activityLoggerMiddleware = (req, res, next) => {
       timestamp: new Date().toISOString(),
       userActivityType: responseBody.action,
       user: user ? user._id : "anonymous",
+      username: user ? user.username : "anonymous",
       ipAddress: req.ip,
       endpoint: originalUrl,
       method: method,

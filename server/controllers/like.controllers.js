@@ -66,8 +66,6 @@ const likeDislikePost = asyncHandler(async (req, res) => {
     post[0].isLiked = true;
     post[0].likes = (post[0].likes || 0) + 1;
 
-    console.log("post[0].author._id.toString()", post[0]._id.toString());
-
     // Create notification in database and send to the recipient
     await createNotification(
       req,

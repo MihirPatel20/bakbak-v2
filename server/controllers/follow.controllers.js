@@ -40,7 +40,7 @@ const followUnFollowUser = asyncHandler(async (req, res) => {
         new ApiResponse(
           200,
           { following: false },
-          "Un-followed successfully",
+          "Removed from following.",
           USER_ACTIVITY_TYPES.UNFOLLOW_USER
         )
       );
@@ -56,7 +56,7 @@ const followUnFollowUser = asyncHandler(async (req, res) => {
         {
           following: true,
         },
-        "Followed successfully",
+        "Added to following",
         USER_ACTIVITY_TYPES.FOLLOW_USER
       )
     );
