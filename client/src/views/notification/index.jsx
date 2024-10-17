@@ -27,6 +27,7 @@ import fetchNotifications, {
 } from "reducer/notification/notification.thunk";
 import { useNavigate } from "react-router-dom";
 import api from "api";
+import AdsComponent from "@/adsense";
 
 const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
@@ -61,10 +62,24 @@ const Notifications = () => {
 
   return (
     <Container>
+      <Box
+        sx={{
+          border: "1px solid #ccc",
+          borderRadius: "8px",
+          padding: "16px",
+          textAlign: "center",
+          margin: "16px 0",
+        }}
+      >
+        <Typography variant="h6" component="h1">
+          Place To show Google AdSense
+        </Typography>
+        <AdsComponent dataAdSlot="8429412170" />
+      </Box>
+
       <Typography variant="h3" sx={{ mb: 2 }} component="h1">
         Notifications
       </Typography>
-
       <List
         sx={{
           width: "100%",
