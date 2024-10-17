@@ -2,7 +2,14 @@ import { Link } from "react-router-dom";
 
 // material-ui
 import { useTheme } from "@mui/material/styles";
-import { Divider, Grid, Stack, Typography, useMediaQuery } from "@mui/material";
+import {
+  Box,
+  Divider,
+  Grid,
+  Stack,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
 
 // project imports
 import AuthWrapper1 from "../AuthWrapper1";
@@ -11,6 +18,7 @@ import AuthLogin from "../auth-forms/AuthLogin";
 import Logo from "ui-component/Logo";
 import AuthFooter from "ui-component/cards/AuthFooter";
 import BakbakLogo from "components/global/BakbakLogo";
+import AdsComponent from "@/adsense";
 
 // assets
 
@@ -111,6 +119,23 @@ const Login = () => {
               </AuthCardWrapper>
             </Grid>
           </Grid>
+        </Grid>
+
+        <Grid
+          item
+          xs={12}
+          sx={{
+            border: "1px solid #ccc",
+            borderRadius: "8px",
+            padding: "16px",
+            textAlign: "center",
+            margin: "16px 0",
+          }}
+        >
+          <Typography variant="h6" component="h1">
+            Place To show Google AdSense
+          </Typography>
+          <AdsComponent dataAdSlot="8429412170" />
         </Grid>
         <Grid item xs={12} sx={{ m: 3, mt: 1 }}>
           <AuthFooter />

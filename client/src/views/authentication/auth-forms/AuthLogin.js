@@ -263,6 +263,7 @@ const AuthLogin = ({ ...others }) => {
               <FormControlLabel
                 control={
                   <Checkbox
+                    sx={{ "& .MuiSvgIcon-root": { maxWidth: 100 } }}
                     checked={checked}
                     onChange={(event) => setChecked(event.target.checked)}
                     name="checked"

@@ -1,8 +1,6 @@
 import React, { useEffect } from "react";
 
-const AdsComponent = (props) => {
-  const { dataAdSlot } = props;
-
+const AdsComponent = () => {
   useEffect(() => {
     try {
       (window.adsbygoogle = window.adsbygoogle || []).push({});
@@ -13,12 +11,19 @@ const AdsComponent = (props) => {
   }, []);
 
   return (
-    <ins
-      className="adsbygoogle"
-      style={{ display: "inline-block", width: "300px", height: "150px" }}
-      data-ad-client="ca-pub-7788263783729305"
-      data-ad-slot={dataAdSlot}
-    ></ins>
+    <>
+      <ins
+        className="adsbygoogle"
+        style={{
+          display: "inline-block",
+          width: "350px",
+          height: "150px",
+        }}
+        data-ad-client="ca-pub-XXXXXXXXXXXXX"
+        data-adtest="on"
+        data-ad-slot="XXXXXXXXXXX"
+      ></ins>
+    </>
   );
 };
 

@@ -7,7 +7,7 @@ import GitHubIcon from "@mui/icons-material/GitHub";
 const AuthFooter = () => (
   <Stack direction="row" justifyContent="space-between">
     <Box sx={{ display: "flex", alignItems: "center" }}>
-      <GitHubIcon sx={{ mr: 1 }} />
+      <GitHubIcon sx={{ mr: 1, maxWidth: 100 }} />
       <Typography
         variant="subtitle2"
         component={Link}
