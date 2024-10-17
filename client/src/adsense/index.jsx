@@ -4,7 +4,6 @@ const AdsComponent = () => {
   useEffect(() => {
     try {
       (window.adsbygoogle = window.adsbygoogle || []).push({});
-      console.log("Adsense loaded");
     } catch (e) {
       console.error("Adsense error: ", e);
     }
@@ -19,9 +18,9 @@ const AdsComponent = () => {
           width: "350px",
           height: "150px",
         }}
-        data-ad-client="ca-pub-XXXXXXXXXXXXX"
+        data-ad-client="ca-pub-7788263783729305"
         data-adtest="on"
-        data-ad-slot="XXXXXXXXXXX"
+        data-ad-slot="8429412170"
       ></ins>
     </>
   );

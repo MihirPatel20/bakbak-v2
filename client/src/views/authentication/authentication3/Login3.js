@@ -121,22 +121,6 @@ const Login = () => {
           </Grid>
         </Grid>
 
-        <Grid
-          item
-          xs={12}
-          sx={{
-            border: "1px solid #ccc",
-            borderRadius: "8px",
-            padding: "16px",
-            textAlign: "center",
-            margin: "16px 0",
-          }}
-        >
-          <Typography variant="h6" component="h1">
-            Place To show Google AdSense
-          </Typography>
-          <AdsComponent dataAdSlot="8429412170" />
-        </Grid>
         <Grid item xs={12} sx={{ m: 3, mt: 1 }}>
           <AuthFooter />
         </Grid>
