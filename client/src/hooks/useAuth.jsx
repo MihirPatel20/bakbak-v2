@@ -42,7 +42,9 @@ const useAuth = () => {
 
   const logout = async () => {
     await updatePushSubscriptionStatus("deactivate");
+    console.log("logout started");
     await dispatch(logoutUser());
+    console.log("logout completed");
   };
 
   return {
