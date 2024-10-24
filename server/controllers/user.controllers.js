@@ -22,10 +22,15 @@ import {
 } from "../utils/mail.js";
 
 // TODO: Add more options to make cookie more secure and reliable
-const cookieOptions = {
+const cookieOptionsForProduction = {
   httpOnly: true,
   secure: process.env.NODE_ENV === "production" ? true : false,
   sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+};
+const cookieOptions = {
+  httpOnly: true,
+  secure: true,
+  sameSite: "none",
 };
 
 const generateAccessAndRefreshTokens = async (userId) => {

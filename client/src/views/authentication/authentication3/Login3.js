@@ -52,7 +52,7 @@ const Login = () => {
                   justifyContent="center"
                 >
                   <Grid item sx={{ mb: 1 }}>
-                    <Link to="#" style={{ textDecoration: "none" }}>
+                    <Link to="/home" style={{ textDecoration: "none" }}>
                       <BakbakLogo
                         sx={{ fontSize: "2rem", textDecoration: "none" }}
                       />

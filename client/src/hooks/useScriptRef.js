@@ -5,12 +5,12 @@ import { useEffect, useRef } from 'react';
 const useScriptRef = () => {
   const scripted = useRef(true);
 
-  useEffect(
-    () => () => {
+  useEffect(() => {
+    scripted.current = true;
+    return () => {
       scripted.current = false;
-    },
-    []
-  );
+    };
+  }, []);
 
   return scripted;
 };

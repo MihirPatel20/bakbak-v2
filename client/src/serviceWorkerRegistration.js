@@ -13,7 +13,8 @@ const subscriptionOptions = {
 // Get Push Subscription
 const getPushSubscription = async () => {
   if (!("serviceWorker" in navigator)) {
-    throw new Error("No support for service worker!");
+    console.error("No support for service worker!");
+    return null;
   }
 
   try {
@@ -27,7 +28,7 @@ const getPushSubscription = async () => {
     }
   } catch (error) {
     console.error("Error getting push subscription:", error);
-    throw error;
+    return null;
   }
 };
 
@@ -70,7 +71,8 @@ export const checkSWRegistration = async () => {
 export const registerSW = async () => {
   try {
     if (!("serviceWorker" in navigator)) {
-      throw new Error("No support for service worker!");
+      console.error("No support for service worker!");
+      return null;
     }
     const registration = await navigator.serviceWorker.register(
       "serviceWorker.js"
@@ -79,7 +81,7 @@ export const registerSW = async () => {
     return registration;
   } catch (error) {
     console.error("Error registering service worker:", error);
-    throw error;
+    return null;
   }
 };
 
@@ -96,7 +98,7 @@ const sendSubscriptionToServer = async (subscription) => {
     return response;
   } catch (error) {
     console.error("Error saving subscription:", error);
-    throw error;
+    return null;
   }
 };
 
@@ -115,7 +117,6 @@ const subscribeToPushNotifications = async (swRegistration) => {
     }
   } catch (error) {
     console.error("Error handling subscription:", error);
-    throw error;
   }
 };
 
@@ -133,7 +134,7 @@ const updatePushSubscriptionStatus = async (action) => {
       return response;
     } catch (error) {
       console.error(`Error ${action} subscription:`, error);
-      throw error;
+      return null;
     }
   } else {
     console.log("User has not subscribed to push notifications.");
@@ -152,7 +153,7 @@ const removeSubscriptionFromServer = async (subscription) => {
     return response;
   } catch (error) {
     console.error("Error removing subscription:", error);
-    throw error;
+    return null;
   }
 };
 
@@ -170,7 +171,6 @@ const unsubscribeFromPushNotifications = async () => {
     }
   } catch (error) {
     console.error("Error handling unsubscription:", error);
-    throw error;
   }
 };
 
@@ -178,13 +178,15 @@ const unsubscribeFromPushNotifications = async () => {
 const initializeServiceWorker = async () => {
   try {
     const registration = await registerSW();
-    await requestNotificationPermission();
-    const swRegistration = await navigator.serviceWorker.ready;
-    await subscribeToPushNotifications(swRegistration);
+    if (registration) {
+      await requestNotificationPermission();
+      const swRegistration = await navigator.serviceWorker.ready;
+      await subscribeToPushNotifications(swRegistration);
+    }
     return registration;
   } catch (error) {
     console.error("Error initializing service worker:", error);
-    throw error;
+    return null;
   }
 };
 

@@ -67,7 +67,6 @@ const AuthLogin = ({ ...others }) => {
     ? {
         email: "mihir@gmail.com",
         password: "1234",
-        submit: null,
       }
     : {};
 
@@ -168,6 +167,7 @@ const AuthLogin = ({ ...others }) => {
             }
           } catch (err) {
             console.error(err);
+            setSubmitting(false);
             if (scriptedRef.current) {
               setStatus({ success: false });
               setErrors({ submit: err.message });
