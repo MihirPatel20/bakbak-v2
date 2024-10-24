@@ -16,7 +16,7 @@ const AuthFooter = () => (
         target="_blank"
         underline="hover"
       >
-        View on GitHub
+        View Preview on GitHub 
       </Typography>
     </Box>
     <Typography variant="subtitle2" component={Link} href="#" underline="hover">

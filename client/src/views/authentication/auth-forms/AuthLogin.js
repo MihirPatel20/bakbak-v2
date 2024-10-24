@@ -166,10 +166,8 @@ const AuthLogin = ({ ...others }) => {
           } catch (err) {
             console.error(err);
             setSubmitting(false);
-            if (scriptedRef.current) {
-              setStatus({ success: false });
-              setErrors({ submit: err.message });
-            }
+            setStatus({ success: false });
+            setErrors({ submit: err.message });
           }
         }}
       >
