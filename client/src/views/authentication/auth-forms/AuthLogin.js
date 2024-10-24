@@ -159,19 +159,16 @@ const AuthLogin = ({ ...others }) => {
         onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
           try {
             console.log("values: ", values);
-            if (scriptedRef.current) {
-              await login(values);
-              navigate("/home");
-              setStatus({ success: true });
-              setSubmitting(false);
-            }
+            await login(values);
+            navigate("/home");
+            setStatus({ success: true });
+            setSubmitting(false);
           } catch (err) {
             console.error(err);
             setSubmitting(false);
             if (scriptedRef.current) {
               setStatus({ success: false });
               setErrors({ submit: err.message });
-              setSubmitting(false);
             }
           }
         }}
