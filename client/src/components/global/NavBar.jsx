@@ -22,6 +22,7 @@ const NavBar = () => {
 
   const handleClose = () => {
     dispatch(logout());
+    console.log("logout clicked");
     setAnchorEl(null);
   };
 
