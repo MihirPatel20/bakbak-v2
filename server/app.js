@@ -14,10 +14,17 @@ import {
 const app = express();
 const httpServer = createServer(app);
 
+// global middlewares
+const allowedOrigins = [
+  process.env.CORS_ORIGIN_1,
+  process.env.CORS_ORIGIN_2,
+  process.env.CORS_ORIGIN_3,
+];
+
 const io = new Server(httpServer, {
   pingTimeout: 60000,
   cors: {
-    origin: process.env.CORS_ORIGIN_1,
+    origin: allowedOrigins,
     credentials: true,
   },
 });
@@ -25,16 +32,26 @@ const io = new Server(httpServer, {
 app.set("io", io); // using set method to mount the `io` instance on the app to avoid usage of `global`
 app.set("trust proxy", true);
 
-// global middlewares
-const allowedOrigins = [process.env.CORS_ORIGIN_1, process.env.CORS_ORIGIN_2];
-
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
+      // Allow requests with no origin (like mobile apps or curl)
+      if (!origin) return callback(null, true);
+
+      // Add localhost origins dynamically
+      const isLocalhost =
+        origin.includes("localhost") || origin.includes("127.0.0.1");
+
+      const allowedOrigins = [
+        process.env.CORS_ORIGIN_1,
+        process.env.CORS_ORIGIN_2,
+        ...(isLocalhost ? [origin] : []), // dynamically allow current localhost origin
+      ];
+
+      if (allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
-        callback(new Error('Not allowed by CORS'));
+        callback(new Error("Not allowed by CORS"));
       }
     },
     credentials: true,
