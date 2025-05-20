@@ -74,19 +74,28 @@ export const checkSWRegistration = async () => {
 };
 
 // Service Worker Registration
+let isSWRegistered = false;
+
 export const registerSW = async () => {
+  if (isSWRegistered) {
+    console.log("🟡 Service worker already registered.");
+    return;
+  }
+
+  if (!("serviceWorker" in navigator)) {
+    console.error("Service workers not supported in this browser. ❌");
+    return;
+  }
+
   try {
-    if (!("serviceWorker" in navigator)) {
-      console.error("No support for service worker!");
-      return null;
-    }
     const registration = await navigator.serviceWorker.register(
-      "serviceWorker.js"
+      "/serviceWorker.js"
     );
-    console.log("Service worker registered ✅", registration);
+    console.log("Service worker registered ✅:", registration);
+    isSWRegistered = true;
     return registration;
   } catch (error) {
-    console.error("Error registering service worker:", error);
+    console.error("Failed to register service worker ❌:", error);
     return null;
   }
 };
