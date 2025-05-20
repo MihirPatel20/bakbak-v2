@@ -6,7 +6,7 @@ import { urlBase64ToUint8Array } from "./utils/swUtils";
 const subscriptionOptions = {
   userVisibleOnly: true,
   applicationServerKey: urlBase64ToUint8Array(
-    "BB4Le-0DZZyObayiEagTgTfc9pFfJ7Ix4or9uxY4VLb-vc71vvb6eVMzvUOqu1TnIsz_lLo20kA_2SiFv-5ZYtA"
+    "BPXUXUqyCADcZ6LI4i5-ACoxW1r7ybjK03iDcfZ1Tfu9hw0S2MERHUrypZT8g01Vulmem8LH28Q-9yObZ-UcOn4"
   ),
 };
 
