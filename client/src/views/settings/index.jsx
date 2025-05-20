@@ -86,17 +86,28 @@ const SettingsView = () => {
         const activateResponse = await updatePushSubscriptionStatus("activate");
 
         if (!activateResponse) {
-          await serviceWorkerRegistration.initializeServiceWorker();
-          console.log("Notifications enabled.");
+          const registration =
+            await serviceWorkerRegistration.initializeServiceWorker();
+          if (!registration) {
+            console.error(
+              "[Settings] Failed to enable notifications. Please check your browser settings."
+            );
+            return;
+          }
         }
       } else {
-        await updatePushSubscriptionStatus("deactivate");
-        console.log("Notifications disabled.");
+        const deactivateResponse = await updatePushSubscriptionStatus(
+          "deactivate"
+        );
+        if (!deactivateResponse) {
+          console.error("[Settings] Failed to disable notifications.");
+          return;
+        }
       }
     } catch (error) {
       console.error(
-        `Error ${isEnabled ? "activating" : "deactivating"} push subscription:`,
-        error
+        "[Settings] Notification settings update failed:",
+        error.message
       );
     }
   };
