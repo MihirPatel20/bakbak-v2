@@ -85,7 +85,6 @@ export const registerSW = async () => {
       "/serviceWorker.js"
     );
     console.log("Service worker registered ✅:", registration);
-    isSWRegistered = true;
     return registration;
   } catch (error) {
     console.error("Failed to register service worker ❌:", error);
