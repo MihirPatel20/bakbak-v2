@@ -74,14 +74,7 @@ export const checkSWRegistration = async () => {
 };
 
 // Service Worker Registration
-let isSWRegistered = false;
-
 export const registerSW = async () => {
-  if (isSWRegistered) {
-    console.log("🟡 Service worker already registered.");
-    return;
-  }
-
   if (!("serviceWorker" in navigator)) {
     console.error("Service workers not supported in this browser. ❌");
     return;
