@@ -12,28 +12,17 @@ const subscriptionOptions = {
 
 // Get Push Subscription
 const getPushSubscription = async () => {
-  console.log("🔍 Checking for service worker support...");
   if (!("serviceWorker" in navigator)) {
-    console.error("❌ No support for service worker!");
+    console.error("Service worker not supported.");
     return null;
   }
 
   try {
-    console.log("⏳ Waiting for service worker to be ready...");
     const swRegistration = await navigator.serviceWorker.ready;
-    console.log("✅ Service worker is ready");
-
-    console.log("🔍 Checking for existing push subscription...");
     const subscription = await swRegistration.pushManager.getSubscription();
-    if (subscription) {
-      console.log("✅ Found existing subscription:", subscription);
-      return subscription;
-    } else {
-      console.log("ℹ️ No existing subscription found.");
-      return null;
-    }
+    return subscription || null;
   } catch (error) {
-    console.error("❌ Error getting push subscription:", error);
+    console.error("Failed to get push subscription:", error);
     return null;
   }
 };
@@ -59,13 +48,9 @@ export const checkSWRegistration = async () => {
       return false;
     }
     const isRegistered = registrations.some((registration) =>
-      registration.active.scriptURL.includes("serviceWorker.js")
+      registration.active?.scriptURL.includes("serviceWorker.js")
     );
-    console.log(
-      isRegistered
-        ? "Service worker already registered."
-        : "No matching service worker found."
-    );
+
     return isRegistered;
   } catch (error) {
     console.error("Error checking service worker registration:", error);
@@ -76,7 +61,7 @@ export const checkSWRegistration = async () => {
 // Service Worker Registration
 export const registerSW = async () => {
   if (!("serviceWorker" in navigator)) {
-    console.error("Service workers not supported in this browser. ❌");
+    console.error("Service workers not supported in this browser.");
     return;
   }
 
@@ -84,17 +69,15 @@ export const registerSW = async () => {
     const registration = await navigator.serviceWorker.register(
       "/serviceWorker.js"
     );
-    console.log("Service worker registered ✅:", registration);
     return registration;
   } catch (error) {
-    console.error("Failed to register service worker ❌:", error);
+    console.error("Failed to register service worker:", error);
     return null;
   }
 };
 
 // API Communication
 const sendSubscriptionToServer = async (subscription) => {
-  console.log("subscription: ", subscription);
   try {
     const response = await api.post(
       `${
@@ -118,40 +101,34 @@ const subscribeToPushNotifications = async (swRegistration) => {
       const subscription = await swRegistration.pushManager.subscribe(
         subscriptionOptions
       );
-      const res = await sendSubscriptionToServer(subscription);
-    } else {
-      console.log("Already subscribed:", existingSubscription);
+      await sendSubscriptionToServer(subscription);
     }
   } catch (error) {
-    console.error("Error handling subscription:", error);
+    console.error("Error subscribing to push notifications:", error);
   }
 };
 
 const updatePushSubscriptionStatus = async (action) => {
-  console.log("Updating push subscription status: ", action);
   const subscription = await getPushSubscription();
-  console.log("Subscription: ", subscription);
 
   if (subscription) {
     try {
       const response = await api.post(
-        import.meta.env.VITE_SERVER_API_URI +
-          `/notificationSubscription/${action}`,
+        `${
+          import.meta.env.VITE_SERVER_API_URI
+        }/notificationSubscription/${action}`,
         subscription
       );
-      console.log(`Subscription ${action} response: `, response);
       return response;
     } catch (error) {
-      console.error(`Error ${action} subscription:`, error);
+      console.error(`Error updating subscription to (${action}):`, error);
       return null;
     }
-  } else {
-    console.log("User has not subscribed to push notifications.");
   }
 };
 
+// Remove Subscription from Server
 const removeSubscriptionFromServer = async (subscription) => {
-  console.log("Removing subscription: ", subscription);
   try {
     const response = await api.post(
       `${
@@ -174,53 +151,30 @@ const unsubscribeFromPushNotifications = async () => {
     const subscription = await swRegistration.pushManager.getSubscription();
     if (subscription) {
       await subscription.unsubscribe();
-      const res = await removeSubscriptionFromServer(subscription);
-    } else {
-      console.log("No subscription found to unsubscribe.");
+      await removeSubscriptionFromServer(subscription);
     }
   } catch (error) {
-    console.error("Error handling unsubscription:", error);
+    console.error("Error unsubscribing from push notifications:", error);
   }
 };
 
 // Main Registration Process
 const initializeServiceWorker = async () => {
-  console.log("🚀 Starting service worker initialization...");
   try {
-    console.log("📥 Attempting to register service worker...");
     const registration = await registerSW();
+    if (!registration) throw new Error("Service worker registration failed");
 
-    if (registration) {
-      console.log("✅ Service worker registration successful:", registration);
-      console.log("🔔 Requesting notification permission...");
+    await requestNotificationPermission();
+    const swRegistration = await navigator.serviceWorker.ready;
+    await subscribeToPushNotifications(swRegistration);
 
-      try {
-        await requestNotificationPermission();
-        console.log("✅ Notification permission granted");
-      } catch (permError) {
-        console.error("❌ Notification permission error:", permError);
-        throw permError;
-      }
-
-      console.log("⏳ Waiting for service worker to be ready...");
-      const swRegistration = await navigator.serviceWorker.ready;
-      console.log("✅ Service worker is ready:", swRegistration);
-
-      console.log("📱 Setting up push notification subscription...");
-      await subscribeToPushNotifications(swRegistration);
-      console.log("✅ Push notification setup complete");
-    } else {
-      console.error("❌ Service worker registration failed");
-    }
     return registration;
   } catch (error) {
-    console.error("💥 Error in service worker initialization:", {
+    console.error("Error initializing service worker:", {
       message: error.message,
       stack: error.stack,
     });
     return null;
-  } finally {
-    console.log("🏁 Service worker initialization process completed");
   }
 };
 
