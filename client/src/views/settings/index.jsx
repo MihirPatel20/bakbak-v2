@@ -65,31 +65,50 @@ const SettingsView = () => {
   }, []);
 
   const handleSettingChange = async (category, setting, value) => {
+    console.log("handleSettingChange called with:", {
+      category,
+      setting,
+      value,
+    });
+
     // Update local state
-    setSettings((prevSettings) => ({
-      ...prevSettings,
-      [category]: {
-        ...prevSettings[category],
-        [setting]: value,
-      },
-    }));
+    setSettings((prevSettings) => {
+      const updatedSettings = {
+        ...prevSettings,
+        [category]: {
+          ...prevSettings[category],
+          [setting]: value,
+        },
+      };
+      console.log("Updated settings:", updatedSettings);
+      return updatedSettings;
+    });
 
     // Handle notification settings specifically
     if (category === "notifications" && setting === "enabled") {
+      console.log("Toggling notifications to:", value);
       await handleNotificationToggle(value);
     }
   };
 
   const handleNotificationToggle = async (isEnabled) => {
+    console.log("handleNotificationToggle called. isEnabled:", isEnabled);
+
     try {
       if (isEnabled) {
+        console.log("Trying to activate push subscription...");
         const activateResponse = await updatePushSubscriptionStatus("activate");
 
         if (!activateResponse) {
+          console.log(
+            "No activateResponse received, initializing service worker..."
+          );
           await serviceWorkerRegistration.initializeServiceWorker();
-          console.log("Notifications enabled.");
         }
+
+        console.log("Notifications enabled.");
       } else {
+        console.log("Trying to deactivate push subscription...");
         await updatePushSubscriptionStatus("deactivate");
         console.log("Notifications disabled.");
       }

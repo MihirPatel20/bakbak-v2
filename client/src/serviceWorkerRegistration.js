@@ -12,22 +12,28 @@ const subscriptionOptions = {
 
 // Get Push Subscription
 const getPushSubscription = async () => {
+  console.log("🔍 Checking for service worker support...");
   if (!("serviceWorker" in navigator)) {
-    console.error("No support for service worker!");
+    console.error("❌ No support for service worker!");
     return null;
   }
 
   try {
+    console.log("⏳ Waiting for service worker to be ready...");
     const swRegistration = await navigator.serviceWorker.ready;
+    console.log("✅ Service worker is ready");
+
+    console.log("🔍 Checking for existing push subscription...");
     const subscription = await swRegistration.pushManager.getSubscription();
     if (subscription) {
+      console.log("✅ Found existing subscription:", subscription);
       return subscription;
     } else {
-      console.log("No existing subscription found.");
+      console.log("ℹ️ No existing subscription found.");
       return null;
     }
   } catch (error) {
-    console.error("Error getting push subscription:", error);
+    console.error("❌ Error getting push subscription:", error);
     return null;
   }
 };
@@ -121,7 +127,9 @@ const subscribeToPushNotifications = async (swRegistration) => {
 };
 
 const updatePushSubscriptionStatus = async (action) => {
+  console.log("Updating push subscription status: ", action);
   const subscription = await getPushSubscription();
+  console.log("Subscription: ", subscription);
 
   if (subscription) {
     try {
