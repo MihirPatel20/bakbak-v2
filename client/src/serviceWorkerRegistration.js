@@ -193,17 +193,42 @@ const unsubscribeFromPushNotifications = async () => {
 
 // Main Registration Process
 const initializeServiceWorker = async () => {
+  console.log("🚀 Starting service worker initialization...");
   try {
+    console.log("📥 Attempting to register service worker...");
     const registration = await registerSW();
+
     if (registration) {
-      await requestNotificationPermission();
+      console.log("✅ Service worker registration successful:", registration);
+      console.log("🔔 Requesting notification permission...");
+
+      try {
+        await requestNotificationPermission();
+        console.log("✅ Notification permission granted");
+      } catch (permError) {
+        console.error("❌ Notification permission error:", permError);
+        throw permError;
+      }
+
+      console.log("⏳ Waiting for service worker to be ready...");
       const swRegistration = await navigator.serviceWorker.ready;
+      console.log("✅ Service worker is ready:", swRegistration);
+
+      console.log("📱 Setting up push notification subscription...");
       await subscribeToPushNotifications(swRegistration);
+      console.log("✅ Push notification setup complete");
+    } else {
+      console.error("❌ Service worker registration failed");
     }
     return registration;
   } catch (error) {
-    console.error("Error initializing service worker:", error);
+    console.error("💥 Error in service worker initialization:", {
+      message: error.message,
+      stack: error.stack,
+    });
     return null;
+  } finally {
+    console.log("🏁 Service worker initialization process completed");
   }
 };
 
