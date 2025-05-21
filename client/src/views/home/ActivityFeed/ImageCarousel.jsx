@@ -63,7 +63,9 @@ const ImageWithSkeletonLoader = ({ src, alt = "image", className = "" }) => {
 
   return (
     <div
-      className={`image-skeleton-wrapper ${!isLoaded ? "skeleton-loader" : ""}`}
+      className={`image-skeleton-wrapper ${
+        isLoaded ? "is-loaded" : "is-loading"
+      }`}
     >
       <img
         src={src}
