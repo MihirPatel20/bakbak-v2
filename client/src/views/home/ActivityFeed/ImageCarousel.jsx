@@ -40,9 +40,7 @@ const ImageCarousel = ({ items }) => {
       >
         {items.map((item, index) => (
           <div key={index} className="carousel-card">
-            <div className="image-container">
-              <img src={item.url} alt="post image" loading="lazy" />
-            </div>
+            <ImageWithSkeletonLoader src={item.url} alt="post image" />
           </div>
         ))}
       </div>
@@ -56,6 +54,25 @@ const ImageCarousel = ({ items }) => {
           ></div>
         ))}
       </div>
+    </div>
+  );
+};
+
+const ImageWithSkeletonLoader = ({ src, alt = "image", className = "" }) => {
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  return (
+    <div
+      className={`image-skeleton-wrapper ${!isLoaded ? "skeleton-loader" : ""}`}
+    >
+      <img
+        src={src}
+        alt={alt}
+        className={`skeleton-image ${className}`}
+        style={{ opacity: isLoaded ? 1 : 0 }}
+        onLoad={() => setIsLoaded(true)}
+        loading="lazy"
+      />
     </div>
   );
 };
