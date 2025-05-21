@@ -9,18 +9,32 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { getRandomNumber, removeLocalFile } from "../utils/helpers.js";
 import { USERS_COUNT } from "./_constants.js";
 
+const avatarServices = [
+  (username) => `https://api.dicebear.com/7.x/adventurer/svg?seed=${username}`,
+  (username) => `https://robohash.org/${username}.png`,
+  (username) => `https://avatar.iran.liara.run/public/boy?username=${username}`,
+  (username) =>
+    `https://avatar.iran.liara.run/public/girl?username=${username}`,
+];
+
 // Array of fake users
-const users = new Array(USERS_COUNT).fill("_").map(() => ({
-  avatar: {
-    url: faker.image.avatar(),
-    localPath: "",
-  },
-  username: faker.internet.userName().substring(0, 12),
-  email: faker.internet.email(),
-  password: "1234",
-  isEmailVerified: true,
-  role: AvailableUserRoles[getRandomNumber(2)],
-}));
+const users = new Array(USERS_COUNT).fill("_").map(() => {
+  const username = faker.internet.userName().substring(0, 12);
+  const avatarUrl =
+    avatarServices[getRandomNumber(avatarServices.length)](username);
+
+  return {
+    avatar: {
+      url: avatarUrl,
+      localPath: "",
+    },
+    username,
+    email: faker.internet.email(),
+    password: "1234",
+    isEmailVerified: true,
+    role: AvailableUserRoles[getRandomNumber(2)],
+  };
+});
 
 /**
  * @description Seeding middleware for users api which other api services can use which are dependent on users
