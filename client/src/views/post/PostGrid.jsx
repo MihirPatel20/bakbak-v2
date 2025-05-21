@@ -126,7 +126,7 @@ const ImageCard = ({
       md={4}
       ref={index === totalPosts - 1 ? lastPostElementRef : null}
     >
-      <Card>
+      <Card sx={{ borderRadius: 1 }}>
         {isLoading && <ImagePlaceholder height={200} />}
         <CardMedia
           component="img"
