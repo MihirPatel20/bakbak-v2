@@ -50,7 +50,7 @@ const userSchema = new Schema(
     role: {
       type: String,
       enum: AvailableUserRoles,
-      default: "user",
+      default: "USER",
       required: true,
     },
     password: {
