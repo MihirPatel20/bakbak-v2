@@ -153,40 +153,39 @@ import path from "path";
 
 app.use("/api/v1/seed", seedRouter);
 
-// ! 🚫 Danger Zone
+// ---- 🚫 Danger Zone
+
+// !!!!!!!!!!
+import { cleanDirectory } from "./utils/cleanDirectory.js";
+import { unlink } from "fs/promises";
+
 app.delete("/api/v1/reset-db", avoidInProduction, async (req, res) => {
-  if (dbInstance) {
-    // Drop the whole DB
-    await dbInstance.connection.db.dropDatabase({
-      dbName: DB_NAME,
-    });
+  try {
+    if (dbInstance) {
+      await dbInstance.connection.db.dropDatabase({ dbName: DB_NAME });
 
-    const directory = "./public/images";
+      // Clean image folder
+      // await cleanDirectory("public/images");
 
-    // Remove all product images from the file system
-    fs.readdir(directory, (err, files) => {
-      if (err) {
-        // fail silently
-        console.log("Error while removing the images: ", err);
-      } else {
-        for (const file of files) {
-          if (file === ".gitkeep") continue;
-          fs.unlink(path.join(directory, file), (err) => {
-            if (err) throw err;
-          });
-        }
+      // Remove seed file if it exists
+      try {
+        await unlink("public/temp/seed-credentials.json");
+      } catch {
+        console.log("Seed credentials are missing.");
       }
-    });
-    // remove the seeded users if exist
-    fs.unlink("./public/temp/seed-credentials.json", (err) => {
-      // fail silently
-      if (err) console.log("Seed credentials are missing.");
-    });
+
+      return res
+        .status(200)
+        .json(new ApiResponse(200, null, "Database dropped successfully"));
+    }
+
+    throw new ApiError(500, "Something went wrong while dropping the database");
+  } catch (error) {
+    console.error("DB reset failed:", error);
     return res
-      .status(200)
-      .json(new ApiResponse(200, null, "Database dropped successfully"));
+      .status(500)
+      .json(new ApiResponse(500, null, "Failed to reset the database"));
   }
-  throw new ApiError(500, "Something went wrong while dropping the database");
 });
 
 app.use(errorLoggerMiddleware);
