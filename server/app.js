@@ -118,6 +118,10 @@ import { errorHandler } from "./middlewares/error.middlewares.js";
 import { initializeSocketIO } from "./socket.js";
 
 // * App apis
+app.get("/api/v1", (req, res) => {
+  res.send("Welcome to the Social Media API");
+});
+
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/profile", profileRouter);
 app.use("/api/v1/notificationSubscription", notificationSubscriptionRouter);
