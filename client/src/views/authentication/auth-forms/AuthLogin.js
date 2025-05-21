@@ -158,10 +158,14 @@ const AuthLogin = ({ ...others }) => {
         })}
         onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
           try {
-            console.log("values: ", values);
-            await login(values);
-            navigate("/home");
-            setStatus({ success: true });
+            const res = await login(values);
+            // Check if login was successful
+            if (res && res.success) {
+              setStatus({ success: true });
+              navigate("/home"); // navigate only after confirming success
+            } else {
+              setStatus({ success: false });
+            }
             setSubmitting(false);
           } catch (err) {
             console.error(err);

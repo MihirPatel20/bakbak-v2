@@ -21,8 +21,9 @@ const useAuth = () => {
 
   const register = async (userData) => dispatch(registerUser(userData));
   const login = async (userData) => {
-    await dispatch(loginUser(userData));
+    const res = await dispatch(loginUser(userData));
     await updatePushSubscriptionStatus("activate");
+    return res.payload;
   };
   const refreshToken = async () => dispatch(refreshAccessToken());
   const verifyEmailToken = async (verificationToken) =>
