@@ -71,7 +71,7 @@ const registerUser = asyncHandler(async (req, res) => {
     isEmailVerified: false,
     avatar: {
       url: "",
-      localPath: `/images/avatars/toy-${getRandomNumber(0, 17)}.jpg`,
+      localPath: `/images/default/avatar_toy-${getRandomNumber(17)}.jpg`,
     },
     role: role || UserRolesEnum.USER,
   });

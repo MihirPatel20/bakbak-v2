@@ -45,7 +45,7 @@ const profileSchema = new Schema(
       },
       default: {
         url: `https://via.placeholder.com/800x450.png`,
-        localPath: "/images/cover/post1.jpg",
+        localPath: "/images/default/profile_cover-1.jpg",
       },
     },
   },
