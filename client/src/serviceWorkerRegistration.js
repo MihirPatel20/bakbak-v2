@@ -18,7 +18,16 @@ const getPushSubscription = async () => {
   }
 
   try {
-    const swRegistration = await navigator.serviceWorker.ready;
+    const swRegistration = await Promise.race([
+      navigator.serviceWorker.ready,
+      new Promise((_, reject) =>
+        setTimeout(
+          () => reject(new Error("Service Worker registration timeout")),
+          3000
+        )
+      ),
+    ]);
+
     const subscription = await swRegistration.pushManager.getSubscription();
     return subscription || null;
   } catch (error) {
