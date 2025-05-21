@@ -100,9 +100,22 @@ const ImageCard = ({
   lastPostElementRef,
   openDialog,
 }) => {
-  const { url, isLoading } = useFetchImageUrl(
-    getUserAvatarUrl(post?.images[0])
-  );
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
+  const imageUrl = getUserAvatarUrl(post?.images[0]);
+  const fallbackUrl =
+    "http://localhost:8080/images/default/placeholder-image.jpg"; // or whatever you want
+
+  const handleLoad = () => {
+    setIsLoading(false);
+  };
+
+  const handleError = () => {
+    setIsLoading(false);
+    setHasError(true);
+  };
+
+  const finalUrl = hasError ? fallbackUrl : imageUrl;
 
   return (
     <Grid
@@ -114,17 +127,20 @@ const ImageCard = ({
       ref={index === totalPosts - 1 ? lastPostElementRef : null}
     >
       <Card>
-        {isLoading ? (
-          <ImagePlaceholder height={200} />
-        ) : (
-          <CardMedia
-            component="img"
-            image={url}
-            alt={`Image for post ${post._id}`}
-            onClick={() => openDialog(post._id)}
-            style={{ height: "200px", objectFit: "cover" }} // Adjust style as needed
-          />
-        )}
+        {isLoading && <ImagePlaceholder height={200} />}
+        <CardMedia
+          component="img"
+          image={finalUrl}
+          alt={`Image for post ${post._id}`}
+          onLoad={handleLoad}
+          onError={handleError}
+          onClick={() => openDialog(post._id)}
+          style={{
+            height: "200px",
+            objectFit: "cover",
+            display: isLoading ? "none" : "block",
+          }}
+        />
       </Card>
     </Grid>
   );
