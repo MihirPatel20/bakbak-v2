@@ -21,19 +21,19 @@ import {
 
 // generate random posts
 const posts = new Array(SOCIAL_POSTS_COUNT).fill("_").map(() => {
+  const seed = faker.string.alphanumeric(10); // unique random seed per post
+  const imageCount = getRandomNumber(SOCIAL_POST_IMAGES_COUNT) + 1;
+
   return {
     content: faker.lorem.lines({ min: 2, max: 5 }),
     tags: faker.lorem.words({ min: 3, max: 8 }).split(" "),
-    images: new Array(getRandomNumber(SOCIAL_POST_IMAGES_COUNT))
-      .fill("_")
-      .map(() => {
-        return {
-          url: faker.image.urlLoremFlickr({
-            category: "food",
-          }),
-          localPath: "",
-        };
-      }),
+    images: new Array(imageCount).fill("_").map(() => {
+      const imgSeed = faker.string.alphanumeric(20);
+      return {
+        url: `https://picsum.photos/seed/${seed}-${imgSeed}/600/400`,
+        localPath: "",
+      };
+    }),
   };
 });
 

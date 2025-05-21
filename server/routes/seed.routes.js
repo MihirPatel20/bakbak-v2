@@ -13,12 +13,12 @@ const router = Router();
 router.use(verifyJWT);
 
 router.post(
-  "/seed/social-media",
+  "/social-media",
   avoidInProduction,
   seedUsers,
   seedSocialMedia
 );
-router.post("/seed/chat-app", avoidInProduction, seedUsers, seedChatApp);
+router.post("/chat-app", avoidInProduction, seedUsers, seedChatApp);
 router.post("/chat-messages/:chatId", avoidInProduction, seedChatMessages);
 
 export default router;
