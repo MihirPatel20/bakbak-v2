@@ -66,7 +66,7 @@ const AuthLogin = ({ ...others }) => {
   const initialValues = isDevelopment
     ? {
         email: "mihir@gmail.com",
-        password: "1234",
+        password: "User@1234",
       }
     : {};
 
