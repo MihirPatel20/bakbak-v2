@@ -93,10 +93,6 @@ webPush.setVapidDetails(
   process.env.VAPID_PRIVATE_KEY
 );
 
-console.log("VAPID keys set for web-push notifications");
-console.log("VAPID_PUBLIC_KEY: ", process.env.VAPID_PUBLIC_KEY);
-console.log("VAPID_PRIVATE_KEY: ", process.env.VAPID_PRIVATE_KEY);
-
 // * App routes
 import userRouter from "./routes/user.routes.js";
 import profileRouter from "./routes/profile.routes.js";
