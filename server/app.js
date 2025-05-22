@@ -153,6 +153,7 @@ app.use("/api/v1/seed", seedRouter);
 
 // !!!!!!!!!!
 import { cleanDirectory } from "./utils/cleanDirectory.js";
+import { seedAdminUser } from "./seeds/user.seeds.js";
 import { unlink } from "fs/promises";
 
 app.delete("/api/v1/reset-db", avoidInProduction, async (req, res) => {
@@ -170,9 +171,12 @@ app.delete("/api/v1/reset-db", avoidInProduction, async (req, res) => {
         console.log("Seed credentials are missing.");
       }
 
+      const result = await seedAdminUser();
       return res
         .status(200)
-        .json(new ApiResponse(200, null, "Database dropped successfully"));
+        .json(
+          new ApiResponse(200, result.user, "DB dropped & admin user seeded")
+        );
     }
 
     throw new ApiError(500, "Something went wrong while dropping the database");

@@ -126,4 +126,55 @@ const getGeneratedCredentials = asyncHandler(async (req, res) => {
   }
 });
 
-export { getGeneratedCredentials, seedUsers };
+/**
+ * @description This function is used to seed the Admin user
+ */
+const seedAdminUser = async () => {
+  const adminUser = {
+    avatar: {
+      url: "",
+      localPath: "/images/default/avatar_toy-2.jpg",
+    },
+    username: "mihir",
+    email: "mihir@gmail.com",
+    password: "User@1234",
+    role: "ADMIN",
+    firstname: "Mihir",
+    lastname: "Patel",
+    bio: "This user hasn't added a bio yet.",
+    dob: "1990-01-01",
+    location: "Not specified",
+    countryCode: "+91",
+    phoneNumber: "+91  123 456 7890",
+  };
+
+  try {
+    // Check if admin already exists
+    const existingUser = await User.findOne({ email: adminUser.email });
+    if (existingUser) {
+      return { alreadyExists: true, user: existingUser };
+    }
+
+    // Create the user
+    const newUser = await User.create(adminUser);
+
+    // Create associated social profile
+    const newProfile = await SocialProfile.create({
+      owner: newUser._id,
+      bio: "Admin account profile.",
+      location: "HQ",
+      website: "https://example.com",
+    });
+
+    // Link profile to user
+    newUser.profile = newProfile._id;
+    await newUser.save();
+
+    return { created: true, user: newUser, profile: newProfile };
+  } catch (err) {
+    console.error("Error seeding admin user:", err);
+    throw err;
+  }
+};
+
+export { getGeneratedCredentials, seedUsers, seedAdminUser };
