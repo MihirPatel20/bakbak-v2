@@ -67,8 +67,13 @@ const AuthLogin = ({ ...others }) => {
     ? {
         email: "mihir@gmail.com",
         password: "User@1234",
+        rememberMe: true, // add this
       }
-    : {};
+    : {
+        email: "",
+        password: "",
+        rememberMe: false, // default unchecked
+      };
 
   return (
     <>
@@ -162,6 +167,7 @@ const AuthLogin = ({ ...others }) => {
             // Check if login was successful
             if (res && res.success) {
               setStatus({ success: true });
+
               navigate("/home"); // navigate only after confirming success
             } else {
               setStatus({ success: false });
@@ -265,9 +271,9 @@ const AuthLogin = ({ ...others }) => {
                 control={
                   <Checkbox
                     sx={{ "& .MuiSvgIcon-root": { maxWidth: 100 } }}
-                    checked={checked}
-                    onChange={(event) => setChecked(event.target.checked)}
-                    name="checked"
+                    checked={values.rememberMe}
+                    onChange={handleChange}
+                    name="rememberMe"
                     color="primary"
                   />
                 }
