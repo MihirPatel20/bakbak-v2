@@ -75,12 +75,11 @@ const getNotifications = asyncHandler(async (req, res) => {
   const userId = req.user._id;
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
-  const isRead = req.query.isRead;
 
   // Build the query based on the isRead parameter
   const query = { user: userId };
-  if (isRead === "false") {
-    query.isRead = false;
+  if (req.query.isRead !== undefined) {
+    query.isRead = req.query.isRead === "true";
   }
 
   // Query notifications for the user
