@@ -69,18 +69,21 @@ const ChatMessageLayout = ({ chat, messages, isTyping, chatBoxDimensions }) => {
             bottom: "100px", // Adjust as needed
             left: chatBoxDimensions.left + chatBoxDimensions.width / 2,
             transform: "translateX(-50%)",
-            backgroundColor: "primary.main",
+            bgcolor: "#757575",
+            borderColor: "#9e9e9e",
+            borderWidth: "1px",
+            borderStyle: "solid",
             color: "white",
             borderRadius: "50%",
-            width: "40px",
-            height: "40px",
+            width: "32px",
+            height: "32px",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             cursor: "pointer",
           }}
         >
-          <ArrowDownwardIcon />
+          <ArrowDownwardIcon fontSize="small" />
         </Box>
       )}
 
