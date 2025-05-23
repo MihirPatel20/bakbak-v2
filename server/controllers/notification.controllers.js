@@ -4,6 +4,7 @@ import { Notification } from "../models/notification.model.js";
 import { emitNotification } from "../socket.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import { ApiError } from "../utils/ApiError.js";
 
 export const createNotification = async (
   req,
@@ -121,21 +122,52 @@ const getNotifications = asyncHandler(async (req, res) => {
 });
 
 const markNotificationAsRead = asyncHandler(async (req, res) => {
-  const { notificationId } = req.params;
+  const notificationId = req.query.notificationId || req.body.notificationId;
+  const chatId = req.query.chatId || req.body.chatId;
 
-  const notification = await Notification.findById(notificationId);
+  if (!notificationId && !chatId) {
+    throw new ApiError(400, "notificationId or chatId is required");
+  }
+
+  let notification;
+
+  if (notificationId) {
+    notification = await Notification.findById(notificationId);
+  } else if (chatId) {
+    notification = await Notification.findOne({
+      referenceId: chatId,
+      type: "message",
+      user: req.user._id,
+      isRead: false,
+    });
+  }
+
   if (!notification) {
-    throw new ApiError(404, "Notification not found");
+    return res.status(204).end(); // Nothing to mark
   }
 
+  // If it's a message-type, just delete it
   if (notification.type === "message") {
-    // Delete the notification if it's a message type
-    await Notification.findByIdAndDelete(notificationId);
-  } else {
-    // Mark other types of notifications as read
-    notification.isRead = true;
-    await notification.save();
+    await Notification.deleteOne({ _id: notification._id });
+    console.log("Message-type notification deleted:", notification._id);
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          notification,
+          "Message notification deleted after marking as read",
+          USER_ACTIVITY_TYPES.READ_NOTIFICATION
+        )
+      );
   }
+
+  // Otherwise mark as read and update readAt
+  notification.isRead = true;
+  notification.readAt = new Date();
+  await notification.save();
+
+  console.log("Notification marked as read:", notification);
 
   return res
     .status(200)

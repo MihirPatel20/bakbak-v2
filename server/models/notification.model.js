@@ -25,31 +25,44 @@ const notificationSchema = new Schema(
       type: Number,
       default: 1,
     },
-
     referenceId: {
       type: Schema.Types.ObjectId,
       required: true,
-      refPath: "refSchema",
+      refPath: "referenceModel",
     },
     referenceModel: {
       type: String,
       required: true,
       enum: ReferenceModel,
     },
-
     isRead: {
       type: Boolean,
       default: false,
+    },
+    readAt: {
+      type: Date,
+      default: null,
     },
   },
   { timestamps: true }
 );
 
-// Indexes to improve query performance
+// Indexes
 notificationSchema.index({ user: 1, isRead: 1 });
 
-// Add pagination plugin to the Notification schema
+// TTL index: delete 3 days after read
+notificationSchema.index(
+  { readAt: 1 },
+  { expireAfterSeconds: 3 * 24 * 60 * 60 } // 3 days
+);
+
+// Optional: TTL for unread cleanup after 7 days
+// notificationSchema.index(
+//   { createdAt: 1 },
+//   { expireAfterSeconds: 7 * 24 * 60 * 60 }
+// );
+
+// Pagination
 notificationSchema.plugin(mongooseAggregatePaginate);
 
-// Export the Notification model
 export const Notification = mongoose.model("Notification", notificationSchema);
