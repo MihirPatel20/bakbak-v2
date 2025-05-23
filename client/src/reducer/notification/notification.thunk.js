@@ -23,11 +23,13 @@ export default fetchNotifications;
 // Async thunk for marking a notification as read
 const markAsRead = createAsyncThunk(
   "notifications/markAsRead",
-  async (notificationId) => {
+  async ({ notificationId, chatId }) => {
     try {
-      const response = await api.patch(
-        `/notifications/${notificationId}/mark-as-read`
-      );
+      const query = notificationId
+        ? `notificationId=${notificationId}`
+        : `chatId=${chatId}`;
+
+      const response = await api.patch(`/notifications/mark-as-read?${query}`);
       return response.data.data;
     } catch (error) {
       throw error;

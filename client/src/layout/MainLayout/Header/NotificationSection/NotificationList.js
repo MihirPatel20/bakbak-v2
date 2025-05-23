@@ -66,7 +66,7 @@ const NotificationList = () => {
   const handleMarkAsRead = async (event, notificationId) => {
     event.stopPropagation();
     try {
-      await dispatch(markAsRead(notificationId)).unwrap();
+      await dispatch(markAsRead({ notificationId })).unwrap();
     } catch (err) {
       console.error("Failed to mark notification as read:", err);
     }
@@ -108,9 +108,13 @@ const NotificationList = () => {
 
   const MessageNotification = ({ notification }) => {
     const url = `messages/direct/u/${notification.referenceId}`;
-
     const navigate = useNavigate();
-    const handleClick = () => {
+
+    const handleClick = (event) => {
+      // Mark as read if not already read
+      if (!notification.isRead) {
+        handleMarkAsRead(event, notification._id);
+      }
       navigate(url);
     };
 
