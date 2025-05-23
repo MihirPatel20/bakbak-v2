@@ -25,6 +25,7 @@ import {
   Stack,
   Switch,
   Typography,
+  useMediaQuery,
 } from "@mui/material";
 
 // third-party
@@ -50,6 +51,7 @@ import useAuth from "hooks/useAuth";
 
 const ProfileSection = () => {
   const theme = useTheme();
+  const matchesXs = useMediaQuery(theme.breakpoints.down("md"));
   const customization = useSelector((state) => state.customization);
   const { auth, logout } = useAuth();
 
@@ -204,7 +206,11 @@ const ProfileSection = () => {
         }}
       >
         {({ TransitionProps }) => (
-          <Transitions in={open} {...TransitionProps}>
+          <Transitions
+            position={matchesXs ? "top" : "top-right"}
+            in={open}
+            {...TransitionProps}
+          >
             <Paper>
               <ClickAwayListener onClickAway={handleClose}>
                 <MainCard
