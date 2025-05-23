@@ -1,9 +1,10 @@
 // useChatSocket.js
 import { useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { ChatEventEnum } from "constants";
 import api from "api";
 import { useSocket } from "context/SocketContext";
+import { markAsRead } from "reducer/notification/notification.thunk";
 
 const useChatSocket = (chatId) => {
   const { socket } = useSocket();
@@ -16,6 +17,8 @@ const useChatSocket = (chatId) => {
   const [selfTyping, setSelfTyping] = useState(false);
 
   const typingTimeoutRef = useRef(null);
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const getActiveChat = async () => {
@@ -35,6 +38,8 @@ const useChatSocket = (chatId) => {
       try {
         const response = await api.get(`/messages/${chatId}`);
         setMessages(response.data.data.messages);
+
+        await dispatch(markAsRead({ chatId })).unwrap();
       } catch (error) {
         console.error("Error fetching messages:", error);
       }
