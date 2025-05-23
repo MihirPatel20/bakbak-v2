@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
-// material-ui
+// MUI
 import { useTheme, styled } from "@mui/material/styles";
 import {
   Avatar,
@@ -18,26 +18,25 @@ import {
   ListItemButton,
   ListSubheader,
   ClickAwayListener,
+  Paper,
 } from "@mui/material";
 
-// third-party
+// 3rd-party
 import PopupState, { bindPopper, bindToggle } from "material-ui-popup-state";
 
-// project imports
-import Transitions from "ui-component/extended/Transitions";
-
-// assets
+// Assets
 import {
   IconAdjustmentsHorizontal,
   IconSearch,
   IconX,
 } from "@tabler/icons-react";
-import { shouldForwardProp } from "@mui/system";
+import { shouldForwardProp, useMediaQuery } from "@mui/system";
 import useDebounce from "hooks/useDebounce";
 import api from "api";
 import { useLocation, useNavigate } from "react-router-dom";
+import Transitions from "ui-component/extended/Transitions";
 
-// styles
+// Styles
 const PopperStyle = styled(Popper, { shouldForwardProp })(({ theme }) => ({
   zIndex: 1100,
   width: "99%",
@@ -133,29 +132,78 @@ const MobileSearch = ({ popupState, ...otherProps }) => {
         </InputAdornment>
       }
       aria-describedby="search-helper-text"
-      inputProps={{ "aria-label": "weight" }}
+      inputProps={{ "aria-label": "search" }}
       {...otherProps}
     />
   );
 };
 
 MobileSearch.propTypes = {
-  value: PropTypes.string,
-  setValue: PropTypes.func,
-  popupState: PopupState,
+  popupState: PropTypes.object,
+};
+
+const SuggestionsList = ({ suggestions, handleSuggestionClick }) => {
+  if (!suggestions?.length) return null;
+
+  return (
+    <Box
+      sx={{
+        mt: 2,
+        position: "absolute",
+        top: "100%",
+        width: "100%",
+        bgcolor: "background.paper",
+        borderRadius: 4,
+        border: "1px solid",
+        borderColor: "primary.light",
+        zIndex: 1200,
+      }}
+    >
+      <List
+        subheader={
+          <ListSubheader component="div" id="nested-list-subheader">
+            Search Suggestions
+          </ListSubheader>
+        }
+      >
+        {suggestions.map((suggestion, index) => (
+          <ListItem key={index} disablePadding>
+            <ListItemButton
+              sx={{ borderRadius: 2 }}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleSuggestionClick(suggestion);
+              }}
+            >
+              <ListItemText primary={suggestion} />
+            </ListItemButton>
+          </ListItem>
+        ))}
+      </List>
+    </Box>
+  );
+};
+
+SuggestionsList.propTypes = {
+  suggestions: PropTypes.array,
+  handleSuggestionClick: PropTypes.func,
 };
 
 // ==============================|| SEARCH INPUT ||============================== //
 
 const SearchSection = () => {
   const theme = useTheme();
+  const matchesXs = useMediaQuery(theme.breakpoints.down("md"));
   const [value, setValue] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [shouldFetchSuggestions, setShouldFetchSuggestions] = useState(true);
 
   const location = useLocation();
+  const navigate = useNavigate();
+
   const searchParams = new URLSearchParams(location.search);
   const query = searchParams.get("q");
+
   useEffect(() => {
     if (query) {
       setValue(query);
@@ -163,20 +211,19 @@ const SearchSection = () => {
     }
   }, [query]);
 
-  // Use the debounce hook
-  const debouncedSearch = useDebounce(value, 500); // Adjust delay as needed
+  const debouncedSearch = useDebounce(value, 500);
 
   const fetchSearchSuggestions = async () => {
-    if (debouncedSearch.length < 0) {
+    if (!debouncedSearch || debouncedSearch.length < 2) {
       setSuggestions([]);
-      return; // Don't make API call if search query is too short
+      return;
     }
 
     try {
       const response = await api.get(
         `/search/suggestions?query=${debouncedSearch}`
       );
-      setSuggestions(response.data.data); // Store suggestions in state
+      setSuggestions(response.data.data);
     } catch (error) {
       console.error("Search error:", error);
     }
@@ -190,20 +237,17 @@ const SearchSection = () => {
     }
   }, [debouncedSearch, shouldFetchSuggestions]);
 
-  const navigate = useNavigate();
-
   const fetchSearchResults = async (query) => {
     if (query) {
-      setShouldFetchSuggestions(false); // Disable suggestions API call
+      setShouldFetchSuggestions(false);
       setValue(query);
       navigate(`/search?q=${query}`);
       setSuggestions([]);
     }
   };
 
-  // Handler for user input
   const handleInputChange = (e) => {
-    setShouldFetchSuggestions(true); // Re-enable suggestions API call
+    setShouldFetchSuggestions(true);
     setValue(e.target.value);
   };
 
@@ -227,46 +271,50 @@ const SearchSection = () => {
               <PopperStyle {...bindPopper(popupState)} transition>
                 {({ TransitionProps }) => (
                   <Transitions
-                    type="zoom"
+                    position={matchesXs ? "top" : "top-right"}
+                    in={open}
                     {...TransitionProps}
-                    sx={{ transformOrigin: "center top" }}
                   >
-                    <Card
-                      sx={{
-                        background: "#fff",
-                        [theme.breakpoints.down("sm")]: {
-                          border: 0,
-                          boxShadow: "none",
-                        },
-                      }}
-                    >
-                      <Box sx={{ p: 1 }}>
-                        <Grid
-                          container
-                          alignItems="center"
-                          justifyContent="space-between"
+                    <Paper>
+                      <ClickAwayListener onClickAway={() => popupState.close()}>
+                        <Card
+                          sx={{
+                            background: "#fff",
+                            [theme.breakpoints.down("sm")]: {
+                              border: 0,
+                              boxShadow: "none",
+                            },
+                          }}
                         >
-                          <Grid item xs>
-                            <MobileSearch
-                              value={value}
-                              onChange={(e) => handleInputChange(e)}
-                              popupState={popupState}
-                              onKeyDown={(e) => {
-                                if (e.key === "Enter") {
-                                  fetchSearchResults(value);
-                                  // popupState.close(); // Close the popover
-                                }
-                              }}
-                            />
-                          </Grid>
-                        </Grid>
-                      </Box>
-                    </Card>
-
-                    <SuggestionsList
-                      suggestions={suggestions}
-                      handleSuggestionClick={fetchSearchResults}
-                    />
+                          <Box sx={{ p: 1 }}>
+                            <Grid
+                              container
+                              alignItems="center"
+                              justifyContent="space-between"
+                            >
+                              <Grid item xs>
+                                <MobileSearch
+                                  value={value}
+                                  onChange={handleInputChange}
+                                  onKeyDown={(e) => {
+                                    if (e.key === "Enter")
+                                      fetchSearchResults(value);
+                                  }}
+                                  popupState={popupState}
+                                />
+                              </Grid>
+                            </Grid>
+                          </Box>
+                        </Card>
+                      </ClickAwayListener>
+                      <SuggestionsList
+                        suggestions={suggestions}
+                        handleSuggestionClick={(val) => {
+                          fetchSearchResults(val);
+                          popupState.close();
+                        }}
+                      />
+                    </Paper>
                   </Transitions>
                 )}
               </PopperStyle>
@@ -281,14 +329,12 @@ const SearchSection = () => {
             <OutlineInputStyle
               id="input-search-header"
               value={value}
-              onChange={(e) => handleInputChange(e)}
-              onClick={(e) => handleInputChange(e)}
+              onChange={handleInputChange}
+              onClick={handleInputChange}
               placeholder="Search"
               size="small"
               onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  fetchSearchResults(value);
-                }
+                if (e.key === "Enter") fetchSearchResults(value);
               }}
               startAdornment={
                 <InputAdornment position="start">
@@ -312,9 +358,8 @@ const SearchSection = () => {
                 </InputAdornment>
               }
               aria-describedby="search-helper-text"
-              inputProps={{ "aria-label": "weight" }}
+              inputProps={{ "aria-label": "search" }}
             />
-
             <Box sx={{ position: "relative", ml: 0 }}>
               <SuggestionsList
                 suggestions={suggestions}
@@ -325,49 +370,6 @@ const SearchSection = () => {
         </ClickAwayListener>
       </Box>
     </>
-  );
-};
-
-const SuggestionsList = ({ suggestions, handleSuggestionClick }) => {
-  if (!suggestions || suggestions.length === 0) {
-    return null;
-  }
-
-  return (
-    <Box
-      sx={{
-        mt: 2,
-        position: "absolute",
-        top: "100%",
-        width: "100%",
-        bgcolor: "background.paper",
-        borderRadius: 4,
-        border: "1px solid",
-        borderColor: "primary.light",
-      }}
-    >
-      <List
-        subheader={
-          <ListSubheader component="div" id="nested-list-subheader">
-            Search Suggestions
-          </ListSubheader>
-        }
-      >
-        {suggestions?.map((suggestion, index) => (
-          <ListItem key={index} disablePadding>
-            <ListItemButton
-              sx={{ borderRadius: 2 }}
-              onClick={(event) => {
-                event.stopPropagation(); // Prevent ClickAwayListener from triggering
-                handleSuggestionClick(suggestion);
-              }}
-            >
-              <ListItemText primary={suggestion} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
-    </Box>
   );
 };
 
