@@ -120,6 +120,7 @@ export const NotificationTypes = Object.freeze({
 });
 
 export const ReferenceModel = Object.freeze({
+  CHAT: "Chat",
   MESSAGE: "ChatMessage",
   LIKE: "SocialLike",
   POST: "SocialPost",
