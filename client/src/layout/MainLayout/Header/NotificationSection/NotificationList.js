@@ -107,7 +107,7 @@ const NotificationList = () => {
   };
 
   const MessageNotification = ({ notification }) => {
-    const url = `messages/direct/u/${notification.referenceId.chat}`;
+    const url = `messages/direct/u/${notification.referenceId}`;
 
     const navigate = useNavigate();
     const handleClick = () => {
