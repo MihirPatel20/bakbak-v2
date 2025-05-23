@@ -31,7 +31,8 @@ const PostFeed = () => {
     <Box
       sx={{
         maxWidth: "560px",
-        px: matchDownSM ? 2 : 1,
+        paddingLeft: matchDownSM ? "16px" : "8px",
+        paddingRight: matchDownSM ? "16px" : "8px",
       }}
     >
       {isLoading && page === 1 ? (
