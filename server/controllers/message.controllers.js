@@ -240,4 +240,35 @@ const sendMessage = asyncHandler(async (req, res) => {
     );
 });
 
-export { getAllMessages, sendMessage };
+const markMessagesAsRead = asyncHandler(async (req, res) => {
+  const { chatId } = req.params;
+  const userId = req.user._id;
+
+  const selectedChat = await Chat.findById(chatId);
+  if (!selectedChat) throw new ApiError(404, "Chat not found");
+
+  if (!selectedChat.participants.includes(userId)) {
+    throw new ApiError(403, "You're not a participant of this chat");
+  }
+
+  const result = await ChatMessage.updateMany(
+    {
+      chat: chatId,
+      readBy: { $ne: userId },
+    },
+    { $addToSet: { readBy: userId } } // prevents duplicates
+  );
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        result,
+        "Messages marked as read",
+        USER_ACTIVITY_TYPES.UPDATE_DATA
+      )
+    );
+});
+
+export { getAllMessages, sendMessage, markMessagesAsRead };

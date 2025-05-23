@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   getAllMessages,
+  markMessagesAsRead,
   sendMessage,
 } from "../controllers/message.controllers.js";
 import { verifyJWT } from "../middlewares/auth.middlewares.js";
@@ -23,5 +24,12 @@ router
     validate,
     sendMessage
   );
+
+router.patch(
+  "/:chatId/read",
+  mongoIdPathVariableValidator("chatId"),
+  validate,
+  markMessagesAsRead
+);
 
 export default router;
