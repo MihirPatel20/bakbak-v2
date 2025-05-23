@@ -93,6 +93,15 @@ const getAllMessages = asyncHandler(async (req, res) => {
     options
   );
 
+  // 🟢 Mark messages as read (only ones that aren't already)
+  await ChatMessage.updateMany(
+    {
+      chat: chatId,
+      readBy: { $ne: userId },
+    },
+    { $addToSet: { readBy: userId } }
+  );
+
   return res
     .status(200)
     .json(
