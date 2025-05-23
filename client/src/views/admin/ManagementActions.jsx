@@ -11,7 +11,7 @@ import ConfirmationDialog from "components/shared/ConfirmationDialog";
 import { downloadFile, downloadJsonFile } from "utils/downloadFile";
 import api from "api";
 
-const ManagementActions = () => {
+const ManagementActions = ({ fetchStats }) => {
   const [dialogType, setDialogType] = useState(null);
   const [dialogAction, setDialogAction] = useState(null);
   const [seedTarget, setSeedTarget] = useState(null);

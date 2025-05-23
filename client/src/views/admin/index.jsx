@@ -86,7 +86,7 @@ const AdminPanel = () => {
 
       <TopPostsSection />
 
-      <ManagementActions />
+      <ManagementActions fetchStats={fetchStats} />
     </Container>
   );
 };
