@@ -94,12 +94,14 @@ const getNotifications = asyncHandler(async (req, res) => {
   const populatedNotifications = await Promise.all(
     notifications.map(async (notification) => {
       const populatedNotification = { ...notification };
+
       if (notification.referenceId && notification.referenceModel) {
         const RefModel = mongoose.model(notification.referenceModel);
-        populatedNotification.referenceId = await RefModel.findById(
+        populatedNotification.referenceDoc = await RefModel.findById(
           notification.referenceId
         ).lean();
       }
+
       return populatedNotification;
     })
   );
