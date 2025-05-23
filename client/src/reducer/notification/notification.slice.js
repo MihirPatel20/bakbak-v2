@@ -57,7 +57,14 @@ const notificationsSlice = createSlice({
         state.error = action.error.message;
       })
       .addCase(markAsRead.fulfilled, (state, action) => {
+        // No notification was updated, maybe it didn’t exist — skip updating state
+        if (!action.payload) {
+          console.warn("No notification found or returned for markAsRead.");
+          return;
+        }
+
         const id = action.payload._id;
+
         // Filter out the notification if its type is "message"
         state.notifications = state.notifications.filter((notification) => {
           return !(notification._id === id && notification.type === "message");
