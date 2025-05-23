@@ -4,13 +4,12 @@ import api from "api";
 // Async thunk for fetching notifications
 const fetchNotifications = createAsyncThunk(
   "notifications/fetchNotifications",
-  async ({ isRead = "all", page = 1, limit = 10 }) => {
+  async ({ isRead = false, page = 1, limit = 10 } = {}) => {
     try {
       // Construct the query string based on parameters
       const query = `?isRead=${isRead}&page=${page}&limit=${limit}`;
       const response = await api.get(`/notifications${query}`);
 
-      console.log("response", response.data.data);
       return response.data.data;
     } catch (error) {
       throw error;
