@@ -201,8 +201,8 @@ const sendMessage = asyncHandler(async (req, res) => {
         receivedMessage.sender, // sender id
         receivedMessage.content, //preview
         NotificationTypes.MESSAGE, //type
-        receivedMessage._id, //referenceId
-        ReferenceModel.MESSAGE // referenceModel
+        chatId, //referenceId
+        ReferenceModel.CHAT // referenceModel
       );
 
       // Find the subscription for the participant
