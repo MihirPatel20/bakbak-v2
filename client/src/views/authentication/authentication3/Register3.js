@@ -35,7 +35,7 @@ const Register = () => {
             alignItems="center"
             sx={{ minHeight: "calc(100vh - 68px)" }}
           >
-            <Grid item sx={{ m: { xs: 1, sm: 3 }, mb: 0 }}>
+            <Grid item sx={{ m: { sm: 2 }, mb: 0 }}>
               <AuthCardWrapper>
                 <Grid
                   container
