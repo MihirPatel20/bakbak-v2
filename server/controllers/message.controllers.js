@@ -52,16 +52,16 @@ const chatMessageCommonAggregation = () => {
 // which is not a good practice
 const getAllMessages = asyncHandler(async (req, res) => {
   const { chatId } = req.params;
-  const { page = 1, limit = 1000 } = req.query; // Get page and limit from query parameters, with defaults
+  const { page = 1, limit = 1000 } = req.query;
+  const userId = req.user._id;
 
   const selectedChat = await Chat.findById(chatId);
-
   if (!selectedChat) {
     throw new ApiError(404, "Chat does not exist");
   }
 
-  // Only send messages if the logged in user is a part of the chat he is requesting messages of
-  if (!selectedChat.participants?.includes(req.user?._id)) {
+  // Make sure the user is part of the chat
+  if (!selectedChat.participants?.includes(userId)) {
     throw new ApiError(400, "User is not a part of this chat");
   }
 
