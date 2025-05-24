@@ -96,9 +96,8 @@ const ChatMessageLayout = ({ chat, messages, isTyping, chatBoxDimensions }) => {
           messages[index + 1].sender._id !== message.sender._id;
 
         return (
-          <>
+          <React.Fragment key={message._id}>
             <Box
-              key={message._id}
               sx={{
                 display: "flex",
                 // alignItems: "flex-end",
@@ -168,7 +167,7 @@ const ChatMessageLayout = ({ chat, messages, isTyping, chatBoxDimensions }) => {
                 </Typography>
               </Collapse>
             </Box>
-          </>
+          </React.Fragment>
         );
       })}
 
