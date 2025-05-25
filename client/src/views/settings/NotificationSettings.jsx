@@ -53,6 +53,38 @@ const NotificationsDetail = ({ onBack }) => {
     }
   };
 
+  const handlePushNotificationToggle = async (isEnabled) => {
+    try {
+      if (isEnabled) {
+        const activateResponse = await updatePushSubscriptionStatus("activate");
+
+        if (!activateResponse) {
+          const registration =
+            await serviceWorkerRegistration.initializeServiceWorker();
+          if (!registration) {
+            console.error(
+              "[Settings] Failed to enable notifications. Please check your browser settings."
+            );
+            return;
+          }
+        }
+      } else {
+        const deactivateResponse = await updatePushSubscriptionStatus(
+          "deactivate"
+        );
+        if (!deactivateResponse) {
+          console.error("[Settings] Failed to disable notifications.");
+          return;
+        }
+      }
+    } catch (error) {
+      console.error(
+        "[Settings] Notification settings update failed:",
+        error.message
+      );
+    }
+  };
+
   const SettingItem = ({ label, checked, onChange }) => (
     <>
       <ListItemButton
@@ -85,7 +117,10 @@ const NotificationsDetail = ({ onBack }) => {
         <SettingItem
           label="Push Notifications"
           checked={notificationSettings.pushNotifications}
-          onChange={(val) => handleSettingChange("pushNotifications", val)}
+          onChange={(val) => {
+            handleSettingChange("pushNotifications", val);
+            handlePushNotificationToggle(val);
+          }}
         />
 
         <SettingItem
