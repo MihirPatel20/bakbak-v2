@@ -1,3 +1,4 @@
+// Importing required modules and constants
 import mongoose from "mongoose";
 import {
   NotificationTypes,
@@ -12,11 +13,16 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { postCommonAggregation } from "./post.controllers.js";
 import { createNotification } from "./notification.controllers.js";
+import { sendPushNotification } from "./notificationSubscription.controllers.js";
+import { shouldSendLikeNotification } from "../utils/notificationLimiter.js";
 
+// Controller to like or unlike a post
 const likeDislikePost = asyncHandler(async (req, res) => {
   const { postId } = req.params;
+  const userId = req.user?._id;
 
-  const post = await SocialPost.aggregate([
+  // Fetch the post using aggregation
+  const posts = await SocialPost.aggregate([
     {
       $match: {
         _id: new mongoose.Types.ObjectId(postId),
@@ -25,64 +31,88 @@ const likeDislikePost = asyncHandler(async (req, res) => {
     ...postCommonAggregation(req),
   ]);
 
-  // Check for post existence
-  if (!post[0]) {
+  const post = posts[0];
+
+  // If post doesn't exist, throw an error
+  if (!post) {
     throw new ApiError(404, "Post does not exist");
   }
 
-  // See if user has already liked the post
+  // Check if the user has already liked the post
   const isAlreadyLiked = await SocialLike.findOne({
     postId,
-    likedBy: req.user?._id,
+    likedBy: userId,
   });
 
   if (isAlreadyLiked) {
-    // if already liked, dislike it by removing the record from the DB
+    // If already liked, remove the like (unlike)
     await SocialLike.findOneAndDelete({
       postId,
-      likedBy: req.user?._id,
+      likedBy: userId,
     });
 
-    post[0].isLiked = false;
-    post[0].likes = (post[0].likes || 0) - 1;
+    post.isLiked = false;
+    post.likes = (post.likes || 0) - 1;
 
+    // Return response for unlike
     return res
       .status(200)
       .json(
         new ApiResponse(
           200,
-          post[0],
+          post,
           "Unliked successfully",
           USER_ACTIVITY_TYPES.UNLIKE_POST
         )
       );
   } else {
-    // if not liked, like it by adding the record from the DB
+    // If not liked yet, add a new like
     const like = await SocialLike.create({
       postId,
-      likedBy: req.user?._id,
+      likedBy: userId,
     });
 
-    post[0].isLiked = true;
-    post[0].likes = (post[0].likes || 0) + 1;
+    post.isLiked = true;
+    post.likes = (post.likes || 0) + 1;
 
-    // Create notification in database and send to the recipient
-    await createNotification(
-      req,
-      post[0].author.owner.toString(), //receiver id
-      req.user, // sender
-      "liked your post", //preview
-      NotificationTypes.LIKE, //type
-      post[0]._id.toString(), //referenceId
-      ReferenceModel.POST // referenceModel
-    );
+    const receiverId = post.author.owner.toString();
 
+    if (
+      receiverId !== userId.toString() &&
+      shouldSendLikeNotification(userId.toString(), postId.toString())
+    ) {
+      // Create a notification for the post author
+      await createNotification(
+        req,
+        receiverId, // Who receives the notification
+        req.user, // Who triggered the action
+        "liked your post", // Notification preview
+        NotificationTypes.LIKE, // Type of notification
+        post._id.toString(), // Related post ID
+        ReferenceModel.POST // Type of referenced model
+      );
+
+      // Send push notification
+      const senderUsername = req.user.username || "Someone";
+      const options = {
+        title: `${senderUsername} liked your post!`,
+        body: "Tap to view the post.",
+        icon: "icons/bakbak.ico",
+        badge: "icons/bakbak.ico",
+        tag: "like",
+        data: { url: `/social/post/${postId}` },
+      };
+
+      await sendPushNotification(receiverId, options);
+    }
+
+    // Return response for like
     return res
       .status(200)
       .json(
         new ApiResponse(
           200,
-          post[0],
+          post,
           "Liked successfully",
           USER_ACTIVITY_TYPES.LIKE_POST
         )
@@ -90,28 +120,32 @@ const likeDislikePost = asyncHandler(async (req, res) => {
   }
 });
 
+// Controller to like or unlike a comment
 const likeDislikeComment = asyncHandler(async (req, res) => {
   const { commentId } = req.params;
+  const userId = req.user?._id;
 
-  const comment = await SocialComment.findById(commentId);
+  // Find the comment and populate author info
+  const comment = await SocialComment.findById(commentId).populate("author");
 
-  // Check for comment existence
+  // If comment doesn't exist, throw an error
   if (!comment) {
     throw new ApiError(404, "Comment does not exist");
   }
 
-  // See if user has already liked the comment
+  // Check if the user has already liked the comment
   const isAlreadyLiked = await SocialLike.findOne({
     commentId,
-    likedBy: req.user?._id,
+    likedBy: userId,
   });
 
   if (isAlreadyLiked) {
-    // if already liked, dislike it by removing the record from the DB
+    // If already liked, remove the like (unlike)
     await SocialLike.findOneAndDelete({
       commentId,
-      likedBy: req.user?._id,
+      likedBy: userId,
     });
+
     return res
       .status(200)
       .json(
@@ -123,11 +157,45 @@ const likeDislikeComment = asyncHandler(async (req, res) => {
         )
       );
   } else {
-    // if not liked, like it by adding the record from the DB
+    // Add a new like
     await SocialLike.create({
       commentId,
-      likedBy: req.user?._id,
+      likedBy: userId,
     });
+
+    const receiverId = comment.author._id.toString();
+
+    // Avoid notifying self
+    if (
+      receiverId !== userId.toString() &&
+      shouldSendLikeNotification(userId.toString(), postId.toString())
+    ) {
+      // Create notification for comment author
+      await createNotification(
+        req,
+        receiverId,
+        req.user,
+        "liked your comment",
+        NotificationTypes.LIKE,
+        commentId,
+        ReferenceModel.COMMENT
+      );
+
+      // Send push notification
+      const senderUsername = req.user.username || "Someone";
+      const options = {
+        title: `${senderUsername} liked your comment!`,
+        body: "Tap to view the comment.",
+        icon: "icons/bakbak.ico",
+        badge: "icons/bakbak.ico",
+        tag: "comment-like",
+        data: { url: `/social/post/${comment.postId}` },
+      };
+
+      await sendPushNotification(receiverId, options);
+    }
+
+    // Return response for like
     return res
       .status(200)
       .json(
