@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 
 // material-ui
 import { useTheme, styled } from "@mui/material/styles";
@@ -6,9 +6,7 @@ import { blue, orange, yellow } from "@mui/material/colors";
 import {
   Avatar,
   Box,
-  Button,
   Card,
-  CardContent,
   Chip,
   Divider,
   Grid,
@@ -17,7 +15,6 @@ import {
   ListItemAvatar,
   ListItemSecondaryAction,
   ListItemText,
-  Stack,
   Typography,
 } from "@mui/material";
 
@@ -29,11 +26,10 @@ import {
 } from "@/reducer/notification/notification.thunk";
 
 // assets
-import { IconPhoto } from "@tabler/icons-react";
-import User1 from "assets/images/users/user-round.svg";
 import { getUserAvatarUrl } from "utils/getImageUrl";
 import { formatRelativeTime } from "utils/getRelativeTime";
 import { useNavigate } from "react-router-dom";
+import { NotificationTypes } from "constants";
 
 // styles
 const ListItemWrapper = styled("div")(({ theme }) => ({
@@ -47,12 +43,41 @@ const ListItemWrapper = styled("div")(({ theme }) => ({
   },
 }));
 
+const useChipStyles = () => {
+  const theme = useTheme();
+  const base = {
+    height: 24,
+    padding: "0 6px",
+    marginRight: "5px",
+  };
+  return {
+    info: {
+      ...base,
+      color: theme.palette.primary.dark,
+      backgroundColor: blue[50],
+    },
+    warning: { ...base, color: orange[600], backgroundColor: yellow[50] },
+    success: {
+      ...base,
+      color: theme.palette.success.dark,
+      backgroundColor: theme.palette.success.light,
+      height: 28,
+    },
+    error: {
+      ...base,
+      color: theme.palette.orange.dark,
+      backgroundColor: theme.palette.orange.light,
+    },
+  };
+};
+
 // ==============================|| NOTIFICATION LIST ITEM ||============================== //
 // [no change in import statements]
 
 const NotificationList = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
+  const chipSX = useChipStyles();
 
   const notifications = useSelector(
     (state) => state.notifications.notifications
@@ -71,40 +96,6 @@ const NotificationList = () => {
     } catch (err) {
       console.error("Failed to mark notification as read:", err);
     }
-  };
-
-  const chipSX = {
-    height: 24,
-    padding: "0 6px",
-  };
-  const chipErrorSX = {
-    ...chipSX,
-    color: theme.palette.orange.dark,
-    backgroundColor: theme.palette.orange.light,
-    marginRight: "5px",
-  };
-
-  const chipWarningSX = {
-    ...chipSX,
-    color: orange[600],
-    backgroundColor: yellow[50],
-    marginRight: "5px",
-    // border: `1px solid ${yellow[600]}`,
-  };
-
-  const chipSuccessSX = {
-    ...chipSX,
-    color: theme.palette.success.dark,
-    backgroundColor: theme.palette.success.light,
-    height: 28,
-  };
-
-  const chipInfoSX = {
-    ...chipSX,
-    color: theme.palette.primary.dark,
-    // border: `1px solid ${theme.palette.primary[200]}`,
-    backgroundColor: blue[50],
-    marginRight: "5px",
   };
 
   const MessageNotification = ({ notification }) => {
@@ -164,10 +155,10 @@ const NotificationList = () => {
             ))}
           </Grid>
           <Grid item>
-            <Chip label="reply" sx={chipInfoSX} />
+            <Chip label="reply" sx={chipSX.info} />
             <Chip
               label={notification.isRead ? "mark as unread" : "mark as read"}
-              sx={chipWarningSX}
+              sx={chipSX.warning}
               onClick={(event) => handleMarkAsRead(event, notification._id)}
             />
           </Grid>
@@ -258,16 +249,51 @@ const NotificationList = () => {
           ))}
         </Grid>
         <Grid item>
-          <Chip label="reply" sx={chipInfoSX} />
+          <Chip label="reply" sx={chipSX.info} />
           <Chip
             label={notification.isRead ? "mark as unread" : "mark as read"}
-            sx={chipWarningSX}
+            sx={chipSX.warning}
             onClick={(event) => handleMarkAsRead(event, notification._id)}
           />
         </Grid>
       </Grid>
     </ListItemWrapper>
   );
+
+  const FollowNotification = ({ notification }) => {
+    const navigate = useNavigate();
+
+    const handleClick = (event) => {
+      if (!notification.isRead) {
+        handleMarkAsRead(event, notification._id);
+      }
+      navigate(`/u/${notification.sender.username}`);
+    };
+
+    return (
+      <ListItemWrapper onClick={handleClick}>
+        <ListItem alignItems="center">
+          <ListItemAvatar>
+            <Avatar
+              alt={notification.sender.username}
+              src={getUserAvatarUrl(notification.sender.avatar)}
+            />
+          </ListItemAvatar>
+          <ListItemText
+            primary={notification.sender.username}
+            secondary={
+              <Typography variant="caption">started following you</Typography>
+            }
+          />
+          <ListItemSecondaryAction>
+            <Typography variant="caption">
+              {formatRelativeTime(notification.updatedAt)}
+            </Typography>
+          </ListItemSecondaryAction>
+        </ListItem>
+      </ListItemWrapper>
+    );
+  };
 
   return (
     <List
@@ -298,15 +324,19 @@ const NotificationList = () => {
       ) : (
         notifications.map((notification, index) => (
           <React.Fragment key={notification.id || index}>
-            {notification.type === "message" && (
+            {notification.type === NotificationTypes.MESSAGE && (
               <MessageNotification notification={notification} />
             )}
-            {notification.type === "like" && (
+            {notification.type === NotificationTypes.LIKE_POST && (
               <LikeNotification notification={notification} />
             )}
-            {notification.type === "comment" && (
+            {notification.type === NotificationTypes.COMMENT && (
               <CommentNotification notification={notification} />
             )}
+            {notification.type === NotificationTypes.FOLLOW_REQUEST && (
+              <FollowNotification notification={notification} />
+            )}
+
             {index < notifications.length - 1 && <Divider />}
           </React.Fragment>
         ))
