@@ -202,7 +202,7 @@ const NotificationSection = () => {
                             onClick={handleMarkAllAsRead}
                             sx={{ textDecoration: "none" }}
                           >
-                            Mark as all read
+                            Mark all as read
                           </Typography>
                         </Grid>
                       </Grid>
