@@ -4,17 +4,49 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { getMongoosePaginationOptions } from "../utils/helpers.js";
 import { ApiError } from "../utils/ApiError.js";
-import { USER_ACTIVITY_TYPES } from "../constants.js";
+import { NotificationTypes, ReferenceModel, USER_ACTIVITY_TYPES } from "../constants.js";
+import { SocialPost } from "../models/post.models.js";
+import { createNotification } from "./notification.controllers.js";
+import { sendPushNotification } from "./notificationSubscription.controllers.js";
 
 const addComment = asyncHandler(async (req, res) => {
   const { postId } = req.params;
   const { content } = req.body;
 
+  // Create the comment
   const comment = await SocialComment.create({
     content,
     author: req.user?._id,
     postId,
   });
+
+  // Fetch post to get author info
+  const post = await SocialPost.findById(postId).select("author");
+
+  // Send notification to post owner (if not commenting on own post)
+  if (post && post.author.toString() !== req.user._id.toString()) {
+    await createNotification(
+      req,
+      post.author.toString(), // receiver
+      req.user, // sender
+      content, // preview
+      NotificationTypes.COMMENT, // type
+      postId, // referenceId
+      ReferenceModel.POST // referenceModel
+    );
+
+    // Optional: Push Notification
+    const options = {
+      title: `${req.user.username} commented on your post!`,
+      body: content,
+      icon: "icons/bakbak.ico",
+      badge: "icons/bakbak.ico",
+      tag: "comment",
+      data: { url: `/social/post/${postId}` },
+    };
+
+    await sendPushNotification(post.author.toString(), options);
+  }
 
   return res
     .status(201)
