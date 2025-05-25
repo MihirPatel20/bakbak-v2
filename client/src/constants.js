@@ -5,6 +5,15 @@ export const MobileHeightBuffer = 72;
 
 export const loadingTimer = 500;
 
+export const NotificationTypes = Object.freeze({
+  MESSAGE: "message",
+  LIKE_POST: "like_post",
+  LIKE_COMMENT: "like_comment",
+  COMMENT: "comment",
+  PING: "ping",
+  FOLLOW_REQUEST: "follow_request",
+});
+
 export const ChatEventEnum = Object.freeze({
   // ? once user is ready to go
   CONNECTED_EVENT: "connected",
