@@ -8,16 +8,15 @@ const likeSchema = new Schema(
     postId: {
       type: Schema.Types.ObjectId,
       ref: "SocialPost",
-      default: null,
     },
     commentId: {
       type: Schema.Types.ObjectId,
       ref: "SocialComment",
-      default: null,
     },
     likedBy: {
       type: Schema.Types.ObjectId,
       ref: "User",
+      required: true,
     },
   },
   { timestamps: true }
