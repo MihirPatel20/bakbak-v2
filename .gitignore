@@ -1,4 +1,6 @@
 /client/node_modules
 /client/.vite
 
+/backups
+
 /server/node_modules
