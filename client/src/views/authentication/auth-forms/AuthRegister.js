@@ -36,15 +36,15 @@ import { strengthColor, strengthIndicator } from "utils/password-strength";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import useAuth from "hooks/useAuth";
-import { showSnackbar } from "reducer/snackbar/snackbar.slice";
+import useSnackbar from "hooks/useSnackbar";
 
 // ===========================|| FIREBASE - REGISTER ||=========================== //
 
 const AuthRegister = ({ ...others }) => {
   const theme = useTheme();
   const { register } = useAuth();
-  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const showSnackbar = useSnackbar();
 
   const scriptedRef = useScriptRef();
   const matchDownSM = useMediaQuery(theme.breakpoints.down("md"));
@@ -171,11 +171,9 @@ const AuthRegister = ({ ...others }) => {
               const res = await register(values);
 
               if (res.payload.success === true) {
-                dispatch(
-                  showSnackbar(
-                    "success",
-                    "Your Account has been created successfully!"
-                  )
+                showSnackbar(
+                  "success",
+                  "Your Account has been created successfully!"
                 );
                 navigate("/login");
                 setStatus({ success: true });

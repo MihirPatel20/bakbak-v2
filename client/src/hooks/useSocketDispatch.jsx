@@ -3,14 +3,15 @@ import { useDispatch } from "react-redux";
 import {
   addNotification,
   updateNotification,
-} from "../reducer/notification/notification.slice"; // Adjust the import path
-import { useSocket } from "../context/SocketContext"; // Adjust the import path
-import { showSnackbar } from "reducer/snackbar/snackbar.slice";
+} from "../reducer/notification/notification.slice";
+import { useSocket } from "../context/SocketContext";
 import { ChatEventEnum } from "constants";
+import useSnackbar from "./useSnackbar";
 
 const useSocketDispatch = () => {
   const { socket } = useSocket();
   const dispatch = useDispatch();
+  const showSnackbar = useSnackbar();
 
   useEffect(() => {
     if (!socket) return;
@@ -19,11 +20,9 @@ const useSocketDispatch = () => {
     socket.on(ChatEventEnum.NOTIFICATION_EVENT, (notification) => {
       // console.log("notification add socket response: ", notification);
       if (notification.type === "message") {
-        dispatch(
-          showSnackbar(
-            "info",
-            `${notification.sender.username} sent you a message`
-          )
+        showSnackbar(
+          "info",
+          `${notification.sender.username} sent you a message`
         );
       }
       dispatch(addNotification(notification));
@@ -35,11 +34,9 @@ const useSocketDispatch = () => {
       (updatedNotification) => {
         // console.log("notification update socket response: ", updatedNotification);
         if (updatedNotification.type === "message") {
-          dispatch(
-            showSnackbar(
-              "info",
-              `${updatedNotification.sender.username} sent you a message`
-            )
+          showSnackbar(
+            "info",
+            `${updatedNotification.sender.username} sent you a message`
           );
         }
         dispatch(updateNotification(updatedNotification));
