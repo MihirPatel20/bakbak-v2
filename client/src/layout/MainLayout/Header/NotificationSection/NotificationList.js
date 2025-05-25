@@ -32,7 +32,7 @@ import {
 import { IconPhoto } from "@tabler/icons-react";
 import User1 from "assets/images/users/user-round.svg";
 import { getUserAvatarUrl } from "utils/getImageUrl";
-import { getRelativeTime } from "utils/getRelativeTime";
+import { formatRelativeTime } from "utils/getRelativeTime";
 import { useNavigate } from "react-router-dom";
 
 // styles
@@ -48,6 +48,7 @@ const ListItemWrapper = styled("div")(({ theme }) => ({
 }));
 
 // ==============================|| NOTIFICATION LIST ITEM ||============================== //
+// [no change in import statements]
 
 const NotificationList = () => {
   const theme = useTheme();
@@ -129,53 +130,46 @@ const NotificationList = () => {
           </ListItemAvatar>
           <ListItemText
             primary={notification.sender.username}
-            secondary={
-              <Typography variant="caption" display="block">
-                sent message
-              </Typography>
-            }
+            secondary={<Typography variant="caption">sent message</Typography>}
           />
-
           <ListItemSecondaryAction>
-            <Grid container justifyContent="flex-end">
-              <Grid item xs={12}>
-                <Typography variant="caption" display="block" gutterBottom>
-                  {getRelativeTime(notification.createdAt)}
-                </Typography>
-              </Grid>
-            </Grid>
+            <Typography variant="caption">
+              {formatRelativeTime(notification.updatedAt)}
+            </Typography>
           </ListItemSecondaryAction>
         </ListItem>
 
         <Grid container direction="column" className="list-container">
-          <Grid item xs={12} sx={{ pb: 2 }}>
+          <Grid
+            item
+            xs={12}
+            mb={1}
+            sx={{
+              px: 2,
+              py: 1,
+              bgcolor: theme.palette.primary.light,
+              borderRadius: 1,
+              border: `1px solid ${theme.palette.grey[300]}`,
+            }}
+          >
             {notification.repetitionCount > 2 && (
-              <Typography variant="caption" display="block">
+              <Typography variant="caption">
                 +{notification.repetitionCount - 2} messages
               </Typography>
             )}
             {notification?.preview?.map((message, index) => (
-              <Typography key={index} variant="subtitle2">
+              <Typography key={index} variant="body2" color="textSecondary">
                 {message}
               </Typography>
             ))}
           </Grid>
-
-          <Grid item xs={12}>
-            <Grid container>
-              <Grid item>
-                <Chip label="reply" sx={chipInfoSX} />
-              </Grid>
-              <Grid item>
-                <Chip
-                  label={
-                    notification.isRead ? "mark as unread" : "mark as read"
-                  }
-                  sx={chipWarningSX}
-                  onClick={(event) => handleMarkAsRead(event, notification._id)}
-                />
-              </Grid>
-            </Grid>
+          <Grid item>
+            <Chip label="reply" sx={chipInfoSX} />
+            <Chip
+              label={notification.isRead ? "mark as unread" : "mark as read"}
+              sx={chipWarningSX}
+              onClick={(event) => handleMarkAsRead(event, notification._id)}
+            />
           </Grid>
         </Grid>
       </ListItemWrapper>
@@ -183,58 +177,97 @@ const NotificationList = () => {
   };
 
   const LikeNotification = ({ notification }) => {
-    const senderUsername = notification.sender.username;
-    // console.log("notification: ", notification);
-
     return (
-      <ListItemWrapper>
+      <ListItemWrapper
+        onClick={(event) => handleMarkAsRead(event, notification._id)}
+      >
         <ListItem alignItems="center">
           <ListItemAvatar>
             <Avatar
-              alt={senderUsername}
+              alt={notification.sender.username}
               src={getUserAvatarUrl(notification.sender.avatar)}
             />
           </ListItemAvatar>
           <ListItemText
             primary={notification.sender.username}
             secondary={
-              <Typography variant="caption" display="block">
-                liked your post
-              </Typography>
+              <Typography variant="caption">liked your post</Typography>
             }
           />
-
           <ListItemSecondaryAction>
-            <Grid container justifyContent="flex-end">
-              <Grid item xs={12}>
-                <Typography variant="caption" display="block" gutterBottom>
-                  {getRelativeTime(notification.createdAt)}
-                </Typography>
-              </Grid>
-            </Grid>
+            <Typography variant="caption">
+              {formatRelativeTime(notification.updatedAt)}
+            </Typography>
           </ListItemSecondaryAction>
         </ListItem>
 
-        <Grid container direction="column" className="list-container">
-          <Card
-            sx={{
-              backgroundColor: theme.palette.primary.light,
-            }}
-          >
+        <Grid container className="list-container">
+          <Card sx={{ backgroundColor: theme.palette.primary.light }}>
             <Box p={1}>
-              <Stack direction="row">
-                <img
-                  src={notification.referenceId.images[0].url}
-                  alt={`notification-img`}
-                  style={{ width: "100%", height: "100px", borderRadius: 8 }}
-                />
-              </Stack>
+              <img
+                src={notification?.referenceDoc?.images?.[0]?.url}
+                alt="notification-img"
+                style={{ width: "100%", height: "100px", borderRadius: 8 }}
+              />
             </Box>
           </Card>
         </Grid>
       </ListItemWrapper>
     );
   };
+
+  const CommentNotification = ({ notification }) => (
+    <ListItemWrapper>
+      <ListItem alignItems="center">
+        <ListItemAvatar>
+          <Avatar
+            alt={notification.sender.username}
+            src={getUserAvatarUrl(notification.sender.avatar)}
+          />
+        </ListItemAvatar>
+        <ListItemText
+          primary={notification.sender.username}
+          secondary={
+            <Typography variant="caption">liked your comment</Typography>
+          }
+        />
+        <ListItemSecondaryAction>
+          <Typography variant="caption">
+            {formatRelativeTime(notification.updatedAt)}
+          </Typography>
+        </ListItemSecondaryAction>
+      </ListItem>
+
+      <Grid container direction="column" className="list-container">
+        <Grid
+          item
+          xs={12}
+          mb={1}
+          sx={{
+            px: 2,
+            py: 1,
+            bgcolor: theme.palette.primary.light,
+            borderRadius: 1,
+            border: `1px solid ${theme.palette.grey[300]}`,
+          }}
+        >
+          {notification?.preview?.map((comment, index) => (
+            <Typography key={index} variant="body2" color="textSecondary">
+              {comment}
+            </Typography>
+          ))}
+        </Grid>
+        <Grid item>
+          <Chip label="reply" sx={chipInfoSX} />
+          <Chip
+            label={notification.isRead ? "mark as unread" : "mark as read"}
+            sx={chipWarningSX}
+            onClick={(event) => handleMarkAsRead(event, notification._id)}
+          />
+        </Grid>
+      </Grid>
+    </ListItemWrapper>
+  );
 
   return (
     <List
@@ -246,15 +279,24 @@ const NotificationList = () => {
         [theme.breakpoints.down("md")]: { maxWidth: 300 },
         "& .MuiListItemSecondaryAction-root": { top: 22 },
         "& .MuiDivider-root": { my: 0 },
-        "& .list-container": { pl: 7 },
+        "& .list-container": { pl: 5 },
       }}
     >
       {notifications?.length === 0 ? (
-        <Typography variant="subtitle1" sx={{ p: 2 }}>
-          No notifications found
-        </Typography>
+        <ListItemWrapper>
+          <ListItem alignItems="center">
+            <Typography
+              variant="subtitle1"
+              width={"325px"}
+              textAlign="center"
+              sx={{ color: theme.palette.grey[500] }}
+            >
+              You're all caught up! No new notifications.
+            </Typography>
+          </ListItem>
+        </ListItemWrapper>
       ) : (
-        notifications?.map((notification, index) => (
+        notifications.map((notification, index) => (
           <React.Fragment key={notification.id || index}>
             {notification.type === "message" && (
               <MessageNotification notification={notification} />
@@ -262,7 +304,9 @@ const NotificationList = () => {
             {notification.type === "like" && (
               <LikeNotification notification={notification} />
             )}
-            {/* Render Divider for all but the last notification */}
+            {notification.type === "comment" && (
+              <CommentNotification notification={notification} />
+            )}
             {index < notifications.length - 1 && <Divider />}
           </React.Fragment>
         ))
