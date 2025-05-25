@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
-import { ReferenceModel } from "../constants.js";
+import { NotificationTypes, ReferenceModel } from "../constants.js";
 
 // Define the Notification schema
 const notificationSchema = new Schema(
@@ -18,7 +18,7 @@ const notificationSchema = new Schema(
     type: {
       type: String,
       required: true,
-      enum: ["message", "follow_request", "like", "comment"],
+      enum: NotificationTypes,
     },
     preview: [{ type: String }],
     repetitionCount: {
