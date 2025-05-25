@@ -32,12 +32,23 @@ const PostItem = forwardRef(({ post }, ref) => {
 
   const contentLimit = 120; // Set the character limit for truncation
 
+  const [isLiked, setIsLiked] = useState(post.isLiked);
+  const [likesCount, setLikesCount] = useState(post.likes);
   const handleLikeClick = async () => {
+    const prevLiked = isLiked;
+
+    // Optimistic UI update
+    setIsLiked(!isLiked);
+    setLikesCount((count) => count + (isLiked ? -1 : 1));
+
     try {
-      // Dispatch likePost thunk
       await dispatch(likePost(post._id));
     } catch (error) {
       console.error("Error liking post:", error);
+
+      // Revert UI changes on failure
+      setIsLiked(prevLiked);
+      setLikesCount((count) => count + (prevLiked ? 1 : -1));
     }
   };
 
@@ -56,12 +67,20 @@ const PostItem = forwardRef(({ post }, ref) => {
     // Handle share click action
   };
 
+  // Add new state for bookmark
+  const [isBookmarked, setIsBookmarked] = useState(post.isBookmarked);
+  // Update handleBookmarkClick function
   const handleBookmarkClick = async () => {
+    const prevBookmarked = isBookmarked;
+    setIsBookmarked(!isBookmarked); // Optimistic UI update
+
     try {
-      // Dispatch bookmarkPost thunk
       await dispatch(bookmarkPost(post._id));
     } catch (error) {
       console.error("Error bookmarking post:", error);
+
+      // Revert UI changes on failure
+      setIsBookmarked(prevBookmarked);
     }
   };
 
@@ -95,12 +114,12 @@ const PostItem = forwardRef(({ post }, ref) => {
           ) : (
             <Box
               sx={{
-                width: '100%',
-                height: '200px',
-                backgroundColor: '#e0e0e0',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
+                width: "100%",
+                height: "200px",
+                backgroundColor: "#e0e0e0",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
               }}
             >
               <Typography variant="body1">Image not available</Typography>
@@ -115,8 +134,8 @@ const PostItem = forwardRef(({ post }, ref) => {
               style={{
                 cursor: "pointer",
                 strokeWidth: 1.5,
-                fill: post.isLiked ? "red" : "none",
-                color: post.isLiked ? "red" : "black",
+                fill: isLiked ? "red" : "none",
+                color: isLiked ? "red" : "black",
               }}
             />
 
@@ -141,14 +160,14 @@ const PostItem = forwardRef(({ post }, ref) => {
               style={{
                 cursor: "pointer",
                 strokeWidth: 1.5,
-                fill: post.isBookmarked ? "gray" : "none",
-                color: post.isBookmarked ? "gray" : "black",
+                fill: isBookmarked ? "gray" : "none",
+                color: isBookmarked ? "gray" : "black",
               }}
             />
           </Box>
 
           <Typography variant="body2" fontWeight={600}>
-            {post.likes} likes
+            {likesCount} likes
           </Typography>
 
           <Typography variant="body2" lineHeight={1.3}>
