@@ -272,7 +272,7 @@ const LikeNotification = ({ notification }) => {
         <Box width={200}>
           <Stack direction="row">
             <img
-              src={notification.referenceId.images[0].url}
+              src={notification.referenceDoc.images[0].url}
               alt={`notification-img`}
               style={{ width: "100%", height: "100px", borderRadius: 4 }}
             />
