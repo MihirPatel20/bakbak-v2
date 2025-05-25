@@ -14,7 +14,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { postCommonAggregation } from "./post.controllers.js";
 import { createNotification } from "./notification.controllers.js";
 import { sendPushNotification } from "./notificationSubscription.controllers.js";
-import { shouldSendLikeNotification } from "../utils/notificationLimiter.js";
+import { shouldSendNotification } from "../utils/notificationLimiter.js";
 
 // Controller to like or unlike a post
 const likeDislikePost = asyncHandler(async (req, res) => {
@@ -79,7 +79,11 @@ const likeDislikePost = asyncHandler(async (req, res) => {
 
     if (
       receiverId !== userId.toString() &&
-      shouldSendLikeNotification(userId.toString(), postId.toString())
+      shouldSendNotification(
+        NotificationTypes.LIKE_POST,
+        userId.toString(),
+        postId.toString()
+      )
     ) {
       // Create a notification for the post author
       await createNotification(
@@ -87,7 +91,7 @@ const likeDislikePost = asyncHandler(async (req, res) => {
         receiverId, // Who receives the notification
         req.user, // Who triggered the action
         "liked your post", // Notification preview
-        NotificationTypes.LIKE, // Type of notification
+        NotificationTypes.LIKE_POST, // Type of notification
         post._id.toString(), // Related post ID
         ReferenceModel.POST // Type of referenced model
       );
@@ -168,7 +172,11 @@ const likeDislikeComment = asyncHandler(async (req, res) => {
     // Avoid notifying self
     if (
       receiverId !== userId.toString() &&
-      shouldSendLikeNotification(userId.toString(), postId.toString())
+      shouldSendNotification(
+        NotificationTypes.LIKE_COMMENT,
+        userId.toString(),
+        postId.toString()
+      )
     ) {
       // Create notification for comment author
       await createNotification(
@@ -176,7 +184,7 @@ const likeDislikeComment = asyncHandler(async (req, res) => {
         receiverId,
         req.user,
         "liked your comment",
-        NotificationTypes.LIKE,
+        NotificationTypes.LIKE_COMMENT,
         commentId,
         ReferenceModel.COMMENT
       );

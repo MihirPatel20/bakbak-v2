@@ -1,18 +1,18 @@
 // utils/notificationLimiter.js
 
-const likeNotifCache = new Map(); // Key: `${userId}:${targetId}`
+const notifCache = new Map(); // Key: `${type}:${userId}:${targetId}`
 
-export const shouldSendLikeNotification = (userId, targetId, ttl = 10) => {
-  const key = `${userId}:${targetId}`;
+export const shouldSendNotification = (type, userId, targetId, ttl = 10) => {
+  const key = `${type}:${userId}:${targetId}`;
   const now = Date.now();
 
-  if (likeNotifCache.has(key)) {
-    const lastTime = likeNotifCache.get(key);
-    if (now - lastTime < ttl * 1000) return false; // Within TTL, skip
+  if (notifCache.has(key)) {
+    const lastTime = notifCache.get(key);
+    if (now - lastTime < ttl * 1000) return false;
   }
 
-  likeNotifCache.set(key, now);
-  setTimeout(() => likeNotifCache.delete(key), ttl * 1000); // Auto-expire
+  notifCache.set(key, now);
+  setTimeout(() => notifCache.delete(key), ttl * 1000);
 
   return true;
 };
