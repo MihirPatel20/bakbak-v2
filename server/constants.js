@@ -112,14 +112,15 @@ export const ChatEventEnum = Object.freeze({
 
 export const NotificationTypes = Object.freeze({
   MESSAGE: "message",
-  LIKE: "like",
+  LIKE_POST: "like_post",
+  LIKE_COMMENT: "like_comment",
   COMMENT: "comment",
-  COMMENT_LIKE: "comment_like",
   PING: "ping",
   FOLLOW_REQUEST: "follow_request",
 });
 
 export const ReferenceModel = Object.freeze({
+  USER: "User",
   CHAT: "Chat",
   MESSAGE: "ChatMessage",
   LIKE: "SocialLike",
