@@ -28,9 +28,13 @@ const notificationsSlice = createSlice({
         (notification) => notification._id === updatedNotification._id
       );
       if (index !== -1) {
-        state.notifications[index] = updatedNotification;
+        // Remove the old notification
+        state.notifications.splice(index, 1);
+        // Add the updated one at the top
+        state.notifications = [updatedNotification, ...state.notifications];
       }
     },
+
     deleteNotification: (state, action) => {
       state.notifications = state.notifications.filter(
         (notification) => notification._id !== action.payload
@@ -67,7 +71,7 @@ const notificationsSlice = createSlice({
 
         // Filter out the notification if its type is "message"
         state.notifications = state.notifications.filter((notification) => {
-          return !(notification._id === id && notification.type === "message");
+          return !(notification._id === id);
         });
 
         // Recalculate totalCount based on the filtered notifications
