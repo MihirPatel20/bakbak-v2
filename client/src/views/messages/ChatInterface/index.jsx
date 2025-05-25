@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
 import SendIcon from "@mui/icons-material/Send";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { AppBarHeight } from "constants";
 import { getUserAvatarUrl } from "utils/getImageUrl";
 import { MobileHeightBuffer } from "constants";
@@ -26,6 +26,8 @@ const ChatInterface = () => {
     handleOnMessageChange,
     sendMessage,
   } = useChatSocket(chatId);
+
+  const navigate = useNavigate();
 
   const boxRef = useRef(null);
   const [chatBoxDimensions, setChatBoxDimensions] = useState({
@@ -110,6 +112,7 @@ const ChatInterface = () => {
             src={getUserAvatarUrl(recipient.avatar)}
             alt={recipient.username}
             sx={{ width: 40, height: 40 }}
+            onClick={() => navigate(`/profile/${recipient.username}`)}
           />
           <Box>
             <Grid container direction="column">
