@@ -5,35 +5,43 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { getMongoosePaginationOptions } from "../utils/helpers.js";
-import { USER_ACTIVITY_TYPES } from "../constants.js";
+import {
+  NotificationTypes,
+  ReferenceModel,
+  USER_ACTIVITY_TYPES,
+} from "../constants.js";
+import { createNotification } from "./notification.controllers.js";
+import { sendPushNotification } from "./notificationSubscription.controllers.js";
+import { shouldSendNotification } from "../utils/notificationLimiter.js";
 
 const followUnFollowUser = asyncHandler(async (req, res) => {
-  const { toBeFollowedUserId } = req.params;
+  const { targetUserId } = req.params;
+  const userId = req.user._id;
 
-  // See if user that is being followed exist
-  const toBeFollowed = await User.findById(toBeFollowedUserId);
-
-  if (!toBeFollowed) {
+  // Fetch the user who is about to be followed/unfollowed
+  const targetUser = await User.findById(targetUserId);
+  if (!targetUser) {
     throw new ApiError(404, "User does not exist");
   }
 
-  // Check of the user who is being followed is not the one who is requesting
-  if (toBeFollowedUserId.toString() === req.user._id.toString()) {
+  // Prevent users from following themselves
+  if (targetUserId.toString() === userId.toString()) {
     throw new ApiError(422, "You cannot follow yourself");
   }
 
-  // Check if logged user is already following the to be followed user
+  // Check if the current user is already following the target user
   const isAlreadyFollowing = await SocialFollow.findOne({
-    followerId: req.user._id,
-    followeeId: toBeFollowed._id,
+    followerId: userId,
+    followeeId: targetUser._id,
   });
 
   if (isAlreadyFollowing) {
-    // if yes, then unfollow the user by deleting the follow entry from the DB
+    // Unfollow: remove the follow entry from DB
     await SocialFollow.findOneAndDelete({
-      followerId: req.user._id,
-      followeeId: toBeFollowed._id,
+      followerId: userId,
+      followeeId: targetUser._id,
     });
+
     return res
       .status(200)
       .json(
@@ -45,21 +53,56 @@ const followUnFollowUser = asyncHandler(async (req, res) => {
         )
       );
   } else {
-    // if no, then create a follow entry
-    await SocialFollow.create({
-      followerId: req.user._id,
-      followeeId: toBeFollowed._id,
+    // Follow: create a new follow entry
+    const followEntry = await SocialFollow.create({
+      followerId: userId,
+      followeeId: targetUser._id,
     });
-    return res.status(200).json(
-      new ApiResponse(
-        200,
-        {
-          following: true,
-        },
-        "Added to following",
-        USER_ACTIVITY_TYPES.FOLLOW_USER
+
+    // Send notification + push if valid
+    if (
+      targetUserId.toString() !== userId.toString() &&
+      shouldSendNotification(
+        NotificationTypes.FOLLOW_REQUEST,
+        userId.toString(),
+        targetUserId.toString()
       )
-    );
+    ) {
+      // In-app notification
+      await createNotification(
+        req,
+        targetUserId, // Receiver
+        req.user, // Actor
+        "started following you", // Preview
+        NotificationTypes.FOLLOW_REQUEST,
+        followEntry._id,
+        ReferenceModel.FOLLOW_REQUEST //SocialFollow
+      );
+
+      // Push notification
+      const senderName = req.user.username || "Someone";
+      const pushOptions = {
+        title: `${senderName} followed you!`,
+        body: "Check out their profile.",
+        icon: "icons/bakbak.ico",
+        badge: "icons/bakbak.ico",
+        tag: "follow",
+        data: { url: `/profile/${userId}` },
+      };
+
+      await sendPushNotification(targetUserId, pushOptions);
+    }
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          { following: true },
+          "Added to following",
+          USER_ACTIVITY_TYPES.FOLLOW_USER
+        )
+      );
   }
 });
 
