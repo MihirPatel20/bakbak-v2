@@ -16,55 +16,85 @@ export const createNotification = async (
   referenceModel
 ) => {
   try {
-    if (type === "message") {
-      // Check if there's an existing notification for messages from the same sender
-      const existingNotification = await Notification.findOne({
-        user: userId,
-        sender: sender._id.toString(),
-        type: "message",
-        isRead: false,
-      });
+    let existingNotification;
 
-      if (existingNotification) {
-        // Update the preview with the latest message
-        existingNotification.preview = [
-          ...(existingNotification.preview || []), // Keep existing messages
-          preview,
-        ].slice(-2); // Keep only the last 2 messages
-        existingNotification.referenceId = referenceId;
-        existingNotification.repetitionCount =
-          existingNotification.repetitionCount + 1;
-        await existingNotification.save();
-
-        // Emit the updated notification via Socket.IO
-        emitNotification(req, userId, ChatEventEnum.NOTIFICATION_UPDATE_EVENT, {
-          ...existingNotification.toObject(),
-          sender,
-        });
-        return existingNotification;
-      }
-    }
-
-    // Create a new notification if no existing one is found
-    const notification = new Notification({
+    // Common query base
+    const baseQuery = {
       user: userId,
       sender: sender._id.toString(),
       type,
-      preview,
-      referenceId,
-      referenceModel,
-      repetitionCount: 1,
-    });
+      isRead: false,
+    };
 
-    await notification.save();
+    // Only add referenceId if it exists
+    if (referenceId) baseQuery.referenceId = referenceId;
 
-    // Emit the notification via Socket.IO
-    emitNotification(req, userId, ChatEventEnum.NOTIFICATION_EVENT, {
-      ...notification.toObject(),
-      sender,
-    });
+    existingNotification = await Notification.findOne(baseQuery);
 
-    return notification;
+    let isUpdate = false;
+    let notification;
+
+    if (existingNotification) {
+      // If message, append preview (as array); else, replace preview
+      if (type === "message") {
+        existingNotification.preview = [
+          ...(existingNotification.preview || []),
+          preview,
+        ].slice(-2);
+      } else {
+        existingNotification.preview = preview;
+      }
+
+      existingNotification.referenceId =
+        referenceId || existingNotification.referenceId;
+      existingNotification.referenceModel =
+        referenceModel || existingNotification.referenceModel;
+      existingNotification.repetitionCount =
+        (existingNotification.repetitionCount || 1) + 1;
+      existingNotification.updatedAt = new Date();
+
+      notification = await existingNotification.save();
+      isUpdate = true;
+    } else {
+      notification = new Notification({
+        user: userId,
+        sender: sender._id.toString(),
+        type,
+        preview: type === "message" ? [preview] : preview,
+        referenceId,
+        referenceModel,
+        repetitionCount: 1,
+      });
+      await notification.save();
+    }
+
+    const populatedNotification = notification.toObject();
+
+    // Populate referenceDoc if applicable
+    if (notification.referenceId && notification.referenceModel) {
+      try {
+        const RefModel = mongoose.model(notification.referenceModel);
+        populatedNotification.referenceDoc = await RefModel.findById(
+          notification.referenceId
+        ).lean();
+      } catch (err) {
+        console.warn("Failed to populate referenceDoc:", err.message);
+        populatedNotification.referenceDoc = null;
+      }
+    }
+
+    populatedNotification.sender = { ...(sender.toObject?.() || sender) };
+
+    emitNotification(
+      req,
+      userId,
+      isUpdate
+        ? ChatEventEnum.NOTIFICATION_UPDATE_EVENT
+        : ChatEventEnum.NOTIFICATION_EVENT,
+      populatedNotification
+    );
+
+    return populatedNotification;
   } catch (error) {
     console.error("Error creating notification:", error);
     throw new Error("Server error while creating notification");
@@ -85,7 +115,7 @@ const getNotifications = asyncHandler(async (req, res) => {
   // Query notifications for the user
   const notifications = await Notification.find(query)
     .populate("sender", "username avatar")
-    .sort({ createdAt: -1 })
+    .sort({ updatedAt: -1 })
     .skip((page - 1) * limit)
     .limit(limit)
     .lean();
