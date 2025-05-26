@@ -46,6 +46,7 @@ import {
 import { getUserAvatarUrl } from "utils/getImageUrl";
 import { AppBarHeight } from "constants";
 import useAuth from "hooks/useAuth";
+import PreferencesCard from "./PreferencesCard";
 
 // ==============================|| PROFILE MENU ||============================== //
 
@@ -56,19 +57,12 @@ const ProfileSection = () => {
   const { auth, logout } = useAuth();
 
   const navigate = useNavigate();
-
-  const [sdm, setSdm] = useState(true);
-  const [value, setValue] = useState("");
-  const [notification, setNotification] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [open, setOpen] = useState(false);
   /**
    * anchorRef is used on different componets and specifying one type leads to other components throwing an error
    * */
   const anchorRef = useRef(null);
-  const handleLogout = async () => {
-    logout();
-  };
 
   const handleClose = (event) => {
     if (anchorRef.current && anchorRef.current.contains(event.target)) {
@@ -149,6 +143,27 @@ const ProfileSection = () => {
     />
   );
 
+  const greetingsPool = [
+    "What's the gossip today? 👀",
+    "Back on the BakBak grind 🔄",
+    "Let's catch up with the crew 🧑‍🤝‍🧑",
+    "Got something to share?",
+    "Time to stir the pot... 🔥",
+    "The timeline missed you!",
+    "Bored? Let's bakbak! 🎤",
+    "Welcome back, legend. 😎",
+    "It's bakbak o'clock 🕐",
+    "Feeling chatty today?",
+  ];
+
+  const [greeting, setGreeting] = useState("");
+
+  useEffect(() => {
+    const randomGreeting =
+      greetingsPool[Math.floor(Math.random() * greetingsPool.length)];
+    setGreeting(randomGreeting);
+  }, []);
+
   return (
     <>
       {/* {AccountChip} */}
@@ -221,18 +236,16 @@ const ProfileSection = () => {
                   shadow={theme.shadows[16]}
                 >
                   <Box sx={{ p: 2, pb: 0 }}>
-                    <Stack>
+                    <Stack p={1}>
                       <Stack direction="row" spacing={0.5} alignItems="center">
-                        <Typography variant="h4">Good Morning,</Typography>
-                        <Typography
-                          component="span"
-                          variant="h4"
-                          sx={{ fontWeight: 400 }}
-                        >
+                        <Typography variant="h4">Welcome Back,</Typography>
+                        <Typography component="span" variant="h4">
                           {auth?.user?.username}
                         </Typography>
                       </Stack>
-                      <Typography variant="subtitle2">Project Admin</Typography>
+                      <Typography variant="subtitle2">
+                        The timeline missed you!
+                      </Typography>
                     </Stack>
 
                     {/* <OutlinedInput
@@ -278,7 +291,8 @@ const ProfileSection = () => {
                           [theme.breakpoints.down("md")]: {
                             minWidth: "100%",
                           },
-                          mt: 1,
+                          pt: 0,
+                          // mt: 1,
                           // "& .MuiListItemButton-root": {
                           //   mt: 0.5,
                           // },
@@ -290,7 +304,7 @@ const ProfileSection = () => {
                           }}
                           selected={selectedIndex === 0}
                           onClick={(event) =>
-                            handleListItemClick(event, 0, "#")
+                            handleListItemClick(event, 0, "/settings")
                           }
                         >
                           <ListItemIcon>
@@ -310,7 +324,7 @@ const ProfileSection = () => {
                           }}
                           selected={selectedIndex === 1}
                           onClick={(event) =>
-                            handleListItemClick(event, 1, "#")
+                            handleListItemClick(event, 1, "/profile")
                           }
                         >
                           <ListItemIcon>
@@ -347,7 +361,7 @@ const ProfileSection = () => {
                             borderRadius: `${customization.borderRadius}px`,
                           }}
                           selected={selectedIndex === 4}
-                          onClick={handleLogout}
+                          onClick={logout}
                         >
                           <ListItemIcon>
                             <IconLogout stroke={1.5} size="1.3rem" />
@@ -361,64 +375,8 @@ const ProfileSection = () => {
                       </List>
 
                       <Divider />
-                      <Card
-                        sx={{
-                          bgcolor: theme.palette.primary.light,
-                          my: 2,
-                        }}
-                      >
-                        <CardContent>
-                          <Grid container spacing={3} direction="column">
-                            <Grid item>
-                              <Grid
-                                item
-                                container
-                                alignItems="center"
-                                justifyContent="space-between"
-                              >
-                                <Grid item>
-                                  <Typography variant="subtitle1">
-                                    Start DND Mode
-                                  </Typography>
-                                </Grid>
-                                <Grid item>
-                                  <Switch
-                                    color="primary"
-                                    checked={sdm}
-                                    onChange={(e) => setSdm(e.target.checked)}
-                                    name="sdm"
-                                    size="small"
-                                  />
-                                </Grid>
-                              </Grid>
-                            </Grid>
-                            <Grid item>
-                              <Grid
-                                item
-                                container
-                                alignItems="center"
-                                justifyContent="space-between"
-                              >
-                                <Grid item>
-                                  <Typography variant="subtitle1">
-                                    Allow Notifications
-                                  </Typography>
-                                </Grid>
-                                <Grid item>
-                                  <Switch
-                                    checked={notification}
-                                    onChange={(e) =>
-                                      setNotification(e.target.checked)
-                                    }
-                                    name="sdm"
-                                    size="small"
-                                  />
-                                </Grid>
-                              </Grid>
-                            </Grid>
-                          </Grid>
-                        </CardContent>
-                      </Card>
+
+                      <PreferencesCard />
 
                       <Divider />
                       <UpgradePlanCard />
