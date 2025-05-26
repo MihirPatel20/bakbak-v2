@@ -41,9 +41,11 @@ import {
   IconLogout,
   IconSearch,
   IconSettings,
-  IconUser,
+  IconUserCircle,
+  IconUsers,
 } from "@tabler/icons-react";
 import { getUserAvatarUrl } from "utils/getImageUrl";
+import PeopleOutlineIcon from "@mui/icons-material/PeopleOutline";
 import { AppBarHeight } from "constants";
 import useAuth from "hooks/useAuth";
 import PreferencesCard from "./PreferencesCard";
@@ -328,7 +330,7 @@ const ProfileSection = () => {
                           }
                         >
                           <ListItemIcon>
-                            <IconUser stroke={1.5} size="1.3rem" />
+                            <IconUserCircle stroke={1.5} size="1.3rem" />
                           </ListItemIcon>
                           <ListItemText
                             primary={
@@ -339,7 +341,7 @@ const ProfileSection = () => {
                               >
                                 <Grid item>
                                   <Typography variant="body2">
-                                    Social Profile
+                                    My Profile
                                   </Typography>
                                 </Grid>
                                 <Grid item>
@@ -356,19 +358,43 @@ const ProfileSection = () => {
                             }
                           />
                         </ListItemButton>
+
                         <ListItemButton
                           sx={{
                             borderRadius: `${customization.borderRadius}px`,
                           }}
-                          selected={selectedIndex === 4}
-                          onClick={logout}
+                          selected={selectedIndex === 2}
+                          onClick={(event) =>
+                            handleListItemClick(event, 2, "/friends")
+                          }
                         >
                           <ListItemIcon>
-                            <IconLogout stroke={1.5} size="1.3rem" />
+                            <IconUsers stroke={1.5} size="1.3rem" />
                           </ListItemIcon>
                           <ListItemText
                             primary={
-                              <Typography variant="body2">Logout</Typography>
+                              <Grid
+                                container
+                                spacing={1}
+                                justifyContent="space-between"
+                              >
+                                <Grid item>
+                                  <Typography variant="body2">
+                                    Friends
+                                  </Typography>
+                                </Grid>
+                                {/* Optional: Add friend requests count chip */}
+                                <Grid item>
+                                  <Chip
+                                    label="5"
+                                    size="small"
+                                    sx={{
+                                      bgcolor: theme.palette.success.dark,
+                                      color: theme.palette.background.default,
+                                    }}
+                                  />
+                                </Grid>
+                              </Grid>
                             }
                           />
                         </ListItemButton>
@@ -379,7 +405,53 @@ const ProfileSection = () => {
                       <PreferencesCard />
 
                       <Divider />
-                      <UpgradePlanCard />
+
+                      <List
+                        component="nav"
+                        sx={{
+                          width: "100%",
+                          maxWidth: 350,
+                          minWidth: 300,
+                          borderRadius: "10px",
+                          [theme.breakpoints.down("md")]: {
+                            minWidth: "100%",
+                          },
+                        }}
+                      >
+                        {" "}
+                        <ListItemButton
+                          sx={{
+                            borderRadius: `${customization.borderRadius}px`,
+                            backgroundColor: theme.palette.error[50],
+                            "&:hover": {
+                              backgroundColor: theme.palette.error[100],
+                              "& .MuiListItemIcon-root": {
+                                color: theme.palette.error.main,
+                              },
+                            },
+                          }}
+                          selected={selectedIndex === 4}
+                          onClick={logout}
+                        >
+                          <ListItemIcon
+                            sx={{
+                              "&:hover": {
+                                backgroundColor: theme.palette.error[100],
+                                color: theme.palette.error.dark,
+                              },
+                            }}
+                          >
+                            <IconLogout stroke={1.5} size="1.3rem" />
+                          </ListItemIcon>
+                          <ListItemText
+                            primary={
+                              <Typography variant="body2">Logout</Typography>
+                            }
+                          />
+                        </ListItemButton>
+                      </List>
+                      {/* <Divider />
+                       <UpgradePlanCard /> */}
                     </Box>
                   </PerfectScrollbar>
                 </MainCard>
