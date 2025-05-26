@@ -3,7 +3,7 @@ $paper: #ffffff;
 
 // primary
 $primaryLight: #eef2f6;
-$primaryMain: #0094FF;
+$primaryMain: #0094ff;
 $primaryDark: #1e88e5;
 $primary200: #90caf9;
 $primary400: #00c6ff;
@@ -23,6 +23,8 @@ $successMain: #00e676;
 $successDark: #00c853;
 
 // error
+$error50: #ffecec;
+$error100: #ffdfdf;
 $errorLight: #ef9a9a;
 $errorMain: #f44336;
 $errorDark: #c62828;
@@ -103,6 +105,8 @@ $darkTextSecondary: #8492c4;
   successDark: $successDark;
 
   // error
+  error50: $error50;
+  error100: $error100;
   errorLight: $errorLight;
   errorMain: $errorMain;
   errorDark: $errorDark;
