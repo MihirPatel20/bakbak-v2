@@ -36,26 +36,6 @@ import { markAllAsRead } from "reducer/notification/notification.thunk";
 // assets
 import { IconBell } from "@tabler/icons-react";
 
-// notification status options
-const status = [
-  {
-    value: "all",
-    label: "All Notifications",
-  },
-  {
-    value: "newest",
-    label: "Newest",
-  },
-  {
-    value: "unread",
-    label: "Unread",
-  },
-  {
-    value: "other",
-    label: "Other",
-  },
-];
-
 // ==============================|| NOTIFICATION ||============================== //
 
 const NotificationSection = () => {
@@ -208,6 +188,7 @@ const NotificationSection = () => {
                       </Grid>
                     </Grid>
                     <Grid item xs={12}>
+                      <Divider />
                       <PerfectScrollbar
                         style={{
                           height: "100%",
@@ -216,35 +197,6 @@ const NotificationSection = () => {
                           // overflowX: "hidden",
                         }}
                       >
-                        <Grid container direction="column" spacing={2}>
-                          <Grid item xs={12}>
-                            <Box sx={{ px: 2, pt: 0.25 }}>
-                              <TextField
-                                id="outlined-select-currency-native"
-                                select
-                                fullWidth
-                                value={value}
-                                onChange={handleChange}
-                                SelectProps={{
-                                  native: true,
-                                }}
-                              >
-                                {status.map((option) => (
-                                  <option
-                                    key={option.value}
-                                    value={option.value}
-                                  >
-                                    {option.label}
-                                  </option>
-                                ))}
-                              </TextField>
-                            </Box>
-                          </Grid>
-                          <Grid item xs={12} p={0}>
-                            <Divider sx={{ my: 0 }} />
-                          </Grid>
-                        </Grid>
-
                         <NotificationList />
                       </PerfectScrollbar>
                     </Grid>
