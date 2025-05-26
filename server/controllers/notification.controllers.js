@@ -103,47 +103,64 @@ export const createNotification = async (
 
 const getNotifications = asyncHandler(async (req, res) => {
   const userId = req.user._id;
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 10;
+  const {
+    readStatus = "all", // 'unread' | 'read' | 'all'
+    type = "all", // 'message', 'like', "follow" etc.
+    sortBy = "newest", // 'newest', 'oldest', 'mostFrequent'
+    page = 1,
+    limit = 10,
+  } = req.query;
 
-  // Build the query based on the isRead parameter
   const query = { user: userId };
-  if (req.query.isRead !== undefined) {
-    query.isRead = req.query.isRead === "true";
+
+  // Read status filter
+  if (readStatus === "unread") query.isRead = false;
+  else if (readStatus === "read") query.isRead = true;
+
+  // Type / referenceModel filter
+  if (type !== "all") {
+    query.type = type; // or `referenceModel` if that's what you use
   }
 
-  // Query notifications for the user
+  // Sort logic
+  let sortOption = { updatedAt: -1 };
+  if (sortBy === "oldest") sortOption = { updatedAt: 1 };
+  else if (sortBy === "mostFrequent") sortOption = { repetitionCount: -1 };
+
   const notifications = await Notification.find(query)
     .populate("sender", "username avatar")
-    .sort({ updatedAt: -1 })
+    .sort(sortOption)
     .skip((page - 1) * limit)
     .limit(limit)
     .lean();
 
-  // Populate the referenceId for each notification
+  const totalCount = await Notification.countDocuments(query);
+
+  // Optional: Populate referenceDoc
   const populatedNotifications = await Promise.all(
-    notifications.map(async (notification) => {
-      const populatedNotification = { ...notification };
-
-      if (notification.referenceId && notification.referenceModel) {
-        const RefModel = mongoose.model(notification.referenceModel);
-        populatedNotification.referenceDoc = await RefModel.findById(
-          notification.referenceId
-        ).lean();
+    notifications.map(async (notif) => {
+      const populated = { ...notif };
+      if (notif.referenceId && notif.referenceModel) {
+        try {
+          const RefModel = mongoose.model(notif.referenceModel);
+          populated.referenceDoc = await RefModel.findById(
+            notif.referenceId
+          ).lean();
+        } catch (err) {
+          populated.referenceDoc = null;
+        }
       }
-
-      return populatedNotification;
+      return populated;
     })
   );
 
-  const totalCount = await Notification.countDocuments(query);
   res.status(200).json(
     new ApiResponse(
       200,
       {
         notifications: populatedNotifications,
         totalCount,
-        currentPage: page,
+        currentPage: Number(page),
         totalPages: Math.ceil(totalCount / limit),
       },
       "Notifications fetched successfully",
