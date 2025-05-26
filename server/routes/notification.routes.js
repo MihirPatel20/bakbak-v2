@@ -10,6 +10,11 @@ import {
 
 const router = Router();
 
+/**
+ *  @example
+ *  GET /api/notifications?readStatus=unread&type=message&sortBy=newest&page=1&limit=10
+ * 
+ */
 router.route("/").get(verifyJWT, getNotifications);
 router.route("/mark-as-read").patch(verifyJWT, markNotificationAsRead);
 router.route("/mark-all-as-read").patch(verifyJWT, markAllNotificationsAsRead);
