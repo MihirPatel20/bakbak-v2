@@ -100,6 +100,7 @@ import notificationSubscriptionRouter from "./routes/notificationSubscription.ro
 import notificationRouter from "./routes/notification.routes.js";
 import exploreRouter from "./routes/explore.routes.js";
 import searchRouter from "./routes/search.routes.js";
+import settingsRouter from "./routes/settings.routes.js";
 
 import followRouter from "./routes/follow.routes.js";
 import postRouter from "./routes/post.routes.js";
@@ -124,6 +125,7 @@ app.use("/api/v1/notificationSubscription", notificationSubscriptionRouter);
 app.use("/api/v1/notifications", notificationRouter);
 app.use("/api/v1/explore", exploreRouter);
 app.use("/api/v1/search", searchRouter);
+app.use("/api/v1/settings", settingsRouter);
 
 app.use("/api/v1/follow", followRouter);
 app.use("/api/v1/post", postRouter);
