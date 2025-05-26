@@ -11,6 +11,7 @@ import { SocketProvider } from "context/SocketContext";
 import PageLoading from "components/global/PageLoading";
 import { loadingTimer } from "constants";
 import { PostDialogProvider } from "context/PostDialogContext";
+import { fetchUserSettings } from "reducer/settings/settings.thunk";
 
 const ProtectedRoutes = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -20,6 +21,10 @@ const ProtectedRoutes = () => {
   useEffect(() => {
     const fetchData = async () => {
       await dispatch(getUserProfile());
+      await dispatch(fetchUserSettings());
+
+      // Simulate a delay to show loading state
+      // This is useful for UX to prevent flickering
       setTimeout(() => {
         setIsLoading(false);
       }, loadingTimer); // Delay of 1 second (1000 milliseconds)
