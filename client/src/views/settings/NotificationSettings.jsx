@@ -8,81 +8,24 @@ import {
   Divider,
 } from "@mui/material";
 import Header from "./Header";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  applyPushNotificationSetting,
+  applySettingChange,
+} from "reducer/settings/settings.actions";
 
 const NotificationsDetail = ({ onBack }) => {
-  const [notificationSettings, setNotificationSettings] = useState({
-    pushNotifications: false,
-    emailNotifications: false,
-  });
+  const notificationSettings = useSelector(
+    (state) => state.settings.notifications
+  );
+  const dispatch = useDispatch();
 
-  const dummySettings = {
-    pushNotifications: true,
-    emailNotifications: false,
+  const handleSettingChange = (key, value) => {
+    dispatch(applySettingChange(`notifications.${key}`, value));
   };
 
-  // Replace your useEffect and handleSettingChange with these versions:
-  useEffect(() => {
-    const fetchSettings = async () => {
-      try {
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 500));
-        setNotificationSettings(dummySettings);
-      } catch (error) {
-        console.error("Failed to fetch notification settings:", error);
-      }
-    };
-
-    fetchSettings();
-  }, []);
-
-  const handleSettingChange = async (type, value) => {
-    try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 100));
-
-      // Update local state
-      setNotificationSettings((prev) => ({
-        ...prev,
-        [type]: value,
-      }));
-
-      // Log the change (for testing)
-      console.log(`Setting ${type} changed to:`, value);
-    } catch (error) {
-      console.error("Failed to update notification settings:", error);
-    }
-  };
-
-  const handlePushNotificationToggle = async (isEnabled) => {
-    try {
-      if (isEnabled) {
-        const activateResponse = await updatePushSubscriptionStatus("activate");
-
-        if (!activateResponse) {
-          const registration =
-            await serviceWorkerRegistration.initializeServiceWorker();
-          if (!registration) {
-            console.error(
-              "[Settings] Failed to enable notifications. Please check your browser settings."
-            );
-            return;
-          }
-        }
-      } else {
-        const deactivateResponse = await updatePushSubscriptionStatus(
-          "deactivate"
-        );
-        if (!deactivateResponse) {
-          console.error("[Settings] Failed to disable notifications.");
-          return;
-        }
-      }
-    } catch (error) {
-      console.error(
-        "[Settings] Notification settings update failed:",
-        error.message
-      );
-    }
+  const handlePushNotificationToggle = (isEnabled) => {
+    dispatch(applyPushNotificationSetting(isEnabled));
   };
 
   const SettingItem = ({ label, checked, onChange }) => (
@@ -116,17 +59,14 @@ const NotificationsDetail = ({ onBack }) => {
       <List sx={{ mt: -2 }}>
         <SettingItem
           label="Push Notifications"
-          checked={notificationSettings.pushNotifications}
-          onChange={(val) => {
-            handleSettingChange("pushNotifications", val);
-            handlePushNotificationToggle(val);
-          }}
+          checked={notificationSettings.push}
+          onChange={(val) => handlePushNotificationToggle(val)}
         />
 
         <SettingItem
           label="Email Notifications"
-          checked={notificationSettings.emailNotifications}
-          onChange={(val) => handleSettingChange("emailNotifications", val)}
+          checked={notificationSettings.email}
+          onChange={(val) => handleSettingChange("email", val)}
         />
       </List>
     </Box>
