@@ -270,8 +270,8 @@ const ProfileSection = () => {
                         "aria-label": "weight",
                       }}
                     /> 
-                    <Divider /> 
                     */}
+                    <Divider />
                   </Box>
 
                   <PerfectScrollbar
@@ -293,7 +293,6 @@ const ProfileSection = () => {
                           [theme.breakpoints.down("md")]: {
                             minWidth: "100%",
                           },
-                          pt: 0,
                           // mt: 1,
                           // "& .MuiListItemButton-root": {
                           //   mt: 0.5,
