@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect } from "react";
+import React, { useEffect } from "react";
+import { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 
 // material-ui
@@ -17,6 +18,7 @@ import {
   Popper,
   Stack,
   TextField,
+  List,
   Typography,
   useMediaQuery,
 } from "@mui/material";
@@ -27,29 +29,34 @@ import PerfectScrollbar from "react-perfect-scrollbar";
 // project imports
 import MainCard from "ui-component/cards/MainCard";
 import Transitions from "ui-component/extended/Transitions";
-import NotificationList from "./NotificationList";
 
 // redux imports
 import { useDispatch, useSelector } from "react-redux";
-import { markAllAsRead } from "reducer/notification/notification.thunk";
+import fetchNotifications, {
+  markAllAsRead,
+} from "reducer/notification/notification.thunk";
 
 // assets
 import { IconBell } from "@tabler/icons-react";
+import NotificationList from "./NotificationList";
 
 // ==============================|| NOTIFICATION ||============================== //
 
 const NotificationSection = () => {
   const dispatch = useDispatch();
   const anchorRef = useRef(null);
-  const notificationsCount = useSelector(
-    (state) => state.notifications.totalCount
+  const { notifications, totalCount: notificationsCount } = useSelector(
+    (state) => state.notifications
   );
+
+  useEffect(() => {
+    dispatch(fetchNotifications());
+  }, [dispatch]);
 
   const theme = useTheme();
   const matchesXs = useMediaQuery(theme.breakpoints.down("md"));
 
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState("");
   /**
    * anchorRef is used on different componets and specifying one type leads to other components throwing an error
    * */
@@ -72,10 +79,6 @@ const NotificationSection = () => {
     }
     prevOpen.current = open;
   }, [open]);
-
-  const handleChange = (event) => {
-    if (event?.target.value) setValue(event?.target.value);
-  };
 
   const handleMarkAllAsRead = async () => {
     try {
@@ -197,7 +200,40 @@ const NotificationSection = () => {
                           // overflowX: "hidden",
                         }}
                       >
-                        <NotificationList />
+                        <List
+                          sx={{
+                            width: "100%",
+                            maxWidth: 330,
+                            py: 0,
+                            borderRadius: "10px",
+                            [theme.breakpoints.down("md")]: { maxWidth: 300 },
+                            "& .MuiListItemSecondaryAction-root": { top: 22 },
+                            "& .MuiDivider-root": { my: 0 },
+                            "& .list-container": { pl: 5 },
+                          }}
+                        >
+                          {notifications?.length === 0 ? (
+                            <ListItemWrapper>
+                              <ListItem alignItems="center">
+                                <Typography
+                                  variant="subtitle1"
+                                  width={"325px"}
+                                  textAlign="center"
+                                  sx={{ color: theme.palette.grey[500] }}
+                                >
+                                  You're all caught up! No new notifications.
+                                </Typography>
+                              </ListItem>
+                            </ListItemWrapper>
+                          ) : (
+                            notifications.map((notif, i) => (
+                              <React.Fragment key={notif._id || i}>
+                                <NotificationList notification={notif} />
+                                {i < notifications.length - 1 && <Divider />}
+                              </React.Fragment>
+                            ))
+                          )}
+                        </List>
                       </PerfectScrollbar>
                     </Grid>
                   </Grid>
