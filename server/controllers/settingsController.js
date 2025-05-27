@@ -2,7 +2,6 @@
 import settingsService from "../services/settingsService.js";
 
 const getSettings = async (req, res) => {
-  console.log("Fetching user settings for:", req.user._id);
   try {
     const userId = req.user._id;
     const settings = await settingsService.getUserSettings(userId);
