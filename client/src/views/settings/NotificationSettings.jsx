@@ -52,7 +52,7 @@ const NotificationsDetail = ({ onBack }) => {
   );
 
   return (
-    <Box sx={{ p: 2, height: "100%", boxSizing: "border-box" }}>
+    <Box sx={{ height: "100%", boxSizing: "border-box" }}>
       <Header title="Notification Settings" onBack={onBack} />
 
       {/* Negative margin is used to visually align the list items with the header */}

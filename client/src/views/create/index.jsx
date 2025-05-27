@@ -19,7 +19,7 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3),
   maxWidth: 600,
   margin: "auto",
-  marginTop: theme.spacing(4),
+  // marginTop: theme.spacing(4),
 }));
 
 const ImagePreview = styled("img")({

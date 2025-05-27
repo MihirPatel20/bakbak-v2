@@ -97,7 +97,7 @@ const Notifications = () => {
         Notifications
       </Typography>
 
-      <Grid container spacing={1}>
+      <Grid container spacing={{ sm: 1, xs: 2 }}>
         {[
           {
             label: "Read Status",

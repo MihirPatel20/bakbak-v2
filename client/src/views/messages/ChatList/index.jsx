@@ -88,6 +88,7 @@ const ChatList = ({ setActiveChat }) => {
         gap: 1,
         pr: "12px",
         pl: "6px",
+        bgcolor: "background.default",
       }}
     >
       <Box

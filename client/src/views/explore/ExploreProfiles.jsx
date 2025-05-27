@@ -57,7 +57,7 @@ const ExploreProfiles = () => {
     <Grid
       container
       spacing={{
-        sm: 1,
+        xs: 1,
         md: 2,
       }}
     >

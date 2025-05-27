@@ -20,15 +20,25 @@ export default function SettingsPage() {
   const [activeSection, setActiveSection] = useState(null);
 
   return (
-    <Box sx={{ position: "relative", height: "100vh", overflow: "hidden" }}>
+    <Container
+      maxWidth="md"
+      sx={{
+        p: 0,
+        mt: { sm: 0, md: 3 },
+        position: "relative",
+        height: "100vh",
+        overflow: "hidden",
+      }}
+    >
       <Slide direction="right" in={!activeSection} mountOnEnter unmountOnExit>
         <Box
           sx={{
             position: "absolute",
-            width: "100%",
+            width: "calc(100% - 24px)",
             height: "100%",
             bgcolor: "background.paper",
             overflowY: "auto",
+            px: 2,
           }}
         >
           <MainSettings onSectionChange={setActiveSection} />
@@ -39,11 +49,11 @@ export default function SettingsPage() {
         <Box
           sx={{
             position: "absolute",
-            px: 2,
-            width: "100%",
+            width: "calc(100% - 24px)",
             height: "100%",
             bgcolor: "background.paper",
             overflowY: "auto",
+            px: 2,
           }}
         >
           {activeSection === "notifications" && (
@@ -67,13 +77,13 @@ export default function SettingsPage() {
           )}
         </Box>
       </Slide>
-    </Box>
+    </Container>
   );
 }
 
 const MainSettings = ({ onSectionChange }) => {
   return (
-    <Container maxWidth="md" sx={{ p: 2, mt: { sm: 0, md: 3 } }}>
+    <Box>
       <Typography variant="h3" gutterBottom>
         Preferences
       </Typography>
@@ -120,7 +130,7 @@ const MainSettings = ({ onSectionChange }) => {
           </React.Fragment>
         ))}
       </List>
-    </Container>
+    </Box>
   );
 };
 

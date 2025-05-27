@@ -52,7 +52,7 @@ const EditProfile = () => {
   };
 
   return (
-    <Container sx={{ px: 2, mt: { sm: 0, md: 3 } }}>
+    <Box >
       <Paper variant="outlined" sx={{ p: 3 }}>
         <Typography variant="h3" align="center" gutterBottom>
           Edit Profile
@@ -254,7 +254,7 @@ const EditProfile = () => {
           }}
         </Formik>
       </Paper>
-    </Container>
+    </Box>
   );
 };
 

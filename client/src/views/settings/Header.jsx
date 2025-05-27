@@ -11,7 +11,7 @@ const Header = ({ title, onBack }) => (
       pb: 1,
     }}
   >
-    <IconButton onClick={onBack} edge="start" aria-label="back">
+    <IconButton onClick={onBack} edge="start" aria-label="back" sx={{ ml: 0 }}>
       <ArrowBackIcon />
     </IconButton>
     <Typography variant="h5" component="div" sx={{ ml: 1, pt: "1px" }}>

@@ -1,3 +1,4 @@
+import { Container } from "@mui/material";
 import FollowingList from "views/friends/FollowingList";
 import DirectMessage from "views/messages/DirectMessage";
 import ProfilePage from "views/profile";
@@ -17,7 +18,11 @@ const appRoutes = [
   {
     desc: "edit profile page for user with id :userId",
     url: "/profile/edit/:userId",
-    element: <EditProfile />,
+    element: (
+      <Container sx={{ px: 2, mt: { sm: 0, md: 3 } }}>
+        <EditProfile />
+      </Container>
+    ),
   },
   {
     desc: "following list of user with username :username",
