@@ -49,6 +49,7 @@ import PeopleOutlineIcon from "@mui/icons-material/PeopleOutline";
 import { AppBarHeight } from "constants";
 import useAuth from "hooks/useAuth";
 import PreferencesCard from "./PreferencesCard";
+import ProfileMenuList from "./ProfileMenuList";
 
 // ==============================|| PROFILE MENU ||============================== //
 
@@ -94,57 +95,6 @@ const ProfileSection = () => {
     prevOpen.current = open;
   }, [open]);
 
-  const AccountChip = (
-    <Chip
-      sx={{
-        height: "48px",
-        alignItems: "center",
-        borderRadius: "27px",
-        transition: "all .2s ease-in-out",
-        borderColor: theme.palette.primary.light,
-        backgroundColor: theme.palette.primary.light,
-        '&[aria-controls="menu-list-grow"], &:hover': {
-          borderColor: theme.palette.primary.main,
-          background: `${theme.palette.primary.main}!important`,
-          color: theme.palette.primary.light,
-          "& svg": {
-            stroke: theme.palette.primary.light,
-          },
-        },
-        "& .MuiChip-label": {
-          lineHeight: 0,
-        },
-      }}
-      icon={
-        <Avatar
-          src={getUserAvatarUrl(auth?.user?.avatar)}
-          sx={{
-            ...theme.typography.mediumAvatar,
-            margin: "8px 0 8px 8px !important",
-            cursor: "pointer",
-          }}
-          ref={anchorRef}
-          aria-controls={open ? "menu-list-grow" : undefined}
-          aria-haspopup="true"
-          color="inherit"
-        />
-      }
-      label={
-        <IconSettings
-          stroke={1.5}
-          size="1.5rem"
-          color={theme.palette.primary.main}
-        />
-      }
-      variant="outlined"
-      ref={anchorRef}
-      aria-controls={open ? "menu-list-grow" : undefined}
-      aria-haspopup="true"
-      onClick={handleToggle}
-      color="primary"
-    />
-  );
-
   const greetingsPool = [
     "What's the gossip today? 👀",
     "Back on the BakBak grind 🔄",
@@ -168,7 +118,6 @@ const ProfileSection = () => {
 
   return (
     <>
-      {/* {AccountChip} */}
       <Box
         sx={{
           display: "flex",
@@ -188,6 +137,11 @@ const ProfileSection = () => {
             },
           },
         }}
+        ref={anchorRef}
+        aria-controls={open ? "menu-list-grow" : undefined}
+        aria-haspopup="true"
+        color="inherit"
+        onClick={handleToggle}
       >
         <Avatar
           src={getUserAvatarUrl(auth?.user?.avatar)}
@@ -196,11 +150,6 @@ const ProfileSection = () => {
             // margin: "8px 0 8px 8px !important",
             cursor: "pointer",
           }}
-          ref={anchorRef}
-          aria-controls={open ? "menu-list-grow" : undefined}
-          aria-haspopup="true"
-          color="inherit"
-          onClick={handleToggle}
         />
       </Box>
 
@@ -282,127 +231,13 @@ const ProfileSection = () => {
                     }}
                   >
                     <Box sx={{ p: 2, pt: 0 }}>
-                      <List
-                        component="nav"
-                        sx={{
-                          width: "100%",
-                          maxWidth: 350,
-                          minWidth: 300,
-                          backgroundColor: theme.palette.background.paper,
-                          borderRadius: "10px",
-                          [theme.breakpoints.down("md")]: {
-                            minWidth: "100%",
-                          },
-                          // mt: 1,
-                          // "& .MuiListItemButton-root": {
-                          //   mt: 0.5,
-                          // },
-                        }}
-                      >
-                        <ListItemButton
-                          sx={{
-                            borderRadius: `${customization.borderRadius}px`,
-                          }}
-                          selected={selectedIndex === 0}
-                          onClick={(event) =>
-                            handleListItemClick(event, 0, "/settings")
-                          }
-                        >
-                          <ListItemIcon>
-                            <IconSettings stroke={1.5} size="1.3rem" />
-                          </ListItemIcon>
-                          <ListItemText
-                            primary={
-                              <Typography variant="body2">
-                                Account Settings
-                              </Typography>
-                            }
-                          />
-                        </ListItemButton>
-                        <ListItemButton
-                          sx={{
-                            borderRadius: `${customization.borderRadius}px`,
-                          }}
-                          selected={selectedIndex === 1}
-                          onClick={(event) =>
-                            handleListItemClick(event, 1, "/profile")
-                          }
-                        >
-                          <ListItemIcon>
-                            <IconUserCircle stroke={1.5} size="1.3rem" />
-                          </ListItemIcon>
-                          <ListItemText
-                            primary={
-                              <Grid
-                                container
-                                spacing={1}
-                                justifyContent="space-between"
-                              >
-                                <Grid item>
-                                  <Typography variant="body2">
-                                    My Profile
-                                  </Typography>
-                                </Grid>
-                                <Grid item>
-                                  <Chip
-                                    label="02"
-                                    size="small"
-                                    sx={{
-                                      bgcolor: theme.palette.warning.dark,
-                                      color: theme.palette.background.default,
-                                    }}
-                                  />
-                                </Grid>
-                              </Grid>
-                            }
-                          />
-                        </ListItemButton>
-
-                        <ListItemButton
-                          sx={{
-                            borderRadius: `${customization.borderRadius}px`,
-                          }}
-                          selected={selectedIndex === 2}
-                          onClick={(event) =>
-                            handleListItemClick(event, 2, "/friends")
-                          }
-                        >
-                          <ListItemIcon>
-                            <IconUsers stroke={1.5} size="1.3rem" />
-                          </ListItemIcon>
-                          <ListItemText
-                            primary={
-                              <Grid
-                                container
-                                spacing={1}
-                                justifyContent="space-between"
-                              >
-                                <Grid item>
-                                  <Typography variant="body2">
-                                    Friends
-                                  </Typography>
-                                </Grid>
-                                {/* Optional: Add friend requests count chip */}
-                                <Grid item>
-                                  <Chip
-                                    label="5"
-                                    size="small"
-                                    sx={{
-                                      bgcolor: theme.palette.success.dark,
-                                      color: theme.palette.background.default,
-                                    }}
-                                  />
-                                </Grid>
-                              </Grid>
-                            }
-                          />
-                        </ListItemButton>
-                      </List>
-
+                      <ProfileMenuList
+                        selectedIndex={selectedIndex}
+                        handleClick={handleListItemClick}
+                      />
                       <Divider />
 
                       <PreferencesCard />
-
                       <Divider />
 
                       <List
@@ -417,7 +252,6 @@ const ProfileSection = () => {
                           },
                         }}
                       >
-                        {" "}
                         <ListItemButton
                           sx={{
                             borderRadius: `${customization.borderRadius}px`,
@@ -450,6 +284,7 @@ const ProfileSection = () => {
                         </ListItemButton>
                       </List>
                       {/* <Divider />
+                      
                        <UpgradePlanCard /> */}
                     </Box>
                   </PerfectScrollbar>
