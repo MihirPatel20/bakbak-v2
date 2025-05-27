@@ -1,67 +1,85 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-
+// ...imports remain mostly same
+import React, { useEffect, useState, useCallback } from "react";
+import { useDispatch } from "react-redux";
 // material-ui
-import { useTheme, styled } from "@mui/material/styles";
-import { blue, orange, yellow } from "@mui/material/colors";
 import {
-  List,
-  ListItem,
-  ListItemAvatar,
-  Avatar,
-  ListItemText,
   Typography,
-  ListItemSecondaryAction,
   Box,
-  Chip,
-  Divider,
   Grid,
-  Stack,
   Container,
+  TextField,
+  Divider,
+  List,
 } from "@mui/material";
-
-import { getUserAvatarUrl } from "utils/getImageUrl";
-import { getRelativeTime } from "utils/getRelativeTime";
-import fetchNotifications, {
-  markAsRead,
-} from "reducer/notification/notification.thunk";
-import { useNavigate } from "react-router-dom";
 import api from "api";
 import AdsComponent from "@/adsense";
+import { markAsRead } from "reducer/notification/notification.thunk";
+import NotificationList from "layout/MainLayout/Header/NotificationSection/NotificationList";
+import { NotificationTypes } from "constants";
+
+const readStatusOptions = [
+  { value: "all", label: "All" },
+  { value: "unread", label: "Unread" },
+  { value: "read", label: "Read" },
+];
+
+const typeOptions = [
+  { value: "all", label: "All Types" },
+  { value: NotificationTypes.MESSAGE, label: "Messages" },
+  { value: NotificationTypes.LIKE_POST, label: "Likes" },
+  { value: NotificationTypes.COMMENT, label: "Comments" },
+  { value: NotificationTypes.FOLLOW_REQUEST, label: "Follows" },
+  { value: NotificationTypes.MENTIONS, label: "Mentions" },
+];
+
+const sortOptions = [
+  { value: "newest", label: "Newest" },
+  { value: "oldest", label: "Oldest" },
+  { value: "mostFrequent", label: "Most Frequent" },
+];
 
 const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    const fetchNotificationsData = async () => {
-      setIsLoading(true);
-      const query = `?isRead="true"&page=${1}&limit=${10}`;
-      try {
-        const response = await api.get(`/notifications${query}`);
-        console.log("response", response.data.data.notifications);
-        setNotifications(response.data.data.notifications);
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setIsLoading(false);
-      }
+  const [readStatus, setReadStatus] = useState("all");
+  const [notifType, setNotifType] = useState("all");
+  const [sortBy, setSortBy] = useState("newest");
+
+  const fetchNotificationsData = useCallback(async () => {
+    setIsLoading(true);
+
+    const params = {
+      page: 1,
+      limit: 10,
+      sortBy,
+      readStatus,
     };
 
-    fetchNotificationsData();
-  }, [dispatch]);
+    if (notifType !== "all") params.type = notifType;
 
-  const handleMarkAsRead = (notificationId) => {
+    try {
+      const response = await api.get("/notifications", { params });
+      setNotifications(response.data.data.notifications);
+    } catch (error) {
+      console.log("Error fetching notifications:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [readStatus, notifType, sortBy]);
+
+  useEffect(() => {
+    fetchNotificationsData();
+  }, [fetchNotificationsData]);
+
+  const handleMarkAsRead = (e, notificationId) => {
+    e.stopPropagation();
     dispatch(markAsRead(notificationId));
   };
 
-  if (isLoading) {
-    return <Typography>Loading...</Typography>;
-  }
-
   return (
-    <Container>
+    <Container maxWidth="sm">
       <Box
         sx={{
           border: "1px solid #ccc",
@@ -71,214 +89,82 @@ const Notifications = () => {
           margin: "16px 0",
         }}
       >
-        <Typography variant="h6" component="h1">
-          Place To show Google AdSense
-        </Typography>
+        <Typography variant="h6">Place To show Google AdSense</Typography>
         <AdsComponent dataAdSlot="8429412170" />
       </Box>
 
-      <Typography variant="h3" sx={{ mb: 2 }} component="h1">
+      <Typography variant="h3" sx={{ mb: 2 }}>
         Notifications
       </Typography>
-      <List
-        sx={{
-          width: "100%",
-          py: 0,
-          borderRadius: "10px",
-        }}
-      >
-        {notifications?.length === 0 ? (
-          <Typography variant="subtitle1" sx={{ p: 2 }}>
-            No notifications found
-          </Typography>
-        ) : (
-          notifications?.map((notification, index) => (
-            <React.Fragment key={notification.id || index}>
-              {notification.type === "message" && (
-                <MessageNotification notification={notification} />
-              )}
-              {notification.type === "like" && (
-                <LikeNotification notification={notification} />
-              )}
-              {/* Render Divider for all but the last notification */}
-              {index < notifications.length - 1 && <Divider />}
+
+      <Grid container spacing={1}>
+        {[
+          {
+            label: "Read Status",
+            value: readStatus,
+            onChange: setReadStatus,
+            options: readStatusOptions,
+          },
+          {
+            label: "Type",
+            value: notifType,
+            onChange: setNotifType,
+            options: typeOptions,
+          },
+          {
+            label: "Sort By",
+            value: sortBy,
+            onChange: setSortBy,
+            options: sortOptions,
+          },
+        ].map(({ label, value, onChange, options }) => (
+          <Grid item sm={4} xs={12} key={label}>
+            <TextField
+              select
+              size="small"
+              fullWidth
+              label={label}
+              value={value}
+              onChange={(e) => onChange(e.target.value)}
+              SelectProps={{ native: true }}
+            >
+              {options.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </TextField>
+          </Grid>
+        ))}
+      </Grid>
+
+      {isLoading ? (
+        <Typography sx={{ mt: 3 }}>Loading...</Typography>
+      ) : notifications.length === 0 ? (
+        <Typography sx={{ mt: 3 }}>
+          You're all caught up! No new notifications.
+        </Typography>
+      ) : (
+        <List
+          sx={{
+            width: "100%",
+            py: 0,
+            borderRadius: "10px",
+            "& .MuiListItemSecondaryAction-root": { top: 22 },
+            "& .MuiDivider-root": { my: 0 },
+            "& .list-container": { pl: 5 },
+          }}
+        >
+          {notifications.map((notif, i) => (
+            <React.Fragment key={notif._id || i}>
+              <NotificationList notification={notif} />
+              {i < notifications.length - 1 && <Divider />}
             </React.Fragment>
-          ))
-        )}
-      </List>
+          ))}
+        </List>
+      )}
     </Container>
   );
 };
 
 export default Notifications;
-
-// styles
-const ListItemWrapper = styled("div")(({ theme }) => ({
-  cursor: "pointer",
-  padding: 16,
-  "&:hover": {
-    // background: theme.palette.primary.light,
-  },
-  "& .MuiListItem-root": {
-    padding: 0,
-  },
-}));
-
-const MessageNotification = ({ notification }) => {
-  const theme = useTheme();
-  const url = `/messages/direct/u/${notification.referenceId.chat}`;
-
-  const navigate = useNavigate();
-  const handleClick = () => {
-    navigate(url);
-  };
-
-  const chipSX = {
-    height: 24,
-    padding: "0 6px",
-  };
-  const chipErrorSX = {
-    ...chipSX,
-    color: theme.palette.orange.dark,
-    backgroundColor: theme.palette.orange.light,
-    marginRight: "5px",
-  };
-
-  const chipWarningSX = {
-    ...chipSX,
-    color: orange[600],
-    backgroundColor: yellow[50],
-    marginRight: "5px",
-    // border: `1px solid ${yellow[600]}`,
-  };
-
-  const chipSuccessSX = {
-    ...chipSX,
-    color: theme.palette.success.dark,
-    backgroundColor: theme.palette.success.light,
-    height: 28,
-  };
-
-  const chipInfoSX = {
-    ...chipSX,
-    color: theme.palette.primary.dark,
-    // border: `1px solid ${theme.palette.primary[200]}`,
-    backgroundColor: blue[50],
-    marginRight: "5px",
-  };
-
-  return (
-    <ListItemWrapper key={notification._id} onClick={handleClick}>
-      <ListItem alignItems="center">
-        <ListItemAvatar>
-          <Avatar
-            alt={notification.sender.username}
-            src={getUserAvatarUrl(notification.sender.avatar)}
-          />
-        </ListItemAvatar>
-        <ListItemText
-          primary={notification.sender.username}
-          secondary={
-            <Typography variant="caption" display="block">
-              sent message
-            </Typography>
-          }
-        />
-
-        <ListItemSecondaryAction>
-          <Grid container justifyContent="flex-end">
-            <Grid item xs={12}>
-              <Typography variant="caption" display="block" gutterBottom>
-                {getRelativeTime(notification.createdAt)}
-              </Typography>
-            </Grid>
-          </Grid>
-        </ListItemSecondaryAction>
-      </ListItem>
-
-      <Grid container direction="column" className="list-container" pl={7}>
-        <Grid item xs={12} sx={{ pb: 2 }}>
-          {notification.repetitionCount > 2 && (
-            <Typography variant="caption" display="block">
-              +{notification.repetitionCount - 2} messages
-            </Typography>
-          )}
-          {notification?.preview?.map((message, index) => (
-            <Typography key={index} variant="subtitle2">
-              {message}
-            </Typography>
-          ))}
-        </Grid>
-
-        <Grid item xs={12}>
-          <Grid container>
-            <Grid item>
-              <Chip label="reply" sx={chipInfoSX} />
-            </Grid>
-            <Grid item>
-              <Chip
-                label={notification.isRead ? "mark as unread" : "mark as read"}
-                sx={chipWarningSX}
-                onClick={(event) => handleMarkAsRead(event, notification._id)}
-              />
-            </Grid>
-          </Grid>
-        </Grid>
-      </Grid>
-    </ListItemWrapper>
-  );
-};
-
-const LikeNotification = ({ notification }) => {
-  const senderUsername = notification.sender.username;
-  // console.log("notification: ", notification);
-
-  return (
-    <ListItemWrapper>
-      <ListItem alignItems="center">
-        <ListItemAvatar>
-          <Avatar
-            alt={senderUsername}
-            src={getUserAvatarUrl(notification.sender.avatar)}
-          />
-        </ListItemAvatar>
-        <ListItemText
-          primary={notification.sender.username}
-          secondary={
-            <Typography variant="caption" display="block">
-              liked your post
-            </Typography>
-          }
-        />
-
-        <ListItemSecondaryAction>
-          <Grid container justifyContent="flex-end">
-            <Grid item xs={12}>
-              <Typography variant="caption" display="block" gutterBottom>
-                {getRelativeTime(notification.createdAt)}
-              </Typography>
-            </Grid>
-          </Grid>
-        </ListItemSecondaryAction>
-      </ListItem>
-
-      <Grid
-        container
-        direction="column"
-        className="list-container"
-        pl={7}
-        pt={1}
-      >
-        <Box width={200}>
-          <Stack direction="row">
-            <img
-              src={notification.referenceDoc.images[0].url}
-              alt={`notification-img`}
-              style={{ width: "100%", height: "100px", borderRadius: 4 }}
-            />
-          </Stack>
-        </Box>
-      </Grid>
-    </ListItemWrapper>
-  );
-};
