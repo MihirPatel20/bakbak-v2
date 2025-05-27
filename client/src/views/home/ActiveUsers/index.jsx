@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { useSocket } from "context/SocketContext";
 import { ChatEventEnum } from "constants";
 import NoOnlineUsersCard from "./NoOnlineUsersCard";
+import ProfileCard from "components/shared/ProfileCard";
 
 const ActiveUsers = () => {
   const { socket } = useSocket();
@@ -123,11 +124,10 @@ const ActiveUsers = () => {
       </Box>
 
       {users.map((user) => (
-        <UserCard
-          key={user._id}
-          user={user}
+        <ProfileCard
+          profile={user}
           onClick={() =>
-            navigate(`/profile/${user.username}`, { state: { user } })
+            navigate(`/profile/${user.account.username}`, { state: { user } })
           }
         />
       ))}
