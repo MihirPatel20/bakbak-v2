@@ -7,6 +7,7 @@ import { ChatEventEnum } from "@/constants";
 import { useSocket } from "context/SocketContext";
 import { LocalStorage } from "@/utils/LocalStorage";
 import { useNavigate } from "react-router-dom";
+import ProfileCard from "components/shared/ProfileCard";
 
 const ChatList = ({ setActiveChat }) => {
   const { socket } = useSocket();
@@ -152,10 +153,10 @@ const ChatList = ({ setActiveChat }) => {
 
       {followingUsers.length > 0
         ? followingUsers.map((user) => (
-            <UserCard
+            <ProfileCard
               key={user._id}
-              user={user}
-              onClick={() => getOrCreateChat(user._id)}
+              profile={user}
+              onClick={() => getOrCreateChat(user.account._id)}
             />
           ))
         : null}
