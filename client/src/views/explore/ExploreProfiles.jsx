@@ -54,7 +54,13 @@ const ExploreProfiles = () => {
   );
 
   return (
-    <Grid container spacing={3}>
+    <Grid
+      container
+      spacing={{
+        sm: 1,
+        md: 2,
+      }}
+    >
       {users.length > 0 ? (
         users.map((user, index) => {
           if (auth.user._id === user.account._id) return null;
