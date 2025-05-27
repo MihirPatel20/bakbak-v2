@@ -12,6 +12,8 @@ export const NotificationTypes = Object.freeze({
   COMMENT: "comment",
   PING: "ping",
   FOLLOW_REQUEST: "follow_request",
+  MENTIONS: "mentions",
+  SYSTEM: "system",
 });
 
 export const ChatEventEnum = Object.freeze({
