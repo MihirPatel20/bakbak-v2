@@ -104,7 +104,7 @@ export const createNotification = async (
 const getNotifications = asyncHandler(async (req, res) => {
   const userId = req.user._id;
   const {
-    readStatus = "all", // 'unread' | 'read' | 'all'
+    readStatus = "unread", // 'unread' | 'read' | 'all'
     type = "all", // 'message', 'like', "follow" etc.
     sortBy = "newest", // 'newest', 'oldest', 'mostFrequent'
     page = 1,
@@ -119,7 +119,7 @@ const getNotifications = asyncHandler(async (req, res) => {
 
   // Type / referenceModel filter
   if (type !== "all") {
-    query.type = type; // or `referenceModel` if that's what you use
+    query.type = type;
   }
 
   // Sort logic
