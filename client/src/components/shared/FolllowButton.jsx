@@ -46,6 +46,7 @@ const FolllowButton = (props) => {
       <Button
         disableElevation
         size="small"
+        sx={{ minWidth: 72 }}
         variant={isFollowing ? "outlined" : "contained"}
         onClick={handleFollowClick}
         {...restProps}
