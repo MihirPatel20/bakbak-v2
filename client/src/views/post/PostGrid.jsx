@@ -48,7 +48,7 @@ const PostGrid = ({ currentProfileUsername }) => {
   );
 
   return (
-    <Grid container spacing={2}>
+    <Grid container spacing={{ xs: 0.5, sm: 2 }}>
       {posts.length > 0 ? (
         posts.map((post, index) => {
           if (!post?.images[0]) return null;
@@ -121,13 +121,14 @@ const ImageCard = ({
     <Grid
       key={post._id}
       item
-      xs={12}
-      sm={6}
+      xs={6}
       md={4}
       ref={index === totalPosts - 1 ? lastPostElementRef : null}
     >
       <Card sx={{ borderRadius: 1 }}>
-        {isLoading && <ImagePlaceholder height={200} />}
+        {isLoading && (
+          <ImagePlaceholder sx={{ height: { xs: 120, sm: 200 } }} />
+        )}
         <CardMedia
           component="img"
           image={finalUrl}
@@ -135,8 +136,8 @@ const ImageCard = ({
           onLoad={handleLoad}
           onError={handleError}
           onClick={() => openDialog(post._id)}
-          style={{
-            height: "200px",
+          sx={{
+            height: { xs: 120, sm: 200 },
             objectFit: "cover",
             display: isLoading ? "none" : "block",
           }}
