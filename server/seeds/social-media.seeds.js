@@ -61,7 +61,9 @@ const seedSocialProfiles = async () => {
         location: `${faker.location.city()}, ${faker.location.country()}`,
         countryCode: "+91",
         phoneNumber: faker.phone.number(),
-        coverImage: { localPath: `images/default/profile_cover-${getRandomNumber(7)}.jpg` },
+        coverImage: {
+          localPath: `images/default/profile_cover-${getRandomNumber(7)}.jpg`,
+        },
       },
     });
   });
@@ -91,7 +93,7 @@ const seedDefaultProfiles = async () => {
           countryCode: userData.countryCode,
           phoneNumber: userData.phoneNumber,
           coverImage: {
-            localPath: `images/cover/post${getRandomNumber(7)}.jpg`,
+            localPath: `images/default/profile_cover-${getRandomNumber(7)}.jpg`,
           },
         },
       }
