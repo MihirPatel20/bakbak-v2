@@ -1,4 +1,5 @@
 import { Container } from "@mui/material";
+import FollowersList from "views/friends/FollowersList";
 import FollowingList from "views/friends/FollowingList";
 import DirectMessage from "views/messages/DirectMessage";
 import ProfilePage from "views/profile";
@@ -28,6 +29,11 @@ const appRoutes = [
     desc: "following list of user with username :username",
     url: "/following/:username",
     element: <FollowingList />,
+  },
+  {
+    desc: "followers list of user with username :username",
+    url: "/followers/:username",
+    element: <FollowersList />,
   },
 ];
 
