@@ -7,7 +7,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import api from "api";
 import { getUserAvatarUrl } from "utils/getImageUrl";
 
-const CoverImage = ({ profile }) => {
+const CoverImage = ({ profile, sx }) => {
   const [hover, setHover] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [previewImage, setPreviewImage] = useState(
@@ -69,6 +69,7 @@ const CoverImage = ({ profile }) => {
         "&:hover .edit-button": {
           opacity: 1, // Show edit button on hover
         },
+        ...sx,
       }}
       onMouseEnter={() => handleHover(true)}
       onMouseLeave={() => handleHover(false)}
