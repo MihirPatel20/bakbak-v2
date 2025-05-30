@@ -7,6 +7,8 @@ import {
   Grid,
   Button,
   Container,
+  Stack,
+  Link,
 } from "@mui/material";
 import { LocationOn, Email, Phone } from "@mui/icons-material";
 import api from "api";
@@ -112,6 +114,36 @@ const ProfilePage = () => {
             <Typography variant="body1" gutterBottom>
               {bio}
             </Typography>
+            
+            {/* ToDo: allow user to add links and integrate with server */}
+            <Stack
+              direction="row"
+              spacing={1}
+              sx={{
+                mt: 1,
+                flexWrap: "wrap",
+                gap: 1,
+              }}
+            >
+              {profile?.links?.map((link, index) => (
+                <Link
+                  key={index}
+                  href={link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  sx={{
+                    color: "text.secondary",
+                    textDecoration: "none",
+                    "&:hover": {
+                      color: "primary.main",
+                      textDecoration: "underline",
+                    },
+                  }}
+                >
+                  {new URL(link).hostname.replace("www.", "")}
+                </Link>
+              ))}
+            </Stack>
           </Box>
         </Grid>
 
