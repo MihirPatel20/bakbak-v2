@@ -18,6 +18,8 @@ export const profileCommonAggregation = (req, userId) => {
 
   return [
     { $match: matchStage },
+
+    // Lookup user account details
     {
       $lookup: {
         from: "users",
@@ -36,6 +38,8 @@ export const profileCommonAggregation = (req, userId) => {
         ],
       },
     },
+
+    // Lookup follower/following stats
     {
       $lookup: {
         from: "socialfollows",
@@ -66,6 +70,8 @@ export const profileCommonAggregation = (req, userId) => {
         as: "followStats",
       },
     },
+
+    // Lookup if current user is following this profile
     {
       $lookup: {
         from: "socialfollows",
@@ -85,18 +91,45 @@ export const profileCommonAggregation = (req, userId) => {
         as: "isFollowingDoc",
       },
     },
+
+    // 🔥 Lookup totalPosts count
+    {
+      $lookup: {
+        from: "socialposts",
+        let: { ownerId: "$owner" },
+        pipeline: [
+          {
+            $match: {
+              $expr: { $eq: ["$author", "$$ownerId"] },
+            },
+          },
+          {
+            $count: "totalPosts",
+          },
+        ],
+        as: "postStats",
+      },
+    },
+
+    // Add derived fields
     {
       $addFields: {
         account: { $arrayElemAt: ["$account", 0] },
         followersCount: { $arrayElemAt: ["$followStats.followedBy", 0] },
         followingCount: { $arrayElemAt: ["$followStats.following", 0] },
         isFollowing: { $gt: [{ $size: "$isFollowingDoc" }, 0] },
+        totalPosts: {
+          $ifNull: [{ $arrayElemAt: ["$postStats.totalPosts", 0] }, 0],
+        },
       },
     },
+
+    // Clean up unwanted stuff
     {
       $project: {
         followStats: 0,
         isFollowingDoc: 0,
+        postStats: 0,
       },
     },
   ];

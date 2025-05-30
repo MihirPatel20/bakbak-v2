@@ -57,14 +57,13 @@ const ProfilePage = () => {
     }
   };
 
-  const { followersCount, followingCount } = profile;
+  const { followersCount, followingCount, totalPosts } = profile;
   const { bio, location, phoneNumber, account } = profile;
   const fullName = `${profile.firstName} ${profile.lastName}`;
 
   return (
     <Container sx={{ px: 2 }}>
       <CoverImage profile={profile} />
-
 
       <Grid container spacing={2}>
         <Grid
@@ -138,20 +137,30 @@ const ProfilePage = () => {
       <Divider sx={{ my: 2 }} />
 
       <Grid container spacing={2}>
-        <Grid item xs={4} sx={{ textAlign: "center" }}>
+        <Grid
+          item
+          xs={4}
+          sx={{ textAlign: "center", cursor: "pointer" }}
+          onClick={() => navigate(`/followers/${profile.account.username}`)}
+        >
           <Typography variant="h6">{followersCount}</Typography>
           <Typography variant="body2" sx={{ color: "text.secondary" }}>
             Followers
           </Typography>
         </Grid>
-        <Grid item xs={4} sx={{ textAlign: "center" }}>
+        <Grid
+          item
+          xs={4}
+          sx={{ textAlign: "center", cursor: "pointer" }}
+          onClick={() => navigate(`/following/${profile.account.username}`)}
+        >
           <Typography variant="h6">{followingCount}</Typography>
           <Typography variant="body2" sx={{ color: "text.secondary" }}>
             Following
           </Typography>
         </Grid>
         <Grid item xs={4} sx={{ textAlign: "center" }}>
-          <Typography variant="h6">21</Typography>
+          <Typography variant="h6">{totalPosts}</Typography>
           <Typography variant="body2" sx={{ color: "text.secondary" }}>
             Posts
           </Typography>
