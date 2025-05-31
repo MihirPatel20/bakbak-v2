@@ -9,7 +9,15 @@ export const setupInterceptors = () => {
     async (error) => {
       const originalRequest = error.config;
 
-      if (error.response?.status === 401 && !originalRequest._retry) {
+      const isRefreshTokenCall = originalRequest.url.includes(
+        "/users/refresh-token"
+      );
+
+      if (
+        error.response?.status === 401 &&
+        !originalRequest._retry &&
+        !isRefreshTokenCall
+      ) {
         originalRequest._retry = true;
 
         try {
@@ -30,9 +38,6 @@ export const setupInterceptors = () => {
             throw new Error("Token refresh failed");
           }
         } catch (err) {
-          store.dispatch(logoutUser());
-
-          // Optional: Show snackbar
           store.dispatch(
             showSnackbar("error", "Session expired. Please log in again.")
           );
