@@ -1,0 +1,38 @@
+@startuml
+actor User
+participant "Frontend (BakBak)" as FE
+participant "Backend API" as BE
+database "Auth DB" as DB
+
+== Login Flow ==
+User -> FE : Enters credentials
+FE -> BE : POST /login (credentials)
+BE -> DB : Verify user
+DB --> BE : Valid
+BE --> FE : accessToken + refreshToken (HttpOnly Cookie)
+
+== Normal API Use ==
+User -> FE : Uses app
+FE -> BE : GET /protected (with accessToken in header)
+BE -> FE : 200 OK
+
+== Access Token Expired ==
+FE -> BE : GET /protected (expired token)
+BE --> FE : 401 Unauthorized
+
+== Refresh Flow ==
+FE -> BE : POST /refresh (cookie auto-sent)
+BE -> DB : Validate refresh token
+DB --> BE : Valid
+BE --> FE : New accessToken
+
+== Retry Request ==
+FE -> BE : GET /protected (new token)
+BE --> FE : 200 OK
+
+== Logout ==
+User -> FE : Logout
+FE -> BE : POST /logout
+BE -> DB : Invalidate refresh token
+BE --> FE : 200 OK (clears cookie)
+@enduml
