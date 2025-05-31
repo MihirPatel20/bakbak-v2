@@ -4,70 +4,29 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { getMongoosePaginationOptions } from "../utils/helpers.js";
 import { ApiError } from "../utils/ApiError.js";
-import { NotificationTypes, ReferenceModel, USER_ACTIVITY_TYPES } from "../constants.js";
+import {
+  NotificationTypes,
+  ReferenceModel,
+  USER_ACTIVITY_TYPES,
+} from "../constants.js";
 import { SocialPost } from "../models/post.models.js";
 import { createNotification } from "./notification.controllers.js";
 import { sendPushNotification } from "./notificationSubscription.controllers.js";
 
-const addComment = asyncHandler(async (req, res) => {
-  const { postId } = req.params;
-  const { content } = req.body;
+const getCommentAggregationPipeline = ({ userId, postId, commentId }) => {
+  const matchStage = {};
 
-  // Create the comment
-  const comment = await SocialComment.create({
-    content,
-    author: req.user?._id,
-    postId,
-  });
-
-  // Fetch post to get author info
-  const post = await SocialPost.findById(postId).select("author");
-
-  // Send notification to post owner (if not commenting on own post)
-  if (post && post.author.toString() !== req.user._id.toString()) {
-    await createNotification(
-      req,
-      post.author.toString(), // receiver
-      req.user, // sender
-      content, // preview
-      NotificationTypes.COMMENT, // type
-      postId, // referenceId
-      ReferenceModel.POST // referenceModel
-    );
-
-    // Optional: Push Notification
-    const options = {
-      title: `${req.user.username} commented on your post!`,
-      body: content,
-      icon: "icons/bakbak.ico",
-      badge: "icons/bakbak.ico",
-      tag: "comment",
-      data: { url: `/social/post/${postId}` },
-    };
-
-    await sendPushNotification(post.author.toString(), options);
+  if (postId) {
+    matchStage.postId = new mongoose.Types.ObjectId(postId);
   }
 
-  return res
-    .status(201)
-    .json(
-      new ApiResponse(
-        201,
-        comment,
-        "Comment added successfully",
-        USER_ACTIVITY_TYPES.COMMENT_ON_POST
-      )
-    );
-});
+  if (commentId) {
+    matchStage._id = new mongoose.Types.ObjectId(commentId);
+  }
 
-const getPostComments = asyncHandler(async (req, res) => {
-  const { postId } = req.params;
-  const { page = 1, limit = 10 } = req.query;
-  const commentAggregation = SocialComment.aggregate([
+  const pipeline = [
     {
-      $match: {
-        postId: new mongoose.Types.ObjectId(postId),
-      },
+      $match: matchStage,
     },
     {
       $lookup: {
@@ -86,7 +45,7 @@ const getPostComments = asyncHandler(async (req, res) => {
         pipeline: [
           {
             $match: {
-              likedBy: new mongoose.Types.ObjectId(req.user?._id),
+              likedBy: new mongoose.Types.ObjectId(userId),
             },
           },
         ],
@@ -137,25 +96,81 @@ const getPostComments = asyncHandler(async (req, res) => {
         likes: { $size: "$likes" },
         isLiked: {
           $cond: {
-            if: {
-              $gte: [
-                {
-                  // if the isLiked key has document in it
-                  $size: "$isLiked",
-                },
-                1,
-              ],
-            },
+            if: { $gte: [{ $size: "$isLiked" }, 1] },
             then: true,
             else: false,
           },
         },
       },
     },
-  ]);
+  ];
+
+  return pipeline;
+};
+
+const addComment = asyncHandler(async (req, res) => {
+  const { postId } = req.params;
+  const { content } = req.body;
+
+  const comment = await SocialComment.create({
+    content,
+    author: req.user?._id,
+    postId,
+  });
+
+  const post = await SocialPost.findById(postId).select("author");
+
+  if (post && post.author.toString() !== req.user._id.toString()) {
+    await createNotification(
+      req,
+      post.author.toString(),
+      req.user,
+      content,
+      NotificationTypes.COMMENT,
+      postId,
+      ReferenceModel.POST
+    );
+
+    await sendPushNotification(post.author.toString(), {
+      title: `${req.user.username} commented on your post!`,
+      body: content,
+      icon: "icons/bakbak.ico",
+      badge: "icons/bakbak.ico",
+      tag: "comment",
+      data: { url: `/social/post/${postId}` },
+    });
+  }
+
+  const pipeline = getCommentAggregationPipeline({
+    userId: req.user._id,
+    commentId: comment._id,
+  });
+
+  const populatedComment = await SocialComment.aggregate(pipeline);
+
+  return res
+    .status(201)
+    .json(
+      new ApiResponse(
+        201,
+        populatedComment[0],
+        "Comment added successfully",
+        USER_ACTIVITY_TYPES.COMMENT_ON_POST
+      )
+    );
+});
+
+const getPostComments = asyncHandler(async (req, res) => {
+  const { postId } = req.params;
+  const { page = 1, limit = 10 } = req.query;
+
+  const pipeline = getCommentAggregationPipeline({
+    userId: req.user._id,
+    postId,
+  });
 
   const comments = await SocialComment.aggregatePaginate(
-    commentAggregation,
+    SocialComment.aggregate(pipeline),
     getMongoosePaginationOptions({
       page,
       limit,
@@ -165,6 +180,7 @@ const getPostComments = asyncHandler(async (req, res) => {
       },
     })
   );
+
   return res
     .status(200)
     .json(
