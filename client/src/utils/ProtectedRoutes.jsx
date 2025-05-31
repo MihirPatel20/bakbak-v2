@@ -27,7 +27,7 @@ const ProtectedRoutes = () => {
           await dispatch(fetchUserSettings());
         }
       } catch (error) {
-        console.error('Error fetching user data:', error);
+        console.error("Error fetching user data:", error);
       } finally {
         // Always set loading to false after attempts are complete
         setTimeout(() => {
@@ -43,7 +43,7 @@ const ProtectedRoutes = () => {
   }
 
   if (!auth.user) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" />;
   }
 
   return (
