@@ -3,6 +3,7 @@ import cors from "cors";
 import fs from "fs";
 import { createServer } from "http";
 import { Server } from "socket.io";
+import requestIp from "request-ip";
 import rateLimit from "express-rate-limit";
 import cookieParser from "cookie-parser";
 import webPush from "web-push";
@@ -58,10 +59,12 @@ app.use(
   })
 );
 
+app.use(requestIp.mw());
+
 // Rate limiter to avoid misuse of the service and avoid cost spikes
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5000, // Limit each IP to 500 requests per `window` (here, per 15 minutes)
+  max: 500, // Limit each IP to 500 requests per `window` (here, per 15 minutes)
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
   keyGenerator: (req, res) => {
