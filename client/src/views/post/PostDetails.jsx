@@ -7,6 +7,7 @@ import {
   useTheme,
   Grid,
   IconButton,
+  useMediaQuery,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import { formatRelativeTime } from "utils/getRelativeTime";
@@ -14,9 +15,14 @@ import api from "api";
 import { getUserAvatarUrl } from "utils/getImageUrl";
 import ImageCarousel from "views/home/ActivityFeed/ImageCarousel";
 import PerfectScrollbar from "react-perfect-scrollbar";
+import { isMobile } from "react-device-detect";
+import useAuth from "hooks/useAuth";
 
 const PostDetails = ({ post }) => {
   const theme = useTheme();
+  const matchDownMd = useMediaQuery(theme.breakpoints.down("md"));
+  const { auth } = useAuth();
+
   const [comment, setComment] = useState("");
   const [postComments, setPostComments] = useState([]);
   const [readMoreStatus, setReadMoreStatus] = useState({});
@@ -27,15 +33,39 @@ const PostDetails = ({ post }) => {
 
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
-    // Handle comment submission logic here
-    console.log("Submitted comment:", comment);
+    if (!comment.trim()) return; // Don't submit empty comments
+
+    // Create temporary comment object with current user info
+    const tempComment = {
+      content: comment,
+      author: {
+        account: {
+          username: auth.user?.username, // This should be current user's username
+          avatar: auth.user?.avatar, // This should be current user's avatar
+        },
+      },
+      createdAt: new Date().toISOString(),
+    };
+
+    // Optimistically update UI
+    setPostComments((prevComments) => [...prevComments, tempComment]);
+    setComment(""); // Clear input field
+
     try {
       const response = await api.post(`/comment/post/${post._id}`, {
         content: comment,
       });
-      setComment("");
+      // Update the temporary comment with the real one from server
+      setPostComments((prevComments) =>
+        prevComments.map((c, index) =>
+          index === prevComments.length - 1 ? response.data.data : c
+        )
+      );
     } catch (error) {
-      console.error("Error fetching post details:", error);
+      // If error occurs, remove the temporary comment
+      setPostComments((prevComments) => prevComments.slice(0, -1));
+      console.error("Error posting comment:", error);
+      // You might want to show an error message to the user here
     }
   };
 
@@ -43,6 +73,7 @@ const PostDetails = ({ post }) => {
     try {
       // Fetch post comments
       const response = await api.get(`/comment/post/${post._id}`);
+      console.log("response.data.data.comments: ", response.data.data.comments);
       setPostComments(response.data.data.comments);
     } catch (error) {
       console.error("Error fetching post comments:", error);
@@ -65,13 +96,61 @@ const PostDetails = ({ post }) => {
     }));
   };
 
+  const renderContent = () => {
+    return (
+      <Box sx={{ minHeight: { xs: 200, md: 400 }, mb: 5, mt: 9 }}>
+        <Box mb={3}>
+          <Typography variant="body1">{post.content}</Typography>
+        </Box>
+
+        <Box mb={3} flexGrow={1} position="relative">
+          {postComments?.map((comment, index) => (
+            <Box key={index} mb={2} display="flex" alignItems="center" gap={2}>
+              <Avatar
+                src={getUserAvatarUrl(comment.author?.account?.avatar)}
+                alt="commenter avatar"
+              />
+              <Box>
+                <Typography variant="body2" fontWeight={600}>
+                  {comment.author?.account?.username}
+                </Typography>
+                <Typography variant="body2">
+                  {readMoreStatus[index]
+                    ? comment.content
+                    : truncateContent(comment.content, 100)}
+                  {comment.content.length > 100 && (
+                    <Typography
+                      component="span"
+                      onClick={() => toggleReadMore(index)}
+                      style={{
+                        color: "gray",
+                        cursor: "pointer",
+                        marginLeft: "5px",
+                      }}
+                    >
+                      {readMoreStatus[index] ? "Read Less" : "Read More"}
+                    </Typography>
+                  )}
+                </Typography>
+              </Box>
+            </Box>
+          ))}
+        </Box>
+      </Box>
+    );
+  };
+
   return (
-    <Grid container>
+    <Grid container spacing={2}>
       {/* Left side - Post Image Preview */}
       <Grid
         item
         xs={12}
-        md={6}
+        md="auto" // don’t stretch, keep content-sized
+        sx={{
+          width: { xs: "100%", md: "500px" }, // full width on small, fixed on large
+          flexShrink: 0,
+        }}
         display="flex"
         flexDirection="column"
         justifyContent="center"
@@ -83,8 +162,10 @@ const PostDetails = ({ post }) => {
       <Grid
         item
         xs={12}
-        md={6}
-        p={2}
+        md
+        mt={{ sm: 0, md: 2 }}
+        ml={{ xs: 2, md: 0 }}
+        pb={1}
         display="flex"
         flexDirection="column"
         position="relative"
@@ -123,61 +204,23 @@ const PostDetails = ({ post }) => {
           </Typography>
         </Box>
 
-        <PerfectScrollbar
-          component="div"
-          style={{
-            flexGrow: 1,
-            maxHeight: "60vh",
-            paddingRight: "16px",
-            overflowX: "hidden",
-            marginTop: "60px",
-            marginBottom: "40px",
-          }}
-        >
-          <Box mb={3}>
-            <Typography variant="body1">{post.content}</Typography>
-          </Box>
-
-          <Box mb={3} flexGrow={1} position="relative">
-            {postComments?.map((comment, index) => (
-              <Box
-                key={index}
-                mb={2}
-                display="flex"
-                alignItems="center"
-                gap={2}
-              >
-                <Avatar
-                  src={getUserAvatarUrl(comment.author.account.avatar)}
-                  alt="commenter avatar"
-                />
-                <Box>
-                  <Typography variant="body2" fontWeight={600}>
-                    {comment.author.account.username}
-                  </Typography>
-                  <Typography variant="body2">
-                    {readMoreStatus[index]
-                      ? comment.content
-                      : truncateContent(comment.content, 100)}
-                    {comment.content.length > 100 && (
-                      <Typography
-                        component="span"
-                        onClick={() => toggleReadMore(index)}
-                        style={{
-                          color: "gray",
-                          cursor: "pointer",
-                          marginLeft: "5px",
-                        }}
-                      >
-                        {readMoreStatus[index] ? "Read Less" : "Read More"}
-                      </Typography>
-                    )}
-                  </Typography>
-                </Box>
-              </Box>
-            ))}
-          </Box>
-        </PerfectScrollbar>
+        {isMobile || matchDownMd ? (
+          renderContent()
+        ) : (
+          <PerfectScrollbar
+            component="div"
+            style={{
+              flexGrow: 1,
+              maxHeight: "60vh",
+              paddingRight: "16px",
+              overflowX: "hidden",
+              marginTop: "60px",
+              marginBottom: "40px",
+            }}
+          >
+            {renderContent()}
+          </PerfectScrollbar>
+        )}
 
         <Box
           component="form"

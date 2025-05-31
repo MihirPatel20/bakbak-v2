@@ -124,6 +124,7 @@ const ImageCard = ({
       xs={6}
       md={4}
       ref={index === totalPosts - 1 ? lastPostElementRef : null}
+      sx={{ cursor: "pointer" }}
     >
       <Card sx={{ borderRadius: 1 }}>
         {isLoading && (
