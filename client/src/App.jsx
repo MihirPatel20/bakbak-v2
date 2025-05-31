@@ -25,6 +25,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import { setupInterceptors } from "api/setupInterceptors.js";
 
 // Register Chart.js components
 ChartJS.register(
@@ -39,6 +40,7 @@ ChartJS.register(
 
 const App = () => {
   const customization = useSelector((state) => state.customization);
+  setupInterceptors();
 
   return (
     <StyledEngineProvider injectFirst>

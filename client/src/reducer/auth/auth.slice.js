@@ -14,7 +14,7 @@ import {
 
 const initialState = {
   user: null, // Store user data here
-  token: null, // Store the JWT token here
+  accessToken: null, // Store the JWT token here
   isLoading: false,
   error: null,
 };
@@ -28,6 +28,9 @@ const authSlice = createSlice({
     setUserProfile: (state, action) => {
       state.user = action.payload;
     },
+    setToken: (state, action) => {
+      state.accessToken = action.payload;
+    },
     logoutUser,
   },
   extraReducers: (builder) => {
@@ -40,7 +43,7 @@ const authSlice = createSlice({
       .addCase(registerUser.fulfilled, (state, action) => {
         state.isLoading = false;
         state.user = action.payload.data.user;
-        state.token = action.payload.data.token;
+        state.accessToken = action.payload.data.token;
         state.error = null;
       })
       .addCase(registerUser.rejected, (state, action) => {
@@ -57,7 +60,7 @@ const authSlice = createSlice({
         // console.log("login payload: ", action.payload.data.user);
         state.isLoading = false;
         // state.user = action.payload.data.user;
-        state.token = action.payload.data.accessToken;
+        state.accessToken = action.payload.data.accessToken;
         state.error = null;
       })
       .addCase(loginUser.rejected, (state, action) => {
@@ -73,7 +76,7 @@ const authSlice = createSlice({
       })
       .addCase(refreshAccessToken.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.token = action.payload.data.token;
+        state.accessToken = action.payload.data.accessToken;
         state.error = null;
       })
       .addCase(refreshAccessToken.rejected, (state, action) => {
@@ -131,7 +134,7 @@ const authSlice = createSlice({
       .addCase(logoutUser.fulfilled, (state) => {
         state.isLoading = false;
         state.user = null;
-        state.token = null;
+        state.accessToken = null;
         state.error = null;
       })
       .addCase(logoutUser.rejected, (state, action) => {
