@@ -22,15 +22,10 @@ import {
 } from "../utils/mail.js";
 
 // TODO: Add more options to make cookie more secure and reliable
-const cookieOptionsForProduction = {
+const cookieOptions = {
   httpOnly: true,
   secure: process.env.NODE_ENV === "production" ? true : false,
   sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
-};
-const cookieOptions = {
-  httpOnly: true,
-  secure: true,
-  sameSite: "none",
 };
 
 const generateAccessAndRefreshTokens = async (userId) => {
@@ -264,10 +259,6 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
       // If token is valid but is used already
       throw new ApiError(401, "Refresh token is expired or used");
     }
-    const cookieOptions = {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-    };
 
     const { accessToken, refreshToken: newRefreshToken } =
       await generateAccessAndRefreshTokens(user._id);
