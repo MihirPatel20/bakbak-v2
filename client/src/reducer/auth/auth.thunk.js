@@ -117,7 +117,7 @@ const getUserProfile = createAsyncThunk(
       console.error("error: ", error.response.data);
       return rejectWithValue({
         ...error.response.data,
-        message: "Please log in again.",
+        message: "Please log in to continue.",
       });
     }
   }

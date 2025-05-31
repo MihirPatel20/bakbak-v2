@@ -20,14 +20,20 @@ const ProtectedRoutes = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      await dispatch(getUserProfile());
-      await dispatch(fetchUserSettings());
-
-      // Simulate a delay to show loading state
-      // This is useful for UX to prevent flickering
-      setTimeout(() => {
-        setIsLoading(false);
-      }, loadingTimer); // Delay of 1 second (1000 milliseconds)
+      try {
+        const userResult = await dispatch(getUserProfile()).unwrap();
+        // Only fetch settings if user profile was successfully retrieved
+        if (userResult) {
+          await dispatch(fetchUserSettings());
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      } finally {
+        // Always set loading to false after attempts are complete
+        setTimeout(() => {
+          setIsLoading(false);
+        }, loadingTimer);
+      }
     };
     fetchData();
   }, [dispatch]);
