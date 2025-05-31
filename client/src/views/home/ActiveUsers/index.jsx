@@ -90,10 +90,10 @@ const ActiveUsers = () => {
         <Divider sx={{ mt: 1.5 }} />
       </Box>
 
-      {onlineUsers.length > 0 ? (
-        onlineUsers.map((user, index) => (
+      {onlineUsers?.length > 0 ? (
+        onlineUsers?.map((user, index) => (
           <UserCard
-            key={index}
+            key={user._id}
             user={user}
             onClick={() =>
               navigate(`/profile/${user.username}`, { state: { user } })
@@ -125,6 +125,7 @@ const ActiveUsers = () => {
 
       {users.map((user) => (
         <ProfileCard
+          key={user._id}
           profile={user}
           onClick={() =>
             navigate(`/profile/${user.account.username}`, { state: { user } })
