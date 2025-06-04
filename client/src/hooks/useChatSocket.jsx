@@ -1,5 +1,5 @@
 // useChatSocket.js
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ChatEventEnum } from "constants";
 import api from "api";
@@ -93,26 +93,27 @@ const useChatSocket = (chatId) => {
     }
   };
 
-  const handleOnMessageChange = (e) => {
-    setNewMessage(e.target.value);
+  const handleOnMessageChange = useCallback(
+    (e) => {
+      setNewMessage(e.target.value);
+      if (!socket) return;
 
-    if (!socket) return;
+      if (!selfTyping) {
+        setSelfTyping(true);
+        socket.emit(ChatEventEnum.TYPING_EVENT, chatId);
+      }
 
-    if (!selfTyping) {
-      setSelfTyping(true);
-      socket.emit(ChatEventEnum.TYPING_EVENT, chatId);
-    }
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
 
-    if (typingTimeoutRef.current) {
-      clearTimeout(typingTimeoutRef.current);
-    }
-
-    const timerLength = 2000;
-    typingTimeoutRef.current = setTimeout(() => {
-      socket.emit(ChatEventEnum.STOP_TYPING_EVENT, chatId);
-      setSelfTyping(false);
-    }, timerLength);
-  };
+      typingTimeoutRef.current = setTimeout(() => {
+        socket.emit(ChatEventEnum.STOP_TYPING_EVENT, chatId);
+        setSelfTyping(false);
+      }, 2000);
+    },
+    [chatId, selfTyping, socket]
+  );
 
   return {
     activeChat,

@@ -184,4 +184,4 @@ const ChatMessageLayout = ({ chat, messages, isTyping, chatBoxDimensions }) => {
   );
 };
 
-export default ChatMessageLayout;
+export default React.memo(ChatMessageLayout);
